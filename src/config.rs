@@ -30,6 +30,7 @@ pub struct Package {
 pub struct Platform {
     pub ia32: Option<Download>,
     pub amd64: Option<Download>,
+    pub arm: Option<Download>,
     pub arm64: Option<Download>,
     pub mips: Option<Download>,
     pub mips64: Option<Download>,

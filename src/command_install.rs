@@ -51,6 +51,16 @@ pub fn install(package_name: &str) -> Result<(), Report> {
         target.ia32
     } else if cfg!(target_arch = "x86_64") {
         target.amd64
+    } else if cfg!(target_arch = "arm") {
+        target.arm
+    } else if cfg!(target_arch = "aarch64") {
+        target.arm64
+    } else if cfg!(target_arch = "mips") {
+        target.mips
+    } else if cfg!(target_arch = "mips64") {
+        target.mips64
+    } else if cfg!(target_arch = "mips64el") {
+        target.mips64el
     } else {
         None
     };

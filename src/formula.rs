@@ -44,8 +44,8 @@ pub struct Download {
     pub url: String,
 }
 
-pub fn new(config_path: &Path) -> Result<Formula, Report> {
-    let mut file = match File::open(config_path) {
+pub fn new(formula_file: &Path) -> Result<Formula, Report> {
+    let mut file = match File::open(formula_file) {
         Ok(f) => f,
         Err(e) => {
             return Err(eyre::Report::from(e));

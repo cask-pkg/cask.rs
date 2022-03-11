@@ -32,7 +32,7 @@ pub async fn install(package_name: &str) -> Result<(), Report> {
             } else if cfg!(target_os = "linux") {
                 config.linux
             } else {
-                panic!("not support your system")
+                return Err(eyre::format_err!("not support your system"));
             };
 
             target

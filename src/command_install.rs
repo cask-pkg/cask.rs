@@ -19,12 +19,15 @@ pub fn install(package_name: &str) -> Result<(), Report> {
             let config_file_path = dest_dir.join("Cask.toml");
             let config = config::new(&config_file_path)?;
 
-            #[cfg(target_os = "macos")]
-            let target = config.darwin;
-            #[cfg(target_os = "linux")]
-            let target = config.linux;
-            #[cfg(target_os = "windows")]
-            let target = config.windows;
+            let target = if cfg!(target_os = "macos") {
+                config.darwin
+            } else if cfg!(target_os = "windows") {
+                config.windows
+            } else if cfg!(target_os = "linux") {
+                config.linux
+            } else {
+                panic!("not support your system")
+            };
 
             target
         }
@@ -36,8 +39,13 @@ pub fn install(package_name: &str) -> Result<(), Report> {
         }
     };
 
-    let target =
-        option_target.unwrap_or_else(|| panic!("{} not support your system", package_name));
+    let target = match option_target {
+        Some(p) => Ok(p),
+        None => Err(eyre::format_err!(
+            "{} not support your system",
+            package_name
+        )),
+    }?;
 
     let option_arch = if cfg!(target_arch = "x86") {
         target.ia32
@@ -47,7 +55,10 @@ pub fn install(package_name: &str) -> Result<(), Report> {
         None
     };
 
-    let arch = option_arch.unwrap_or_else(|| panic!("{} not support your arch", package_name));
+    let arch = match option_arch {
+        Some(a) => Ok(a),
+        None => Err(eyre::format_err!("{} not support your arch", package_name)),
+    }?;
 
     println!("{}", arch.url);
 

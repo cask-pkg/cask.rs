@@ -28,7 +28,7 @@ fn main() {
         Some(("install", sub_matches)) => {
             let package_name = sub_matches.value_of("PACKAGE").expect("required");
 
-            command_install::install(package_name).unwrap();
+            command_install::install(package_name).expect("install package fail!");
         }
         Some((ext, sub_matches)) => {
             let args = sub_matches

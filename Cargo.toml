@@ -35,3 +35,6 @@ async-recursion = "1.0.0"
 indicatif = "0.16.2"
 futures-util = "0.3.21"
 tokio = { version = "1", features = ["full"] }
+sha2 = "0.10.2"
+hex-literal = "0.3.4"
+chrono = "0.4.19"

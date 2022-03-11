@@ -1,4 +1,4 @@
-__package_nae__ = "github.com/axetroy/gpm.rs"
+__package_name__ = "github.com/axetroy/gpm.rs"
 [package]
 name = "gpm"
 bin = "gpm"

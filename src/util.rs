@@ -7,9 +7,16 @@ use std::cmp::min;
 use std::fs::File;
 use std::path::Path;
 
+use chrono::prelude::{DateTime, Utc};
 use futures_util::StreamExt;
 use reqwest::Client;
 use std::io::Write;
+
+pub fn iso8601(st: &std::time::SystemTime) -> String {
+    let dt: DateTime<Utc> = (*st).into();
+    format!("{}", dt.format("%+"))
+    // formats like "2001-07-08T00:34:60.026490+09:30"
+}
 
 pub async fn download(url: &str, filepath: &Path) -> Result<(), Report> {
     let client = &Client::new();

@@ -1,20 +1,22 @@
+// #![deny(warnings)]
+
 use eyre::Report;
 use serde_derive::Deserialize;
 use std::fs::File;
 use std::io::Read;
 use std::path::Path;
-use toml;
+use toml::from_str;
 
 #[derive(Deserialize)]
-struct Configure {
-    package: Package,
-    windows: Option<Platform>,
-    darwin: Option<Platform>,
-    linux: Option<Platform>,
+pub struct Configure {
+    pub package: Package,
+    pub windows: Option<Platform>,
+    pub darwin: Option<Platform>,
+    pub linux: Option<Platform>,
 }
 
 #[derive(Deserialize)]
-struct Package {
+pub struct Package {
     name: String,
     bin: String,
     version: String,
@@ -25,21 +27,21 @@ struct Package {
 }
 
 #[derive(Deserialize)]
-struct Platform {
-    ia32: Option<Download>,
-    amd64: Option<Download>,
-    arm64: Option<Download>,
-    mips: Option<Download>,
-    mips64: Option<Download>,
-    mips64el: Option<Download>,
+pub struct Platform {
+    pub ia32: Option<Download>,
+    pub amd64: Option<Download>,
+    pub arm64: Option<Download>,
+    pub mips: Option<Download>,
+    pub mips64: Option<Download>,
+    pub mips64el: Option<Download>,
 }
 
 #[derive(Deserialize)]
-struct Download {
-    url: String,
+pub struct Download {
+    pub url: String,
 }
 
-fn new(config_path: &Path) -> Result<Configure, Report> {
+pub fn new(config_path: &Path) -> Result<Configure, Report> {
     let mut file = match File::open(config_path) {
         Ok(f) => f,
         Err(e) => {
@@ -58,7 +60,7 @@ fn new(config_path: &Path) -> Result<Configure, Report> {
 
     drop(file);
 
-    let config: Configure = match toml::from_str(&file_content) {
+    let config: Configure = match from_str(&file_content) {
         Ok(r) => r,
         Err(e) => return Err(eyre::Report::from(e)),
     };

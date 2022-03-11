@@ -28,10 +28,10 @@ pub struct Package {
 
 #[derive(Deserialize)]
 pub struct Platform {
-    pub ia32: Option<Download>,
-    pub amd64: Option<Download>,
+    pub x86: Option<Download>,
+    pub x86_64: Option<Download>,
     pub arm: Option<Download>,
-    pub arm64: Option<Download>,
+    pub aarch64: Option<Download>,
     pub mips: Option<Download>,
     pub mips64: Option<Download>,
     pub mips64el: Option<Download>,
@@ -79,7 +79,7 @@ mod tests {
     fn test_read_config() {
         let config_path = env::current_dir()
             .unwrap()
-            .join(" fixtures")
+            .join("fixtures")
             .join("config")
             .join("default_Cask.toml");
 
@@ -105,39 +105,39 @@ mod tests {
 
         // windows
         assert_eq!(
-            windows.ia32.as_ref().unwrap().url,
+            windows.x86.as_ref().unwrap().url,
             "https://github.com/axetroy/gpm.rs/releases/download/v0.1.12/gpm_windows_386.tar.gz"
         );
         assert_eq!(
-            windows.amd64.as_ref().unwrap().url,
+            windows.x86_64.as_ref().unwrap().url,
             "https://github.com/axetroy/gpm.rs/releases/download/v0.1.12/gpm_windows_amd64.tar.gz"
         );
         assert_eq!(
-            windows.arm64.as_ref().unwrap().url,
+            windows.aarch64.as_ref().unwrap().url,
             "https://github.com/axetroy/gpm.rs/releases/download/v0.1.12/gpm_windows_arm64.tar.gz"
         );
 
         // darwin
         assert_eq!(
-            darwin.amd64.as_ref().unwrap().url,
+            darwin.x86_64.as_ref().unwrap().url,
             "https://github.com/axetroy/gpm.rs/releases/download/v0.1.12/gpm_darwin_amd64.tar.gz"
         );
         assert_eq!(
-            darwin.arm64.as_ref().unwrap().url,
+            darwin.aarch64.as_ref().unwrap().url,
             "https://github.com/axetroy/gpm.rs/releases/download/v0.1.12/gpm_darwin_arm64.tar.gz"
         );
 
         // linux
         assert_eq!(
-            linux.ia32.as_ref().unwrap().url,
+            linux.x86.as_ref().unwrap().url,
             "https://github.com/axetroy/gpm.rs/releases/download/v0.1.12/gpm_linux_386.tar.gz"
         );
         assert_eq!(
-            linux.amd64.as_ref().unwrap().url,
+            linux.x86_64.as_ref().unwrap().url,
             "https://github.com/axetroy/gpm.rs/releases/download/v0.1.12/gpm_linux_amd64.tar.gz"
         );
         assert_eq!(
-            linux.arm64.as_ref().unwrap().url,
+            linux.aarch64.as_ref().unwrap().url,
             "https://github.com/axetroy/gpm.rs/releases/download/v0.1.12/gpm_linux_arm64.tar.gz"
         );
         assert_eq!(

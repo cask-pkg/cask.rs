@@ -11,7 +11,12 @@ pub fn install(package_name: &str) -> Result<(), Report> {
 
     let cwd = env::current_dir()?;
 
+    // TODO:: use custom folder
     let dest_dir = &cwd.join("dist").join(package_name);
+
+    if dest_dir.exists() {
+        fs::remove_dir_all(dest_dir)?;
+    }
 
     let option_target = match git::clone(&url, dest_dir, vec![]) {
         Ok(()) => {
@@ -48,13 +53,13 @@ pub fn install(package_name: &str) -> Result<(), Report> {
     }?;
 
     let option_arch = if cfg!(target_arch = "x86") {
-        target.ia32
+        target.x86
     } else if cfg!(target_arch = "x86_64") {
-        target.amd64
+        target.x86_64
     } else if cfg!(target_arch = "arm") {
         target.arm
     } else if cfg!(target_arch = "aarch64") {
-        target.arm64
+        target.aarch64
     } else if cfg!(target_arch = "mips") {
         target.mips
     } else if cfg!(target_arch = "mips64") {

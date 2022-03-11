@@ -14,6 +14,7 @@ pub struct Formula {
     pub darwin: Option<Platform>,          // The macOS target information
     pub linux: Option<Platform>,           // The linux target information
     pub dependencies: Option<Vec<String>>, // The dependencies will be installed before install package
+    pub postinstall: Option<String>,       // The script will run after install package
 }
 
 #[derive(Deserialize)]

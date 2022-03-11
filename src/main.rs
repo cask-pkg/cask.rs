@@ -1,7 +1,9 @@
+#![deny(warnings)]
+
 mod command_install;
-mod download;
 mod formula;
 mod git;
+mod util;
 
 use clap::{arg, Command};
 use futures::executor;

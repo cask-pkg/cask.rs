@@ -1,6 +1,8 @@
-use crate::download;
+#![deny(warnings)]
+
 use crate::formula;
 use crate::git;
+use crate::util;
 use eyre::Report;
 use std::env;
 use std::fs;
@@ -76,7 +78,7 @@ pub async fn install(package_name: &str) -> Result<(), Report> {
 
     let dest = cwd.join("gpm.tar.gz");
 
-    download::download(&arch.url, &dest).await?;
+    util::download(&arch.url, &dest).await?;
 
     Ok(())
 }

@@ -1,3 +1,5 @@
+#![deny(warnings)]
+
 use core::result::Result;
 use eyre::Report;
 use indicatif::{ProgressBar, ProgressStyle};

@@ -9,21 +9,22 @@ use toml::from_str;
 
 #[derive(Deserialize)]
 pub struct Formula {
-    pub package: Package,
-    pub windows: Option<Platform>,
-    pub darwin: Option<Platform>,
-    pub linux: Option<Platform>,
+    pub package: Package,                  // The package information
+    pub windows: Option<Platform>,         // The windows target information
+    pub darwin: Option<Platform>,          // The macOS target information
+    pub linux: Option<Platform>,           // The linux target information
+    pub dependencies: Option<Vec<String>>, // The dependencies will be installed before install package
 }
 
 #[derive(Deserialize)]
 pub struct Package {
-    name: String,
-    bin: String,
-    version: String,
-    authors: Vec<String>,
-    keywords: Option<Vec<String>>,
-    repository: String,
-    description: String,
+    name: String,                  // The package name
+    bin: String,                   // The binary name of package
+    version: String,               // The version of package.
+    authors: Vec<String>,          // The author of package
+    keywords: Option<Vec<String>>, // The keywords of package
+    repository: String,            // The repository url
+    description: String,           // The description of package
 }
 
 #[derive(Deserialize)]

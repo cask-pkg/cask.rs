@@ -73,7 +73,7 @@ pub fn new(config_path: &Path) -> Result<Configure, Report> {
 mod tests {
     use std::env;
 
-    use crate::config;
+    use crate::formula;
 
     #[test]
     fn test_read_config() {
@@ -83,7 +83,7 @@ mod tests {
             .join("config")
             .join("default_Cask.toml");
 
-        let rc = config::new(&config_path).unwrap();
+        let rc = formula::new(&config_path).unwrap();
 
         assert_eq!(rc.package.name, "gpm");
         assert_eq!(rc.package.bin, "gpm");

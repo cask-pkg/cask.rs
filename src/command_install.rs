@@ -1,4 +1,4 @@
-use crate::config;
+use crate::formula;
 use crate::download;
 use crate::git;
 use eyre::Report;
@@ -21,7 +21,7 @@ pub async fn install(package_name: &str) -> Result<(), Report> {
     let option_target = match git::clone(&url, dest_dir, vec![]) {
         Ok(()) => {
             let config_file_path = dest_dir.join("Cask.toml");
-            let config = config::new(&config_file_path)?;
+            let config = formula::new(&config_file_path)?;
 
             let target = if cfg!(target_os = "macos") {
                 config.darwin

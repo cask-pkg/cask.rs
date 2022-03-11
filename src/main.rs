@@ -1,5 +1,5 @@
 mod command_install;
-mod config;
+mod formula;
 mod download;
 mod git;
 

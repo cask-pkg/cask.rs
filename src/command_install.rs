@@ -1,5 +1,5 @@
-use crate::formula;
 use crate::download;
+use crate::formula;
 use crate::git;
 use eyre::Report;
 use std::env;

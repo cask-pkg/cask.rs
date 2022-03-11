@@ -1,6 +1,6 @@
 mod command_install;
-mod formula;
 mod download;
+mod formula;
 mod git;
 
 use clap::{arg, Command};

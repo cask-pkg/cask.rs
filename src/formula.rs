@@ -8,7 +8,7 @@ use std::path::Path;
 use toml::from_str;
 
 #[derive(Deserialize)]
-pub struct Configure {
+pub struct Formula {
     pub package: Package,
     pub windows: Option<Platform>,
     pub darwin: Option<Platform>,
@@ -42,7 +42,7 @@ pub struct Download {
     pub url: String,
 }
 
-pub fn new(config_path: &Path) -> Result<Configure, Report> {
+pub fn new(config_path: &Path) -> Result<Formula, Report> {
     let mut file = match File::open(config_path) {
         Ok(f) => f,
         Err(e) => {
@@ -61,7 +61,7 @@ pub fn new(config_path: &Path) -> Result<Configure, Report> {
 
     drop(file);
 
-    let config: Configure = match from_str(&file_content) {
+    let config: Formula = match from_str(&file_content) {
         Ok(r) => r,
         Err(e) => return Err(eyre::Report::from(e)),
     };

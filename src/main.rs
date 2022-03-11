@@ -22,7 +22,13 @@ async fn main() {
         .subcommand(
             Command::new("install")
                 .about("Install package")
-                .arg(arg!(<PACKAGE> "The package address"))
+                .arg(arg!(<PACKAGE> "The package name"))
+                .arg_required_else_help(true),
+        )
+        .subcommand(
+            Command::new("info")
+                .about("Show information of package")
+                .arg(arg!(<PACKAGE> "The package name"))
                 .arg_required_else_help(true),
         );
 

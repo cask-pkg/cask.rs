@@ -6,7 +6,7 @@ use std::env;
 use std::fs;
 use std::process;
 
-pub fn install(package_name: &str) -> Result<(), Report> {
+pub async fn install(package_name: &str) -> Result<(), Report> {
     let url = format!("https://{}-cask.git", package_name);
 
     let cwd = env::current_dir()?;
@@ -20,7 +20,6 @@ pub fn install(package_name: &str) -> Result<(), Report> {
 
     let option_target = match git::clone(&url, dest_dir, vec![]) {
         Ok(()) => {
-            println!("clone success");
             let config_file_path = dest_dir.join("Cask.toml");
             let config = config::new(&config_file_path)?;
 
@@ -75,11 +74,9 @@ pub fn install(package_name: &str) -> Result<(), Report> {
         None => Err(eyre::format_err!("{} not support your arch", package_name)),
     }?;
 
-    println!("{}", arch.url);
-
     let dest = cwd.join("gpm.tar.gz");
 
-    download::download(&arch.url, &dest)?;
+    download::download(&arch.url, &dest).await?;
 
     Ok(())
 }

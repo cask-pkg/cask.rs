@@ -4,9 +4,11 @@ mod download;
 mod git;
 
 use clap::{arg, Command};
+use futures::executor;
 use std::process;
 
-fn main() {
+#[tokio::main]
+async fn main() {
     let mut app = Command::new("cask")
         .version("v0.1.0")
         .author("Axetroy <axetroy.dev@gmail.com>")
@@ -28,7 +30,9 @@ fn main() {
         Some(("install", sub_matches)) => {
             let package_name = sub_matches.value_of("PACKAGE").expect("required");
 
-            command_install::install(package_name).expect("install package fail!");
+            let f = command_install::install(package_name);
+
+            executor::block_on(f).expect("install package fail!");
         }
         Some((ext, sub_matches)) => {
             let args = sub_matches

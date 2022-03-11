@@ -1,0 +1,43 @@
+### Cask.toml
+
+```toml
+[package]
+name = "gpm"
+bin = "gpm"
+version = "0.1.12"
+authors = ["Axetroy <axetroy.dev@gmail.com>"]
+keywords = ["gpm", "git", "project", "manager"]
+repository = "https://github.com/axetroy/gpm.rs"
+description = """
+A command line tool, manage your hundreds of repository, written with Rust.
+"""
+
+[darwin]
+x86_64 = { url = "https://github.com/axetroy/gpm.rs/releases/download/v0.1.12/gpm_darwin_amd64.tar.gz" }
+aarch64 = { url = "https://github.com/axetroy/gpm.rs/releases/download/v0.1.12/gpm_darwin_arm64.tar.gz" }
+
+[windows]
+x86 = { url = "https://github.com/axetroy/gpm.rs/releases/download/v0.1.12/gpm_windows_386.tar.gz" }
+x86_64 = { url = "https://github.com/axetroy/gpm.rs/releases/download/v0.1.12/gpm_windows_amd64.tar.gz" }
+aarch64 = { url = "https://github.com/axetroy/gpm.rs/releases/download/v0.1.12/gpm_windows_arm64.tar.gz" }
+
+[linux]
+x86 = { url = "https://github.com/axetroy/gpm.rs/releases/download/v0.1.12/gpm_linux_386.tar.gz" }
+x86_64 = { url = "https://github.com/axetroy/gpm.rs/releases/download/v0.1.12/gpm_linux_amd64.tar.gz" }
+aarch64 = { url = "https://github.com/axetroy/gpm.rs/releases/download/v0.1.12/gpm_linux_arm64.tar.gz" }
+mips = { url = "https://github.com/axetroy/gpm.rs/releases/download/v0.1.12/gpm_linux_mips.tar.gz" }
+mips64 = { url = "https://github.com/axetroy/gpm.rs/releases/download/v0.1.12/gpm_linux_mips64.tar.gz" }
+mips64el = { url = "https://github.com/axetroy/gpm.rs/releases/download/v0.1.12/gpm_linux_mips64el.tar.gz" }
+```
+
+### .cask folder
+
+```
+.cask
+├── bin
+│   └── gpm
+└── formula
+    └── f8aa04fa7332a88e0c1433ace2683b9f1e445727815428d9ffd18541db45b9fc
+        ├── Cask.toml
+        └── bin
+```

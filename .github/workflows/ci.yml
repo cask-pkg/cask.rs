@@ -91,6 +91,11 @@ jobs:
           rustup target add mips-unknown-linux-gnu
           rustup target add mips64-unknown-linux-gnuabi64
           rustup target add mips64el-unknown-linux-gnuabi64
+
+          ls -lh /usr/lib/
+
+          export OPENSSL_DIR=/usr/lib/x86_64-linux-gnu
+
           cargo build --release --locked --target x86_64-unknown-linux-musl
           cargo build --release --locked --target i686-unknown-linux-musl
           cargo build --release --locked --target aarch64-unknown-linux-musl

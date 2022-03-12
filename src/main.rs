@@ -1,5 +1,6 @@
 // #![deny(warnings)]
 
+mod command_info;
 mod command_install;
 mod formula;
 mod git;
@@ -46,6 +47,13 @@ async fn main() {
             let version = sub_matches.value_of("VERSION");
 
             let f = command_install::install(package_name, version);
+
+            executor::block_on(f).expect("install package fail!");
+        }
+        Some(("info", sub_matches)) => {
+            let package_name = sub_matches.value_of("PACKAGE").expect("required");
+
+            let f = command_info::info(package_name);
 
             executor::block_on(f).expect("install package fail!");
         }

@@ -8,9 +8,9 @@ use std::process::Command as ChildProcess;
 pub fn clone(url: &str, dest: &Path, args: Vec<&str>) -> Result<(), Report> {
     match ChildProcess::new("git")
         .arg("clone")
+        .args(args)
         .arg(url)
         .arg(dest.to_str().unwrap())
-        .args(args)
         .spawn()
     {
         Ok(mut child) => match child.wait() {

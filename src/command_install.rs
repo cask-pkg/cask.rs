@@ -35,7 +35,7 @@ pub async fn install(package_name: &str, _version: Option<&str>) -> Result<(), R
     let formula_cloned_dir = env::temp_dir().join(format!("cask_{}", unix_time));
     let cask_file_path = formula_cloned_dir.join("Cask.toml");
 
-    let package_formula = match git::clone(&url, &formula_cloned_dir, vec![]) {
+    let package_formula = match git::clone(&url, &formula_cloned_dir, vec!["--depth", "1"]) {
         Ok(()) => {
             if !cask_file_path.exists() {
                 // remove cloned repo

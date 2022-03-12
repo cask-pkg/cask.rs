@@ -98,16 +98,16 @@ jobs:
 
           cargo build --release --locked --target x86_64-unknown-linux-musl
           cargo build --release --locked --target i686-unknown-linux-musl
-          cargo build --release --locked --target aarch64-unknown-linux-musl
-          cargo build --release --locked --target mips-unknown-linux-gnu
-          cargo build --release --locked --target mips64-unknown-linux-gnuabi64
-          cargo build --release --locked --target mips64el-unknown-linux-gnuabi64
-          tar -cvzf target/x86_64-unknown-linux-musl/release/cask_linux_amd64.tar.gz --directory=target/x86_64-unknown-linux-musl/release cask
-          tar -cvzf target/i686-unknown-linux-musl/release/cask_linux_386.tar.gz --directory=target/i686-unknown-linux-musl/release cask
-          tar -cvzf target/aarch64-unknown-linux-musl/release/cask_linux_arm64.tar.gz --directory=target/aarch64-unknown-linux-musl/release cask
-          tar -cvzf target/mips-unknown-linux-gnu/release/cask_linux_mips.tar.gz --directory=target/mips-unknown-linux-gnu/release cask
-          tar -cvzf target/mips64-unknown-linux-gnuabi64/release/cask_linux_mips64.tar.gz --directory=target/mips64-unknown-linux-gnuabi64/release cask
-          tar -cvzf target/mips64el-unknown-linux-gnuabi64/release/cask_linux_mips64el.tar.gz --directory=target/mips64el-unknown-linux-gnuabi64/release cask
+          # cargo build --release --locked --target aarch64-unknown-linux-musl
+          # cargo build --release --locked --target mips-unknown-linux-gnu
+          # cargo build --release --locked --target mips64-unknown-linux-gnuabi64
+          # cargo build --release --locked --target mips64el-unknown-linux-gnuabi64
+          # tar -cvzf target/x86_64-unknown-linux-musl/release/cask_linux_amd64.tar.gz --directory=target/x86_64-unknown-linux-musl/release cask
+          # tar -cvzf target/i686-unknown-linux-musl/release/cask_linux_386.tar.gz --directory=target/i686-unknown-linux-musl/release cask
+          # tar -cvzf target/aarch64-unknown-linux-musl/release/cask_linux_arm64.tar.gz --directory=target/aarch64-unknown-linux-musl/release cask
+          # tar -cvzf target/mips-unknown-linux-gnu/release/cask_linux_mips.tar.gz --directory=target/mips-unknown-linux-gnu/release cask
+          # tar -cvzf target/mips64-unknown-linux-gnuabi64/release/cask_linux_mips64.tar.gz --directory=target/mips64-unknown-linux-gnuabi64/release cask
+          # tar -cvzf target/mips64el-unknown-linux-gnuabi64/release/cask_linux_mips64el.tar.gz --directory=target/mips64el-unknown-linux-gnuabi64/release cask
 
       - name: Build (mac)
         if: startsWith(matrix.os, 'macOS')

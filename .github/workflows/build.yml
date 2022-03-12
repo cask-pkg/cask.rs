@@ -1,4 +1,4 @@
-name: ci
+name: build
 
 on: [push, pull_request]
 
@@ -25,17 +25,12 @@ jobs:
           profile: minimal
           toolchain: stable
           override: true
-          components: rustfmt, clippy
 
       - name: Install rust
         uses: hecrj/setup-rust-action@v1
         with:
           rust-version: "1.59.0"
 
-      - name: Install clippy and rustfmt
-        run: |
-          rustup component add clippy
-          rustup component add rustfmt
       - name: Log versions
         run: |
           rustc --version
@@ -63,17 +58,6 @@ jobs:
           key: ${{ matrix.config.os }}-${{ hashFiles('Cargo.lock') }}
           restore-keys: |
             ${{ matrix.config.os }}-
-      - name: Run cargo fmt
-        run: make format-check
-
-      - name: Run cargo check
-        run: make check
-
-      - name: Run cargo clippy
-        run: make lint
-
-      - name: Run cargo test
-        run: make test
 
       - name: Build (linux)
         if: startsWith(matrix.os, 'ubuntu')

@@ -64,6 +64,8 @@ jobs:
         run: |
           # for build aarch64-unknown-linux-musl
           sudo apt-get update
+          # install musl-gcc
+          sudo apt-get install musl-tools
           # install linker
           sudo apt-get -y install gcc-x86-64-linux-gnu gcc-aarch64-linux-gnu gcc-mips-linux-gnu gcc-mips64-linux-gnuabi64 gcc-mips64el-linux-gnuabi64
 

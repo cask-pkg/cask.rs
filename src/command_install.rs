@@ -170,9 +170,23 @@ created_at = "{}"
 
     let download_version = {
         if let Some(v) = version {
-            Ok(v.to_owned())
+            if !package_formula.package.versions.contains(&v.to_string()) {
+                Err(eyre::format_err!(
+                    "can not found version '{}' of formula",
+                    v
+                ))
+            } else {
+                Ok(v.to_owned())
+            }
         } else if let Some(v) = &package_formula.package.version {
-            Ok(v.clone())
+            if !package_formula.package.versions.contains(v) {
+                Err(eyre::format_err!(
+                    "can not found version '{}' of formula",
+                    v
+                ))
+            } else {
+                Ok(v.clone())
+            }
         } else if package_formula.package.versions.is_empty() {
             Err(eyre::format_err!("can not found any version of formula"))
         } else {

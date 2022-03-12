@@ -3,13 +3,15 @@
 use core::result::Result;
 use eyre::Report;
 use std::path::Path;
-use std::process::Command as ChildProcess;
+use std::process::{Command as ChildProcess, Stdio};
 
 pub fn clone(url: &str, dest: &Path, args: Vec<&str>) -> Result<(), Report> {
     match ChildProcess::new("git")
         .arg("clone")
         .args(args)
         .arg(url)
+        .stdout(Stdio::null())
+        .stderr(Stdio::null())
         .arg(dest.to_str().unwrap())
         .spawn()
     {
@@ -21,9 +23,9 @@ pub fn clone(url: &str, dest: &Path, args: Vec<&str>) -> Result<(), Report> {
                     Err(Report::msg("git clone process fail"))
                 }
             }
-            Err(e) => Err(Report::from(e)),
+            Err(e) => Err(eyre::format_err!("run git clone command exit: {}", e)),
         },
-        Err(e) => Err(Report::from(e)),
+        Err(e) => Err(eyre::format_err!("run git clone command fail: {}", e)),
     }
 }
 

@@ -102,7 +102,8 @@ mod tests {
 
         assert_eq!(rc.package.name, "gpm");
         assert_eq!(rc.package.bin, "gpm");
-        assert_eq!(rc.package.version.unwrap(), "0.1.12");
+        assert!(rc.package.version.is_none());
+        assert_eq!(rc.package.versions, vec!["0.1.12", "0.1.11"]);
         assert_eq!(rc.package.authors, vec!["Axetroy <axetroy.dev@gmail.com>"]);
         assert_eq!(
             rc.package.keywords.unwrap(),
@@ -121,51 +122,51 @@ mod tests {
         // windows
         assert_eq!(
             windows.x86.as_ref().unwrap().url,
-            "https://github.com/axetroy/gpm.rs/releases/download/v0.1.12/gpm_windows_386.tar.gz"
+            "https://github.com/axetroy/gpm.rs/releases/download/v{version}/gpm_windows_386.tar.gz"
         );
         assert_eq!(
             windows.x86_64.as_ref().unwrap().url,
-            "https://github.com/axetroy/gpm.rs/releases/download/v0.1.12/gpm_windows_amd64.tar.gz"
+            "https://github.com/axetroy/gpm.rs/releases/download/v{version}/gpm_windows_amd64.tar.gz"
         );
         assert_eq!(
             windows.aarch64.as_ref().unwrap().url,
-            "https://github.com/axetroy/gpm.rs/releases/download/v0.1.12/gpm_windows_arm64.tar.gz"
+            "https://github.com/axetroy/gpm.rs/releases/download/v{version}/gpm_windows_arm64.tar.gz"
         );
 
         // darwin
         assert_eq!(
             darwin.x86_64.as_ref().unwrap().url,
-            "https://github.com/axetroy/gpm.rs/releases/download/v0.1.12/gpm_darwin_amd64.tar.gz"
+            "https://github.com/axetroy/gpm.rs/releases/download/v{version}/gpm_darwin_amd64.tar.gz"
         );
         assert_eq!(
             darwin.aarch64.as_ref().unwrap().url,
-            "https://github.com/axetroy/gpm.rs/releases/download/v0.1.12/gpm_darwin_arm64.tar.gz"
+            "https://github.com/axetroy/gpm.rs/releases/download/v{version}/gpm_darwin_arm64.tar.gz"
         );
 
         // linux
         assert_eq!(
             linux.x86.as_ref().unwrap().url,
-            "https://github.com/axetroy/gpm.rs/releases/download/v0.1.12/gpm_linux_386.tar.gz"
+            "https://github.com/axetroy/gpm.rs/releases/download/v{version}/gpm_linux_386.tar.gz"
         );
         assert_eq!(
             linux.x86_64.as_ref().unwrap().url,
-            "https://github.com/axetroy/gpm.rs/releases/download/v0.1.12/gpm_linux_amd64.tar.gz"
+            "https://github.com/axetroy/gpm.rs/releases/download/v{version}/gpm_linux_amd64.tar.gz"
         );
         assert_eq!(
             linux.aarch64.as_ref().unwrap().url,
-            "https://github.com/axetroy/gpm.rs/releases/download/v0.1.12/gpm_linux_arm64.tar.gz"
+            "https://github.com/axetroy/gpm.rs/releases/download/v{version}/gpm_linux_arm64.tar.gz"
         );
         assert_eq!(
             linux.mips.as_ref().unwrap().url,
-            "https://github.com/axetroy/gpm.rs/releases/download/v0.1.12/gpm_linux_mips.tar.gz"
+            "https://github.com/axetroy/gpm.rs/releases/download/v{version}/gpm_linux_mips.tar.gz"
         );
         assert_eq!(
             linux.mips64.as_ref().unwrap().url,
-            "https://github.com/axetroy/gpm.rs/releases/download/v0.1.12/gpm_linux_mips64.tar.gz"
+            "https://github.com/axetroy/gpm.rs/releases/download/v{version}/gpm_linux_mips64.tar.gz"
         );
         assert_eq!(
             linux.mips64el.as_ref().unwrap().url,
-            "https://github.com/axetroy/gpm.rs/releases/download/v0.1.12/gpm_linux_mips64el.tar.gz"
+            "https://github.com/axetroy/gpm.rs/releases/download/v{version}/gpm_linux_mips64el.tar.gz"
         );
     }
 }

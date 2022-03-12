@@ -82,7 +82,6 @@ jobs:
           sudo apt-get update
           # install OpenSSL https://docs.rs/openssl/latest/openssl/#automatic
           sudo apt-get install pkg-config libssl-dev
-          sudo apt-get gcc-multilib g++-multilib
           # install linker
           sudo apt-get -y install gcc-x86-64-linux-gnu gcc-aarch64-linux-gnu gcc-mips-linux-gnu gcc-mips64-linux-gnuabi64 gcc-mips64el-linux-gnuabi64
 

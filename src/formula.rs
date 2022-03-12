@@ -20,19 +20,19 @@ pub struct Formula {
 
 #[derive(Deserialize)]
 pub struct Cask {
-    package_name: String, // The package name
-    created_at: String,   // The package installed date
+    pub package_name: String, // The package name
+    pub created_at: String,   // The package installed date
 }
 
 #[derive(Deserialize)]
 pub struct Package {
-    name: String,                  // The package name
-    bin: String,                   // The binary name of package
-    version: String,               // The version of package.
-    authors: Vec<String>,          // The author of package
-    keywords: Option<Vec<String>>, // The keywords of package
-    repository: String,            // The repository url
-    description: String,           // The description of package
+    pub name: String,                  // The package name
+    pub bin: String,                   // The binary name of package
+    pub version: String,               // The version of package.
+    pub authors: Vec<String>,          // The author of package
+    pub keywords: Option<Vec<String>>, // The keywords of package
+    pub repository: String,            // The repository url
+    pub description: String,           // The description of package
 }
 
 #[derive(Deserialize)]

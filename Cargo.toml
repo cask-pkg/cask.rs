@@ -36,3 +36,4 @@ tar = "0.4.38"
 tinytemplate = "1.1"
 dirs = "4.0.0"
 sha2 = "0.10.2"
+openssl = { version = "0.10.38", features = ["vendored"] }

@@ -1,0 +1,59 @@
+name: test
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    name: ${{ matrix.kind }} ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-11, ubuntu-latest, windows-latest]
+
+    env:
+      CARGO_INCREMENTAL: 0
+      RUST_BACKTRACE: full
+      CARGO_TERM_COLOR: always
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v2
+
+      - name: Install stable toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+
+      - name: Install rust
+        uses: hecrj/setup-rust-action@v1
+        with:
+          rust-version: "1.59.0"
+
+      - name: Configure cargo data directory
+        # After this point, all cargo registry and crate data is stored in
+        # $GITHUB_WORKSPACE/.cargo_home. This allows us to cache only the files
+        # that are needed during the build process. Additionally, this works
+        # around a bug in the 'cache' action that causes directories outside of
+        # the workspace dir to be saved/restored incorrectly.
+        run: |
+          echo "CARGO_HOME=$(pwd)/.cargo_home" >> $GITHUB_ENV
+      - name: Cache
+        uses: actions/cache@v2
+        with:
+          # Note: crates from the denoland/deno git repo always get rebuilt,
+          # and their outputs ('deno', 'libdeno.rlib' etc.) are quite big,
+          # so we cache only those subdirectories of target/{debug|release} that
+          # contain the build output for crates that come from the registry.
+          path: |-
+            .cargo_home
+            target/*/.*
+            target/*/build
+            target/*/deps
+          key: ${{ matrix.config.os }}-${{ hashFiles('Cargo.lock') }}
+          restore-keys: |
+            ${{ matrix.config.os }}-
+
+      - name: Run cargo test
+        run: make test

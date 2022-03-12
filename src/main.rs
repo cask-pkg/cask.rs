@@ -5,7 +5,7 @@ mod formula;
 mod git;
 mod util;
 
-use clap::{arg, Command};
+use clap::{arg, Arg, Command};
 use futures::executor;
 use std::process;
 
@@ -23,6 +23,12 @@ async fn main() {
             Command::new("install")
                 .about("Install package")
                 .arg(arg!(<PACKAGE> "The package name"))
+                .arg(
+                    Arg::new("VERSION")
+                        .required(false)
+                        .multiple_occurrences(false)
+                        .help("Install specified version."),
+                )
                 .arg_required_else_help(true),
         )
         .subcommand(
@@ -37,8 +43,9 @@ async fn main() {
     match matches.subcommand() {
         Some(("install", sub_matches)) => {
             let package_name = sub_matches.value_of("PACKAGE").expect("required");
+            let version = sub_matches.value_of("VERSION");
 
-            let f = command_install::install(package_name);
+            let f = command_install::install(package_name, version);
 
             executor::block_on(f).expect("install package fail!");
         }

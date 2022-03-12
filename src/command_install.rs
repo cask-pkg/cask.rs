@@ -21,7 +21,7 @@ use std::io::Write;
 use std::time::{SystemTime, UNIX_EPOCH};
 use tar::Archive;
 
-pub async fn install(package_name: &str) -> Result<(), Report> {
+pub async fn install(package_name: &str, _version: Option<&str>) -> Result<(), Report> {
     let url = format!("https://{}-cask.git", package_name);
 
     let unix_time = {

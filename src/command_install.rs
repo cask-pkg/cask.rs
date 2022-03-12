@@ -8,9 +8,6 @@ use crate::git;
 use crate::util;
 use crate::util::iso8601;
 
-use eyre::Report;
-use flate2::read::GzDecoder;
-use sha2::{Digest, Sha256};
 use std::env;
 use std::fs;
 use std::fs::{set_permissions, File};
@@ -19,10 +16,23 @@ use std::io::BufReader;
 use std::io::Read;
 use std::io::Write;
 use std::time::{SystemTime, UNIX_EPOCH};
-use tar::Archive;
 
-pub async fn install(package_name: &str, _version: Option<&str>) -> Result<(), Report> {
-    let url = format!("https://{}-cask.git", package_name);
+use eyre::Report;
+use flate2::read::GzDecoder;
+use serde::Serialize;
+use sha2::{Digest, Sha256};
+use tar::Archive;
+use tinytemplate::TinyTemplate;
+
+#[derive(Serialize)]
+struct URLTemplateContext {
+    name: String,
+    bin: String,
+    version: String,
+}
+
+pub async fn install(package_name: &str, version: Option<&str>) -> Result<(), Report> {
+    let cask_git_url = format!("https://{}-cask.git", package_name);
 
     let unix_time = {
         let start = SystemTime::now();
@@ -35,7 +45,8 @@ pub async fn install(package_name: &str, _version: Option<&str>) -> Result<(), R
     let formula_cloned_dir = env::temp_dir().join(format!("cask_{}", unix_time));
     let cask_file_path = formula_cloned_dir.join("Cask.toml");
 
-    let package_formula = match git::clone(&url, &formula_cloned_dir, vec!["--depth", "1"]) {
+    let package_formula = match git::clone(&cask_git_url, &formula_cloned_dir, vec!["--depth", "1"])
+    {
         Ok(()) => {
             if !cask_file_path.exists() {
                 // remove cloned repo
@@ -54,11 +65,11 @@ pub async fn install(package_name: &str, _version: Option<&str>) -> Result<(), R
     }?;
 
     let option_target = if cfg!(target_os = "macos") {
-        package_formula.darwin
+        package_formula.darwin.as_ref()
     } else if cfg!(target_os = "windows") {
-        package_formula.windows
+        package_formula.windows.as_ref()
     } else if cfg!(target_os = "linux") {
-        package_formula.linux
+        package_formula.linux.as_ref()
     } else {
         fs::remove_dir_all(formula_cloned_dir)?;
         return Err(eyre::format_err!(
@@ -135,19 +146,19 @@ created_at = "{}"
     fs::remove_dir_all(formula_cloned_dir)?;
 
     let option_arch = if cfg!(target_arch = "x86") {
-        target.x86
+        target.x86.as_ref()
     } else if cfg!(target_arch = "x86_64") {
-        target.x86_64
+        target.x86_64.as_ref()
     } else if cfg!(target_arch = "arm") {
-        target.arm
+        target.arm.as_ref()
     } else if cfg!(target_arch = "aarch64") {
-        target.aarch64
+        target.aarch64.as_ref()
     } else if cfg!(target_arch = "mips") {
-        target.mips
+        target.mips.as_ref()
     } else if cfg!(target_arch = "mips64") {
-        target.mips64
+        target.mips64.as_ref()
     } else if cfg!(target_arch = "mips64el") {
-        target.mips64el
+        target.mips64el.as_ref()
     } else {
         None
     };
@@ -157,19 +168,44 @@ created_at = "{}"
         None => Err(eyre::format_err!("{} not support your arch", package_name)),
     }?;
 
+    let download_version = {
+        if let Some(v) = version {
+            Ok(v.to_owned())
+        } else if let Some(v) = &package_formula.package.version {
+            Ok(v.clone())
+        } else if package_formula.package.versions.is_empty() {
+            Err(eyre::format_err!("can not found any version of formula"))
+        } else {
+            Ok(package_formula.package.versions[0].clone())
+        }
+    }?;
+
     let tar_file_path = &package_dir
         .join("version")
-        .join(format!("{}.tar.gz", package_formula.package.version));
+        .join(format!("{}.tar.gz", &download_version));
     let tar_file_name = tar_file_path.file_name().unwrap().to_str().unwrap();
 
-    util::download(&arch.url, tar_file_path).await?;
+    // renderer url
+    let rendered_url = {
+        let render_context = URLTemplateContext {
+            name: package_formula.package.name.clone(),
+            bin: package_formula.package.bin.clone(),
+            version: download_version.clone(),
+        };
+        let mut tt = TinyTemplate::new();
+        tt.add_template("url_template", &arch.url)?;
+
+        tt.render("url_template", &render_context)?
+    };
+
+    util::download(&rendered_url, tar_file_path).await?;
 
     let tar_file = File::open(tar_file_path)?;
 
     let bin_name = if cfg!(target_os = "windows") {
-        format!("{}.exe", package_formula.package.bin)
+        format!("{}.exe", &package_formula.package.bin)
     } else {
-        package_formula.package.bin
+        package_formula.package.bin.clone()
     };
 
     let mut bin_found = false;

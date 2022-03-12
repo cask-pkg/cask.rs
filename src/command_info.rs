@@ -49,11 +49,9 @@ pub async fn info(package_name: &str) -> Result<(), Report> {
     let msg = format!(
         r#"{}
 Package: {}
-Version: {}
 Repository: {}"#,
         package_formula.package.description,
         package_formula.package.name,
-        package_formula.package.version,
         package_formula.package.repository
     );
 

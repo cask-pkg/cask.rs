@@ -14,8 +14,8 @@ pub struct Formula {
     pub windows: Option<Platform>, // The windows target information
     pub darwin: Option<Platform>,  // The macOS target information
     pub linux: Option<Platform>,   // The linux target information
-    pub dependencies: Option<Vec<String>>, // The dependencies will be installed before install package
-    pub postinstall: Option<String>,       // The script will run after install package
+    pub dependencies: Option<Vec<String>>, // TODO: The dependencies will be installed before install package
+    pub postinstall: Option<String>,       // TODO: The script will run after install package
 }
 
 #[derive(Deserialize)]
@@ -48,7 +48,8 @@ pub struct Platform {
 
 #[derive(Deserialize)]
 pub struct Download {
-    pub url: String,
+    pub url: String,          // The url will be download when install the package
+    pub hash: Option<String>, // TODO: The hash256 of download resource
 }
 
 pub fn new(formula_file: &Path) -> Result<Formula, Report> {

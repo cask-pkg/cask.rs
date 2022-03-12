@@ -19,14 +19,10 @@ path = "src/main.rs"
 
 [dependencies]
 clap = "3.1.2"
-git-url-parse = "0.4.0"
 ctrlc = { version = "3.2.1", features = ["termination"] }
-dirs = "1.0.4"
 serde = { version = "1.0.136", features = ["derive"] }
 serde_json = "1.0.79"
-inquire = { version = "0.2.1" }
 eyre = "0.6.7"
-path-absolutize = "3.0.11"
 toml = "0.5.0"
 serde_derive = "1.0.136"
 reqwest = { version = "0.11.9", features = ["blocking", "json", "stream"] }
@@ -35,9 +31,8 @@ async-recursion = "1.0.0"
 indicatif = "0.16.2"
 futures-util = "0.3.21"
 tokio = { version = "1", features = ["full"] }
-sha2 = "0.10.2"
-hex-literal = "0.3.4"
 chrono = "0.4.19"
 zip = "0.5"
 flate2 = "1.0.22"
 tar = "0.4.38"
+tinytemplate = "1.1"

@@ -1,16 +1,16 @@
 #![deny(warnings)]
 
 use core::result::Result;
-use eyre::Report;
-use indicatif::{ProgressBar, ProgressStyle};
 use std::cmp::min;
 use std::fs::File;
+use std::io::Write;
 use std::path::Path;
 
 use chrono::prelude::{DateTime, Utc};
+use eyre::Report;
 use futures_util::StreamExt;
+use indicatif::{ProgressBar, ProgressStyle};
 use reqwest::Client;
-use std::io::Write;
 
 pub fn iso8601(st: &std::time::SystemTime) -> String {
     let dt: DateTime<Utc> = (*st).into();

@@ -6,10 +6,11 @@ extern crate tar;
 use crate::formula;
 use crate::git;
 
-use eyre::Report;
 use std::env;
 use std::fs;
 use std::time::{SystemTime, UNIX_EPOCH};
+
+use eyre::Report;
 
 pub async fn info(package_name: &str) -> Result<(), Report> {
     let url = format!("https://{}-cask.git", package_name);

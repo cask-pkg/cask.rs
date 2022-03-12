@@ -1,11 +1,12 @@
 // #![deny(warnings)]
 
-use eyre::Report;
-use serde::Serialize;
-use serde_derive::Deserialize;
 use std::fs::File;
 use std::io::Read;
 use std::path::Path;
+
+use eyre::Report;
+use serde::Serialize;
+use serde_derive::Deserialize;
 use toml::from_str;
 
 // #[derive(Serialize)]

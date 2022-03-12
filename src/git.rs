@@ -1,9 +1,10 @@
 #![deny(warnings)]
 
 use core::result::Result;
-use eyre::Report;
 use std::path::Path;
 use std::process::{Command as ChildProcess, Stdio};
+
+use eyre::Report;
 
 pub fn clone(url: &str, dest: &Path, args: Vec<&str>) -> Result<(), Report> {
     match ChildProcess::new("git")

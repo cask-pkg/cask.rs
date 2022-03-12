@@ -6,9 +6,10 @@ mod formula;
 mod git;
 mod util;
 
+use std::process;
+
 use clap::{arg, Arg, Command};
 use futures::executor;
-use std::process;
 
 #[tokio::main]
 async fn main() {

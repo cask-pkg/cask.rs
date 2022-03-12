@@ -90,22 +90,29 @@ pub async fn install(package_name: &str, version: Option<&str>) -> Result<(), Re
         let mut hasher = Sha256::new();
 
         hasher.update(package_name);
-        format!("{:X}", hasher.finalize())
+        format!("{:x}", hasher.finalize())
     };
 
-    let package_dir = {
-        let mut d = match dirs::home_dir() {
-            Some(d) => Ok(d),
-            None => Err(eyre::format_err!("can not found home dir")),
-        }?;
+    let home_dir = match dirs::home_dir() {
+        Some(p) => Ok(p),
+        None => Err(eyre::format_err!("can not get $HOME dir")),
+    }?;
 
-        d = d.join(".cask").join("formula").join(hash_of_package);
-
-        d
-    };
+    let cask_dir = home_dir.join(".cask");
+    let cask_dir_bin = cask_dir.join("bin");
+    let cask_dir_formula = cask_dir.join("formula");
+    let package_dir = cask_dir_formula.join(hash_of_package);
 
     // init formula folder
     {
+        if !&cask_dir_bin.exists() {
+            fs::create_dir_all(&cask_dir_bin)?;
+        }
+
+        if !&cask_dir_formula.exists() {
+            fs::create_dir_all(&cask_dir_formula)?;
+        }
+
         if !&package_dir.exists() {
             fs::create_dir_all(&package_dir)?;
             fs::create_dir_all(&package_dir.join("bin"))?;
@@ -278,6 +285,12 @@ created_at = "{}"
             "can not found binary file '{}' in tar",
             bin_name
         ));
+    } else {
+        // create soft link in bin folder
+        #[cfg(target_family = "unix")]
+        std::os::unix::fs::symlink(output_file_path, cask_dir_bin.join(bin_name))?;
+        #[cfg(target_family = "windows")]
+        std::os::windows::fs::symlink_file(output_file_path, cask_dir_bin.join(bin_name))?;
     }
 
     Ok(())

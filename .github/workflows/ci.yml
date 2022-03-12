@@ -94,7 +94,7 @@ jobs:
 
           ls -lh /usr/lib/
 
-          export OPENSSL_DIR=/usr/lib/x86_64-linux-gnu
+          export OPENSSL_DIR=x86_64-linux-musl
 
           cargo build --release --locked --target x86_64-unknown-linux-musl
           cargo build --release --locked --target i686-unknown-linux-musl

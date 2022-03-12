@@ -34,6 +34,17 @@ async fn main() {
                 .arg_required_else_help(true),
         )
         .subcommand(
+            Command::new("uninstall")
+                .about("Uninstall package")
+                .arg(arg!(<PACKAGE> "The package name"))
+                .arg_required_else_help(true),
+        )
+        .subcommand(
+            Command::new("list")
+                .about("List installed package")
+                .arg_required_else_help(true),
+        )
+        .subcommand(
             Command::new("info")
                 .about("Show information of package")
                 .arg(arg!(<PACKAGE> "The package name"))
@@ -50,6 +61,12 @@ async fn main() {
             let f = command_install::install(package_name, version);
 
             executor::block_on(f).expect("install package fail!");
+        }
+        Some(("uninstall", _sub_matches)) => {
+            // TODO
+        }
+        Some(("list", _sub_matches)) => {
+            // TODO
         }
         Some(("info", sub_matches)) => {
             let package_name = sub_matches.value_of("PACKAGE").expect("required");

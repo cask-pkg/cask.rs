@@ -103,6 +103,32 @@ pub async fn install(package_name: &str, version: Option<&str>) -> Result<(), Re
     let cask_dir_formula = cask_dir.join("formula");
     let package_dir = cask_dir_formula.join(hash_of_package);
 
+    let download_version = {
+        if let Some(v) = version {
+            if !package_formula.package.versions.contains(&v.to_string()) {
+                Err(eyre::format_err!(
+                    "can not found version '{}' of formula",
+                    v
+                ))
+            } else {
+                Ok(v.to_owned())
+            }
+        } else if let Some(v) = &package_formula.package.version {
+            if !package_formula.package.versions.contains(v) {
+                Err(eyre::format_err!(
+                    "can not found version '{}' of formula",
+                    v
+                ))
+            } else {
+                Ok(v.clone())
+            }
+        } else if package_formula.package.versions.is_empty() {
+            Err(eyre::format_err!("can not found any version of formula"))
+        } else {
+            Ok(package_formula.package.versions[0].clone())
+        }
+    }?;
+
     // init formula folder
     {
         if !&cask_dir_bin.exists() {
@@ -138,10 +164,12 @@ pub async fn install(package_name: &str, version: Option<&str>) -> Result<(), Re
 [cask]
 package_name = "{}"
 created_at = "{}"
+version = "{}"
 
 "#,
                 package_name,
-                iso8601(&SystemTime::now())
+                iso8601(&SystemTime::now()),
+                download_version
             )
             .as_str()
             .as_bytes(),
@@ -173,32 +201,6 @@ created_at = "{}"
     let arch = match option_arch {
         Some(a) => Ok(a),
         None => Err(eyre::format_err!("{} not support your arch", package_name)),
-    }?;
-
-    let download_version = {
-        if let Some(v) = version {
-            if !package_formula.package.versions.contains(&v.to_string()) {
-                Err(eyre::format_err!(
-                    "can not found version '{}' of formula",
-                    v
-                ))
-            } else {
-                Ok(v.to_owned())
-            }
-        } else if let Some(v) = &package_formula.package.version {
-            if !package_formula.package.versions.contains(v) {
-                Err(eyre::format_err!(
-                    "can not found version '{}' of formula",
-                    v
-                ))
-            } else {
-                Ok(v.clone())
-            }
-        } else if package_formula.package.versions.is_empty() {
-            Err(eyre::format_err!("can not found any version of formula"))
-        } else {
-            Ok(package_formula.package.versions[0].clone())
-        }
     }?;
 
     let tar_file_path = &package_dir

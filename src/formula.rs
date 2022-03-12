@@ -25,6 +25,7 @@ pub struct Formula {
 pub struct Cask {
     pub package_name: String, // The package name
     pub created_at: String,   // The package installed date
+    pub version: String,      // Current using version of package
 }
 
 #[derive(Deserialize, Serialize)]

@@ -35,9 +35,9 @@ mips64el = { url = "https://github.com/axetroy/gpm.rs/releases/download/v0.1.12/
 ```
 .cask
 ├── bin
-│   └── gpm
 └── formula
-    └── f8aa04fa7332a88e0c1433ace2683b9f1e445727815428d9ffd18541db45b9fc
+    └── F8AA04FA7332A88E0C1433ACE2683B9F1E445727815428D9FFD18541DB45B9FC
         ├── Cask.toml
-        └── bin
+        ├── bin
+        └── version
 ```

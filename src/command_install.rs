@@ -10,8 +10,7 @@ use crate::util::iso8601;
 
 use std::env;
 use std::fs;
-use std::fs::{set_permissions, File};
-use std::io;
+use std::fs::File;
 use std::io::BufReader;
 use std::io::Read;
 use std::io::Write;
@@ -255,31 +254,8 @@ version = "{}"
                 }
             }
         }
-    } else if tar_file_name.ends_with(".zip") {
-        let mut archive = zip::ZipArchive::new(&tar_file)?;
-
-        for i in 0..archive.len() {
-            let mut file = archive.by_index(i)?;
-
-            if file.is_file() && file.name() == bin_name {
-                let mut output_file = File::create(&output_file_path)?;
-
-                io::copy(&mut file, &mut output_file)?;
-
-                bin_found = true;
-
-                // Get and Set permissions
-                #[cfg(unix)]
-                {
-                    use std::os::unix::fs::PermissionsExt;
-
-                    if let Some(mode) = file.unix_mode() {
-                        set_permissions(&output_file_path, fs::Permissions::from_mode(mode))?;
-                    }
-                }
-                break;
-            }
-        }
+    } else {
+        return Err(eyre::format_err!("not support the download file"));
     }
 
     if !bin_found {

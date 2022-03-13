@@ -158,6 +158,8 @@ mod tests {
 
         let extracted_file_path = dest_dir.join("test");
 
+        println!("extracted_file_path: {}", extracted_file_path.display());
+
         let meta = fs::metadata(&extracted_file_path).unwrap();
 
         assert_eq!(meta.len(), 12);

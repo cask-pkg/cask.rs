@@ -8,6 +8,8 @@ pub async fn info(cask: cask::Cask, package_name: &str) -> Result<(), Report> {
     let package_dir = cask.package_dir(package_name);
     let package_formula = cask.package_formula(package_name)?;
 
+    let cask_info = package_formula.cask.unwrap();
+
     let msg = format!(
         r#"{}
 Package: {}
@@ -15,8 +17,8 @@ Version: {}
 Repository: {}
 Location: {}"#,
         package_formula.package.description,
-        package_formula.package.name,
-        package_formula.cask.unwrap().version,
+        cask_info.name,
+        cask_info.version,
         package_formula.package.repository,
         package_dir.display()
     );

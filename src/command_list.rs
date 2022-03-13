@@ -36,7 +36,7 @@ pub async fn list(cask: cask::Cask) -> Result<(), Report> {
 
         if let Some(f) = f {
             let cask_info = f.cask.unwrap();
-            println!("{} {}", cask_info.package_name, cask_info.version);
+            println!("{} {}", cask_info.name, cask_info.version);
         }
     }
 

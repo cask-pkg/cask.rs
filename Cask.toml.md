@@ -36,15 +36,16 @@ As you can see, it only contains a few top-level fields:
 
 ## Package
 
-| Field        | Description                                                  | type            | required | example                                   |
-| ------------ | ------------------------------------------------------------ | --------------- | -------- | ----------------------------------------- |
-| **name**     | The name of package                                          | string          | true     | `"github.com/axetroy/gpm.rs"`             |
-| **bin**      | The non-extension binary name of package                     | string          | true     | `"gpm"`                                   |
-| **versions** | The versions of package.<br/>The latest version at the head. | Array\<string\> | true     | `["0.1.12", "0.1.11"]`                    |
-| authors      | Show information of remote package                           | Array\<string\> |          | `["Axetroy <axetroy.dev@gmail.com>"]`     |
-| keywords     | The keywords of package                                      | Array\<string\> |          | `["foo", "bar"]`                          |
-| repository   | The repository url of package                                | string          |          | `"https://github.com/axetroy/gpm.rs.git"` |
-| description  | The description information of package                       | string          |          | `"The description"`                       |
+| Field           | Description                                                  | type            | required | example                                   |
+| --------------- | ------------------------------------------------------------ | --------------- | -------- | ----------------------------------------- |
+| **name**        | The name of package                                          | string          | true     | `"github.com/axetroy/gpm.rs"`             |
+| **description** | The description information of package                       | string          | true     | `"The description"`                       |
+| **bin**         | The non-extension binary name of package                     | string          | true     | `"gpm"`                                   |
+| **repository**  | The repository url of package                                | string          | true     | `"https://github.com/axetroy/gpm.rs.git"` |
+| **versions**    | The versions of package.<br/>The latest version at the head. | Array\<string\> | true     | `["0.1.12", "0.1.11"]`                    |
+| authors         | Show information of remote package                           | Array\<string\> |          | `["Axetroy <axetroy.dev@gmail.com>"]`     |
+| keywords        | The keywords of package                                      | Array\<string\> |          | `["foo", "bar"]`                          |
+| license         | The license of package                                       | string          |          | `"MIT"`                                   |
 
 ## Platform-specify-configuration
 

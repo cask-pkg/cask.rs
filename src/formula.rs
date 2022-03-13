@@ -47,6 +47,7 @@ pub struct Package {
     pub keywords: Option<Vec<String>>, // The keywords of package
     pub repository: String,            // The repository url
     pub description: String,           // The description of package
+    pub license: Option<String>,       // The license of package
 }
 
 #[derive(Deserialize, Serialize)]

@@ -39,7 +39,7 @@ As you can see, it only contains a few top-level fields:
 | Field        | Description                                                  | type            | required | example                                   |
 | ------------ | ------------------------------------------------------------ | --------------- | -------- | ----------------------------------------- |
 | **name**     | The name of package                                          | string          | true     | `"github.com/axetroy/gpm.rs"`             |
-| **bin**      | The binary name of package                                   | string          | true     | `"gpm"`                                   |
+| **bin**      | The non-extension binary name of package                     | string          | true     | `"gpm"`                                   |
 | **versions** | The versions of package.<br/>The latest version at the head. | Array\<string\> | true     | `["0.1.12", "0.1.11"]`                    |
 | authors      | Show information of remote package                           | Array\<string\> |          | `["Axetroy <axetroy.dev@gmail.com>"]`     |
 | keywords     | The keywords of package                                      | Array\<string\> |          | `["foo", "bar"]`                          |

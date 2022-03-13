@@ -14,30 +14,30 @@ Code style follows Rust's style.
 
 1. Fork repository
 
-Click the button \[Fork\] on the web
+   Click the button \[Fork\] on the web
 
 2. Clone your forked repository
 
-```bash
-git clone https://github.com/<username>/cask.rs
-cd cask.rs
-```
+   ```bash
+   git clone https://github.com/<username>/cask.rs
+   cd cask.rs
+   ```
 
 3. Checkout to a new branch
 
-```bash
-git checkout -b fix_bug
-```
+   ```bash
+   git checkout -b fix_bug
+   ```
 
-Then add or modify the code.
+   Then add or modify the code.
 
 4. Commit the changes
 
-```bash
-git commit -m "<commit message>"
-git push
-```
+   ```bash
+   git commit -m "<commit message>"
+   git push
+   ```
 
 5. Create a pull request
 
-Follow the instructions, create a PR on Github and wait for review.
+   Follow the instructions, create a PR on Github and wait for review.

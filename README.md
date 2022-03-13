@@ -11,7 +11,21 @@ A universal distributed binary distribution manage tool.
 
 ### Install
 
-TODO
+1. Shell (Mac/Linux)
+
+   ```bash
+   curl -fsSL https://github.com/release-lab/install/raw/v1/install.sh | bash -s -- -r=axetroy/cask.rs -e=gpm
+   ```
+
+2. PowerShell (Windows):
+
+   ```powershell
+   $r="axetroy/cask.rs";$e="gpm";iwr https://github.com/release-lab/install/raw/v1/install.ps1 -useb | iex
+   ```
+
+3. [Github release page](https://github.com/axetroy/cask.rs/releases)
+
+   Download the executable, then put it in the `$PATH` directory.
 
 ## Usage
 

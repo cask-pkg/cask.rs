@@ -59,6 +59,12 @@ async fn main() {
 
     cask.init().expect("init cask fail");
 
+    cask.check_bin_path().unwrap_or_else(|e| {
+        println!("{}", e);
+        println!("Manually add the directory to your $HOME/.bash_profile (or similar)");
+        process::exit(1);
+    });
+
     match matches.subcommand() {
         Some(("install", sub_matches)) => {
             let package_name = sub_matches.value_of("PACKAGE").expect("required");

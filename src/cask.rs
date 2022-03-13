@@ -2,6 +2,7 @@
 
 use crate::formula;
 
+use std::env;
 use std::fs;
 use std::path::Path;
 use std::path::PathBuf;
@@ -35,6 +36,37 @@ impl Cask {
         }
 
         Ok(())
+    }
+
+    // check bin path of Cask
+    pub fn check_bin_path(&self) -> Result<(), Report> {
+        let key = "PATH";
+        match env::var_os(key) {
+            Some(paths) => {
+                for path in env::split_paths(&paths) {
+                    let abs_path_str = path
+                        .as_os_str()
+                        .to_str()
+                        .unwrap()
+                        .replace('~', dirs::home_dir().unwrap().as_os_str().to_str().unwrap());
+
+                    let abs_path = Path::new(&abs_path_str);
+
+                    if abs_path == self.bin_dir() {
+                        return Ok(());
+                    }
+                }
+
+                Err(eyre::format_err!(
+                    "Make sure '{}' has been add to your $PATH environment variable.",
+                    self.bin_dir().display()
+                ))
+            }
+            None => Err(eyre::format_err!(
+                "{} is not defined in the environment.",
+                key
+            )),
+        }
     }
 
     pub fn root_dir(&self) -> PathBuf {

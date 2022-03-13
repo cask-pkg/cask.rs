@@ -18,7 +18,7 @@ use futures::executor;
 #[tokio::main]
 async fn main() {
     let mut app = Command::new("cask")
-        .version("v0.1.0")
+        .version("v0.1.1")
         .author("Axetroy <axetroy.dev@gmail.com>")
         .about("General binary package management, written in Rust")
         .subcommand_required(true)

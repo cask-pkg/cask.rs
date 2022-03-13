@@ -1,12 +1,12 @@
 [package]
 name = "cask"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Axetroy <axetroy.dev@gmail.com>"]
 readme = "README.md"
-keywords = ["cask", "git", "project", "manager"]
+keywords = ["cask", "distributed", "binary", "package", "manager"]
 repository = "https://github.com/axetroy/cask.rs"
 description = """
-A command line tool, manage your hundreds of repository, written with Rust.
+General distributed binary distribution package management, written in Rust.
 """
 
 edition = "2021"

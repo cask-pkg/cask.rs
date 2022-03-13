@@ -16,7 +16,8 @@ A universal distributed binary distribution manage tool.
 [Usage](#Usage) |
 [How to add my package?](DESIGN.md#how-do-i-publish-myothers-package) |
 [Design](DESIGN.md) |
-[Contributing](CONTRIBUTING.md)
+[Contributing](CONTRIBUTING.md) |
+[Cask.toml](Cask.toml.md)
 
 </div>
 

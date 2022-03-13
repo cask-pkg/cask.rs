@@ -13,7 +13,7 @@
 A universal distributed binary distribution manage tool.
 
 [Installation](#Installation) |
-[Docs](docs.md) |
+[Usage](#Usage) |
 [Changelog](CHANGELOG.md) |
 [Design](DESIGN.md) |
 [Contributing](CONTRIBUTING.md)

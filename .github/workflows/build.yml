@@ -36,20 +36,11 @@ jobs:
           rustc --version
           cargo --version
       - name: Configure cargo data directory
-        # After this point, all cargo registry and crate data is stored in
-        # $GITHUB_WORKSPACE/.cargo_home. This allows us to cache only the files
-        # that are needed during the build process. Additionally, this works
-        # around a bug in the 'cache' action that causes directories outside of
-        # the workspace dir to be saved/restored incorrectly.
         run: |
           echo "CARGO_HOME=$(pwd)/.cargo_home" >> $GITHUB_ENV
       - name: Cache
         uses: actions/cache@v2
         with:
-          # Note: crates from the denoland/deno git repo always get rebuilt,
-          # and their outputs ('deno', 'libdeno.rlib' etc.) are quite big,
-          # so we cache only those subdirectories of target/{debug|release} that
-          # contain the build output for crates that come from the registry.
           path: |-
             .cargo_home
             target/*/.*
@@ -67,31 +58,9 @@ jobs:
           # install linker
           sudo apt-get -y install gcc-x86-64-linux-gnu gcc-aarch64-linux-gnu gcc-mips-linux-gnu gcc-mips64-linux-gnuabi64 gcc-mips64el-linux-gnuabi64
 
-          sudo apt-get install  -y musl-tools clang llvm
-          # install for aarch64-unknown-linux-musl
-          export CC_aarch64_unknown_linux_musl=clang
-          export AR_aarch64_unknown_linux_musl=llvm-ar
-          export CARGO_TARGET_AARCH64_UNKNOWN_LINUX_MUSL_RUSTFLAGS="-Clink-self-contained=yes -Clinker=rust-lld"
-
           rustup target add x86_64-unknown-linux-musl
-          # rustup target add i686-unknown-linux-musl
-          rustup target add aarch64-unknown-linux-musl
-          # rustup target add mips-unknown-linux-gnu
-          # rustup target add mips64-unknown-linux-gnuabi64
-          # rustup target add mips64el-unknown-linux-gnuabi64
 
-          cargo build --release --locked --target x86_64-unknown-linux-musl
-          # cargo build --release --locked --target i686-unknown-linux-musl
-          # cargo build --release --locked --target aarch64-unknown-linux-musl
-          # cargo build --release --locked --target mips-unknown-linux-gnu
-          # cargo build --release --locked --target mips64-unknown-linux-gnuabi64
-          # cargo build --release --locked --target mips64el-unknown-linux-gnuabi64
-          # tar -cvzf target/x86_64-unknown-linux-musl/release/cask_linux_amd64.tar.gz --directory=target/x86_64-unknown-linux-musl/release cask
-          # tar -cvzf target/i686-unknown-linux-musl/release/cask_linux_386.tar.gz --directory=target/i686-unknown-linux-musl/release cask
-          # tar -cvzf target/aarch64-unknown-linux-musl/release/cask_linux_arm64.tar.gz --directory=target/aarch64-unknown-linux-musl/release cask
-          # tar -cvzf target/mips-unknown-linux-gnu/release/cask_linux_mips.tar.gz --directory=target/mips-unknown-linux-gnu/release cask
-          # tar -cvzf target/mips64-unknown-linux-gnuabi64/release/cask_linux_mips64.tar.gz --directory=target/mips64-unknown-linux-gnuabi64/release cask
-          # tar -cvzf target/mips64el-unknown-linux-gnuabi64/release/cask_linux_mips64el.tar.gz --directory=target/mips64el-unknown-linux-gnuabi64/release cask
+          tar -cvzf target/x86_64-unknown-linux-musl/release/cask_linux_amd64.tar.gz --directory=target/x86_64-unknown-linux-musl/release cask
 
       - name: Build (mac)
         if: startsWith(matrix.os, 'macOS')
@@ -107,14 +76,10 @@ jobs:
         if: startsWith(matrix.os, 'windows')
         run: |
           rustup target add x86_64-pc-windows-msvc
-          # rustup target add i686-pc-windows-msvc
-          # rustup target add aarch64-pc-windows-msvc
+
           cargo build --release --locked --target x86_64-pc-windows-msvc
-          # cargo build --release --locked --target i686-pc-windows-msvc
-          # cargo build --release --locked --target aarch64-pc-windows-msvc
+
           tar -cvzf target/x86_64-pc-windows-msvc/release/cask_windows_amd64.tar.gz --directory=target/x86_64-pc-windows-msvc/release cask.exe
-          # tar -cvzf target/i686-pc-windows-msvc/release/cask_windows_386.tar.gz --directory=target/i686-pc-windows-msvc/release cask.exe
-          # tar -cvzf target/aarch64-pc-windows-msvc/release/cask_windows_arm64.tar.gz --directory=target/aarch64-pc-windows-msvc/release cask.exe
 
       - name: Release to Github
         uses: softprops/action-gh-release@v1
@@ -123,16 +88,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
         with:
           files: |
-            # target/i686-pc-windows-msvc/release/cask_windows_386.tar.gz
-            # target/aarch64-pc-windows-msvc/release/cask_windows_arm64.tar.gz
             target/x86_64-pc-windows-msvc/release/cask_windows_amd64.tar.gz
 
             target/x86_64-unknown-linux-musl/release/cask_linux_amd64.tar.gz
-            # target/i686-unknown-linux-musl/release/cask_linux_386.tar.gz
-            # target/aarch64-unknown-linux-musl/release/cask_linux_arm64.tar.gz
-            target/mips-unknown-linux-gnu/release/cask_linux_mips.tar.gz
-            target/mips64-unknown-linux-gnuabi64/release/cask_linux_mips64.tar.gz
-            target/mips64el-unknown-linux-gnuabi64/release/cask_linux_mips64el.tar.gz
 
             target/x86_64-apple-darwin/release/cask_darwin_amd64.tar.gz
             target/aarch64-apple-darwin/release/cask_darwin_arm64.tar.gz

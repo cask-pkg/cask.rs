@@ -1,4 +1,7 @@
-# Cask
+<div align="center">
+   <img src="logo.svg" with="64" height="64"/>
+
+   <h1>Cask</h1>
 
 [![lint](https://github.com/axetroy/cask.rs/actions/workflows/lint.yml/badge.svg)](https://github.com/axetroy/cask.rs/actions/workflows/lint.yml)
 [![test](https://github.com/axetroy/cask.rs/actions/workflows/test.yml/badge.svg)](https://github.com/axetroy/cask.rs/actions/workflows/test.yml)
@@ -9,7 +12,15 @@
 
 A universal distributed binary distribution manage tool.
 
-## Install
+[Installation](#Installation) |
+[Docs](docs.md) |
+[Changelog](CHANGELOG.md) |
+[Design](DESIGN.md) |
+[Contributing](CONTRIBUTING.md)
+
+</div>
+
+## Installation
 
 1. Shell (Mac/Linux)
 

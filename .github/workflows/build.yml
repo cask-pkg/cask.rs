@@ -58,6 +58,8 @@ jobs:
           # install linker
           sudo apt-get -y install gcc-x86-64-linux-gnu gcc-aarch64-linux-gnu gcc-mips-linux-gnu gcc-mips64-linux-gnuabi64 gcc-mips64el-linux-gnuabi64
 
+          sudo apt-get install -y musl-tools clang llvm
+
           rustup target add x86_64-unknown-linux-musl
 
           cargo build --release --locked --target x86_64-unknown-linux-musl

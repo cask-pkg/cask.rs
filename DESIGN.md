@@ -73,6 +73,11 @@ x86_64 = { url = "https://github.com/<username>/<repo>/releases/download/v{versi
 x86_64 = { url = "https://github.com/<username>/<repo>/releases/download/v{version}/linux_amd64.tar.gz" }
 ```
 
-Please modify the information above, such as user name, version, etc.
+Please modify the information above, eg. username, version, etc.
 
-## How do I install a package?
+example:
+
+- [github.com/axetroy/gpm.rs-cask](https://github.com/axetroy/gpm.rs-cask)
+- [github.com/axetroy/dvm-cask](https://github.com/axetroy/dvm-cask)
+
+### Advanced of `Cask.toml`

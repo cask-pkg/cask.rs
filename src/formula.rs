@@ -13,6 +13,7 @@ use serde::Serialize;
 use serde_derive::Deserialize;
 use tinytemplate::TinyTemplate;
 use toml::from_str;
+use url::Url;
 
 // #[derive(Serialize)]
 #[derive(Deserialize, Serialize)]
@@ -63,6 +64,7 @@ pub struct Platform {
 pub struct Arch {
     pub url: String,          // The url will be download when install the package
     pub hash: Option<String>, // TODO: The hash256 of download resource
+    pub ext: Option<String>,  // The extension name of download resource
 }
 
 pub fn new(formula_file: &Path) -> Result<Formula, Report> {
@@ -92,6 +94,11 @@ pub fn new(formula_file: &Path) -> Result<Formula, Report> {
     f.file_content = file_content;
 
     Ok(f)
+}
+
+pub struct DownloadTarget {
+    pub url: String,
+    pub ext: String,
 }
 
 // fetch remote formula
@@ -175,7 +182,7 @@ impl Formula {
         self.file_content.clone()
     }
 
-    pub fn get_current_download_url(&self, version: &str) -> Result<String, Report> {
+    pub fn get_current_download_url(&self, version: &str) -> Result<DownloadTarget, Report> {
         #[derive(Serialize)]
         struct URLTemplateContext {
             name: String,
@@ -195,7 +202,37 @@ impl Formula {
 
             let renderer_url = tt.render("url_template", &render_context)?;
 
-            Ok(renderer_url)
+            let ext_name = match &arch.ext {
+                Some(s) => s.clone(),
+                None => {
+                    let u = Url::parse(&renderer_url)?;
+
+                    let default_ext = ".tar.gz".to_string();
+
+                    if let Some(sep) = u.path_segments() {
+                        if let Some(filename) = sep.last() {
+                            if filename.ends_with(".tar.gz") {
+                                ".tar.gz".to_string()
+                            } else if filename.ends_with(".tar") {
+                                ".tar".to_string()
+                            } else if filename.ends_with(".zip") {
+                                ".zip".to_string()
+                            } else {
+                                default_ext
+                            }
+                        } else {
+                            default_ext
+                        }
+                    } else {
+                        default_ext
+                    }
+                }
+            };
+
+            Ok(DownloadTarget {
+                url: renderer_url,
+                ext: ext_name,
+            })
         } else {
             Err(eyre::format_err!(
                 "the package '{}' not support your system",

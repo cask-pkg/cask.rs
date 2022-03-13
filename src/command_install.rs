@@ -51,13 +51,13 @@ pub async fn install(
 
     let package_dir = cask.package_dir(&package_formula.package.name);
 
-    let url = package_formula.get_current_download_url(&download_version)?;
+    let download_target = package_formula.get_current_download_url(&download_version)?;
 
     let tar_file_path = &cask
         .package_version_dir(&package_formula.package.name)
-        .join(format!("{}.tar.gz", &download_version));
+        .join(format!("{}.{}", &download_version, download_target.ext));
 
-    util::download(&url, tar_file_path).await?;
+    util::download(&download_target.url, tar_file_path).await?;
 
     #[cfg(target_family = "unix")]
     let executable_name = package_formula.package.bin.clone();

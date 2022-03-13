@@ -91,6 +91,7 @@ dependencies = [
  "tinytemplate",
  "tokio",
  "toml",
+ "url",
 ]
 
 [[package]]

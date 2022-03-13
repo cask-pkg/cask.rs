@@ -10,17 +10,17 @@ Mainly have a few more troublesome things:
 
 1. Not cross-platform
 
-Every platform has its own version, eg `Brew` in MacOS, `scoop` in Windows
+   Every platform has its own version, eg `Brew` in MacOS, `scoop` in Windows
 
 2. Package manager usually has a center
 
-eg. `Brew` need to add package information to [homebrew-core](https://github.com/Homebrew/homebrew-core) then it can install directly. Of course, this is not necessary.
+   eg. `Brew` need to add package information to [homebrew-core](https://github.com/Homebrew/homebrew-core) then it can install directly. Of course, this is not necessary.
 
 3. Write too much installation script
 
-If you don't like these package managers, then you will see your own writing scripts for installation.
+   If you don't like these package managers, then you will see your own writing scripts for installation.
 
-eg `install.ps1` in Windows or `install.sh` in Unix.
+   eg `install.ps1` in Windows or `install.sh` in Unix.
 
 Based on the above reasons, I need a package manager.
 

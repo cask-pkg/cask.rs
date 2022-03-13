@@ -105,5 +105,10 @@ version = "{}"
         std::os::windows::fs::symlink_file(output_file_path, &symlink_file)?;
     }
 
+    println!(
+        "The package '{} {}'  has been installed!",
+        package_name, download_version
+    );
+
     Ok(())
 }

@@ -56,11 +56,7 @@ pub async fn download(url: &str, filepath: &Path) -> Result<(), Report> {
         pb.set_position(downloaded);
     }
 
-    pb.finish_with_message(format!(
-        "Downloaded {} to {}",
-        url,
-        filepath.as_os_str().to_str().unwrap()
-    ));
+    pb.finish();
 
     Ok(())
 }

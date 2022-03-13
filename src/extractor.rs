@@ -151,7 +151,7 @@ mod tests {
 
         assert!(r.is_ok());
 
-        let extracted_file_path = dest_dir.join("test");
+        let extracted_file_path = r.unwrap();
 
         let meta = fs::metadata(&extracted_file_path).unwrap();
 
@@ -177,7 +177,7 @@ mod tests {
 
         assert!(r.is_ok());
 
-        let extracted_file_path = dest_dir.join("test");
+        let extracted_file_path = r.unwrap();
 
         let meta = fs::metadata(&extracted_file_path).unwrap();
 
@@ -219,7 +219,7 @@ mod tests {
 
         assert!(r.is_ok());
 
-        let extracted_file_path = dest_dir.join("test");
+        let extracted_file_path = r.unwrap();
 
         println!("extracted_file_path: {}", extracted_file_path.display());
 
@@ -247,7 +247,7 @@ mod tests {
 
         assert!(r.is_ok());
 
-        let extracted_file_path = dest_dir.join("prune");
+        let extracted_file_path = r.unwrap();
 
         let meta = fs::metadata(&extracted_file_path).unwrap();
 

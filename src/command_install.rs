@@ -12,14 +12,6 @@ use std::io::Write;
 use std::time::SystemTime;
 
 use eyre::Report;
-use serde::Serialize;
-
-#[derive(Serialize)]
-struct URLTemplateContext {
-    name: String,
-    bin: String,
-    version: String,
-}
 
 pub async fn install(
     cask: cask::Cask,

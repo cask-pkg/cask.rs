@@ -121,8 +121,6 @@ mod tests {
         let content = fs::read_to_string(&extracted_file_path).unwrap();
 
         assert_eq!(content, "hello world\n");
-
-        fs::remove_file(&extracted_file_path).unwrap();
     }
 
     #[test]
@@ -167,8 +165,6 @@ mod tests {
         let content = fs::read_to_string(&extracted_file_path).unwrap();
 
         assert_eq!(content, "hello world\n");
-
-        fs::remove_file(&extracted_file_path).unwrap();
     }
 
     #[test]
@@ -191,7 +187,5 @@ mod tests {
         let meta = fs::metadata(&extracted_file_path).unwrap();
 
         assert_eq!(meta.len(), 137_656);
-
-        fs::remove_file(&extracted_file_path).unwrap();
     }
 }

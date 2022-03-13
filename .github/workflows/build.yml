@@ -69,9 +69,9 @@ jobs:
 
           sudo apt-get install  -y musl-tools clang llvm
           # install for aarch64-unknown-linux-musl
-          ENV CC_aarch64_unknown_linux_musl=clang
-          ENV AR_aarch64_unknown_linux_musl=llvm-ar
-          ENV CARGO_TARGET_AARCH64_UNKNOWN_LINUX_MUSL_RUSTFLAGS="-Clink-self-contained=yes -Clinker=rust-lld"
+          export CC_aarch64_unknown_linux_musl=clang
+          export AR_aarch64_unknown_linux_musl=llvm-ar
+          export CARGO_TARGET_AARCH64_UNKNOWN_LINUX_MUSL_RUSTFLAGS="-Clink-self-contained=yes -Clinker=rust-lld"
 
           rustup target add x86_64-unknown-linux-musl
           # rustup target add i686-unknown-linux-musl
@@ -107,14 +107,14 @@ jobs:
         if: startsWith(matrix.os, 'windows')
         run: |
           rustup target add x86_64-pc-windows-msvc
-          rustup target add i686-pc-windows-msvc
-          rustup target add aarch64-pc-windows-msvc
+          # rustup target add i686-pc-windows-msvc
+          # rustup target add aarch64-pc-windows-msvc
           cargo build --release --locked --target x86_64-pc-windows-msvc
-          cargo build --release --locked --target i686-pc-windows-msvc
-          cargo build --release --locked --target aarch64-pc-windows-msvc
+          # cargo build --release --locked --target i686-pc-windows-msvc
+          # cargo build --release --locked --target aarch64-pc-windows-msvc
           tar -cvzf target/x86_64-pc-windows-msvc/release/cask_windows_amd64.tar.gz --directory=target/x86_64-pc-windows-msvc/release cask.exe
-          tar -cvzf target/i686-pc-windows-msvc/release/cask_windows_386.tar.gz --directory=target/i686-pc-windows-msvc/release cask.exe
-          tar -cvzf target/aarch64-pc-windows-msvc/release/cask_windows_arm64.tar.gz --directory=target/aarch64-pc-windows-msvc/release cask.exe
+          # tar -cvzf target/i686-pc-windows-msvc/release/cask_windows_386.tar.gz --directory=target/i686-pc-windows-msvc/release cask.exe
+          # tar -cvzf target/aarch64-pc-windows-msvc/release/cask_windows_arm64.tar.gz --directory=target/aarch64-pc-windows-msvc/release cask.exe
 
       - name: Release to Github
         uses: softprops/action-gh-release@v1
@@ -123,13 +123,13 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
         with:
           files: |
-            target/i686-pc-windows-msvc/release/cask_windows_386.tar.gz
-            target/aarch64-pc-windows-msvc/release/cask_windows_arm64.tar.gz
+            # target/i686-pc-windows-msvc/release/cask_windows_386.tar.gz
+            # target/aarch64-pc-windows-msvc/release/cask_windows_arm64.tar.gz
             target/x86_64-pc-windows-msvc/release/cask_windows_amd64.tar.gz
 
             target/x86_64-unknown-linux-musl/release/cask_linux_amd64.tar.gz
-            target/i686-unknown-linux-musl/release/cask_linux_386.tar.gz
-            target/aarch64-unknown-linux-musl/release/cask_linux_arm64.tar.gz
+            # target/i686-unknown-linux-musl/release/cask_linux_386.tar.gz
+            # target/aarch64-unknown-linux-musl/release/cask_linux_arm64.tar.gz
             target/mips-unknown-linux-gnu/release/cask_linux_mips.tar.gz
             target/mips64-unknown-linux-gnuabi64/release/cask_linux_mips64.tar.gz
             target/mips64el-unknown-linux-gnuabi64/release/cask_linux_mips64el.tar.gz

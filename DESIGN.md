@@ -81,3 +81,5 @@ example:
 - [github.com/axetroy/dvm-cask](https://github.com/axetroy/dvm-cask)
 
 ### Advanced of `Cask.toml`
+
+[Cask.toml.md](Cask.toml.md)

@@ -22,7 +22,7 @@ pub async fn install(
 ) -> Result<(), Report> {
     eprintln!("Fetching {} formula...", package_name);
 
-    let package_formula = formula::fetch(package_name)?;
+    let package_formula = formula::fetch(&cask, package_name, false)?;
 
     let download_version = {
         if let Some(v) = version {

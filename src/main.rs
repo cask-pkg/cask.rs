@@ -98,7 +98,7 @@ async fn main() {
         Some(("search", sub_matches)) => {
             let package_name = sub_matches.value_of("PACKAGE").expect("required");
 
-            let f = command_search::search(package_name);
+            let f = command_search::search(cask, package_name);
 
             executor::block_on(f).expect("search remote package fail!");
         }

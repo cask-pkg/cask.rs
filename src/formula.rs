@@ -1,6 +1,6 @@
 // #![deny(warnings)]
 
-use crate::git;
+use crate::{cask, git};
 
 use std::fs::File;
 use std::io::{ErrorKind, Read};
@@ -27,6 +27,7 @@ pub struct Formula {
     pub darwin: Option<Platform>, // The macOS target information
     pub linux: Option<Platform>, // The linux target information
     pub dependencies: Option<Vec<String>>, // TODO: The dependencies will be installed before install package
+    pub preinstall: Option<String>,        // TODO: The script will run before install package
     pub postinstall: Option<String>,       // TODO: The script will run after install package
 }
 
@@ -109,7 +110,7 @@ pub fn get_formula_git_url(package_name: &str) -> String {
 }
 
 // fetch remote formula
-pub fn fetch(package_name: &str) -> Result<Formula, Report> {
+pub fn fetch(cask: &cask::Cask, package_name: &str, temp: bool) -> Result<Formula, Report> {
     let cask_git_url = get_formula_git_url(package_name);
 
     let unix_time = {
@@ -120,7 +121,18 @@ pub fn fetch(package_name: &str) -> Result<Formula, Report> {
         t.as_secs()
     };
 
-    let formula_cloned_dir = env::temp_dir().join(format!("cask_formula_{}", unix_time));
+    let formula_cloned_dir = {
+        if temp {
+            env::temp_dir().join(format!("cask_formula_{}", unix_time))
+        } else {
+            cask.package_dir(package_name).join("repository")
+        }
+    };
+
+    if formula_cloned_dir.exists() {
+        fs::remove_dir_all(&formula_cloned_dir)?;
+    }
+
     let cask_file_path = formula_cloned_dir.join("Cask.toml");
 
     match git::clone(
@@ -130,7 +142,9 @@ pub fn fetch(package_name: &str) -> Result<Formula, Report> {
     ) {
         Ok(()) => {
             if !cask_file_path.exists() {
-                fs::remove_dir_all(formula_cloned_dir)?;
+                if temp {
+                    fs::remove_dir_all(formula_cloned_dir)?;
+                }
                 return Err(eyre::format_err!(
                     "{} is not a valid formula!",
                     package_name
@@ -139,12 +153,15 @@ pub fn fetch(package_name: &str) -> Result<Formula, Report> {
 
             match new(&cask_file_path) {
                 Ok(r) => {
-                    fs::remove_dir_all(formula_cloned_dir)?;
+                    if temp {
+                        fs::remove_dir_all(formula_cloned_dir)?;
+                    }
                     Ok(r)
                 }
                 Err(e) => {
-                    fs::remove_dir_all(formula_cloned_dir)?;
-
+                    if temp {
+                        fs::remove_dir_all(formula_cloned_dir)?;
+                    }
                     Err(e)
                 }
             }

@@ -17,8 +17,10 @@ use futures::executor;
 
 #[tokio::main]
 async fn main() {
+    let version = format!("v{}", env!("CARGO_PKG_VERSION"));
+
     let mut app = Command::new("cask")
-        .version("v0.1.1")
+        .version(version.as_str())
         .author("Axetroy <axetroy.dev@gmail.com>")
         .about("General binary package management, written in Rust")
         .subcommand_required(true)

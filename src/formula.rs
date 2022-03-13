@@ -117,7 +117,11 @@ pub fn fetch(package_name: &str) -> Result<Formula, Report> {
     let formula_cloned_dir = env::temp_dir().join(format!("cask_formula_{}", unix_time));
     let cask_file_path = formula_cloned_dir.join("Cask.toml");
 
-    match git::clone(&cask_git_url, &formula_cloned_dir, vec!["--depth", "1", "--quiet"]) {
+    match git::clone(
+        &cask_git_url,
+        &formula_cloned_dir,
+        vec!["--depth", "1", "--quiet"],
+    ) {
         Ok(()) => {
             if !cask_file_path.exists() {
                 fs::remove_dir_all(formula_cloned_dir)?;

@@ -2,7 +2,7 @@
 
 use core::result::Result;
 use std::path::Path;
-use std::process::{Command as ChildProcess};
+use std::process::Command as ChildProcess;
 
 use eyre::Report;
 
@@ -22,7 +22,7 @@ pub fn clone(url: &str, dest: &Path, args: Vec<&str>) -> Result<(), Report> {
                     Err(Report::msg("git clone process fail"))
                 }
             }
-            Err(e) => Err(eyre::format_err!("run git clone command exit: {}", e)),
+            Err(e) => Err(eyre::format_err!("clone formula fail: {}", e)),
         },
         Err(e) => Err(eyre::format_err!("run git clone command fail: {}", e)),
     }

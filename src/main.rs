@@ -2,6 +2,7 @@
 
 mod command_info;
 mod command_install;
+mod command_uninstall;
 mod extractor;
 mod formula;
 mod git;
@@ -63,8 +64,12 @@ async fn main() {
 
             executor::block_on(f).expect("install package fail!");
         }
-        Some(("uninstall", _sub_matches)) => {
-            // TODO
+        Some(("uninstall", sub_matches)) => {
+            let package_name = sub_matches.value_of("PACKAGE").expect("required");
+
+            let f = command_uninstall::uninstall(package_name);
+
+            executor::block_on(f).expect("uninstall package fail!");
         }
         Some(("list", _sub_matches)) => {
             // TODO

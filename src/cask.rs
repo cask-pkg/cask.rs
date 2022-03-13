@@ -45,7 +45,7 @@ impl Cask {
         self.root_dir().join("bin")
     }
 
-    fn formula_dir(&self) -> PathBuf {
+    pub fn formula_dir(&self) -> PathBuf {
         self.root_dir().join("formula")
     }
 

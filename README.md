@@ -30,6 +30,7 @@ cask uninstall github.com/axetroy/gpm.rs
 | cask install \<PACKAGE\> [VERSION] | Install package             |
 | cask uninstall \<PACKAGE\>         | Uninstall package           |
 | cask info \<PACKAGE\>              | Show information of package |
+| cask list                          | List installed package      |
 
 ## LICENSE
 

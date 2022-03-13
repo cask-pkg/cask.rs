@@ -3,6 +3,7 @@
 mod cask;
 mod command_info;
 mod command_install;
+mod command_list;
 mod command_uninstall;
 mod extractor;
 mod formula;
@@ -42,11 +43,7 @@ async fn main() {
                 .arg(arg!(<PACKAGE> "The package name"))
                 .arg_required_else_help(true),
         )
-        .subcommand(
-            Command::new("list")
-                .about("List installed package")
-                .arg_required_else_help(true),
-        )
+        .subcommand(Command::new("list").about("List installed package"))
         .subcommand(
             Command::new("info")
                 .about("Show information of package")
@@ -79,7 +76,9 @@ async fn main() {
             executor::block_on(f).expect("uninstall package fail!");
         }
         Some(("list", _sub_matches)) => {
-            // TODO
+            let f = command_list::list(cask);
+
+            executor::block_on(f).expect("list packages fail!");
         }
         Some(("info", sub_matches)) => {
             let package_name = sub_matches.value_of("PACKAGE").expect("required");

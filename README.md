@@ -7,7 +7,7 @@
 ![License](https://img.shields.io/github/license/axetroy/cask.rs.svg)
 ![Repo Size](https://img.shields.io/github/repo-size/axetroy/cask.rs.svg)
 
-A universal distributed binary distribution tool.
+A universal distributed binary distribution manage tool.
 
 ### Install
 

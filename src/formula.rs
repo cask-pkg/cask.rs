@@ -7,6 +7,7 @@ use std::path::Path;
 use eyre::Report;
 use serde::Serialize;
 use serde_derive::Deserialize;
+use tinytemplate::TinyTemplate;
 use toml::from_str;
 
 // #[derive(Serialize)]
@@ -42,17 +43,17 @@ pub struct Package {
 
 #[derive(Deserialize, Serialize)]
 pub struct Platform {
-    pub x86: Option<Download>,
-    pub x86_64: Option<Download>,
-    pub arm: Option<Download>,
-    pub aarch64: Option<Download>,
-    pub mips: Option<Download>,
-    pub mips64: Option<Download>,
-    pub mips64el: Option<Download>,
+    pub x86: Option<Arch>,
+    pub x86_64: Option<Arch>,
+    pub arm: Option<Arch>,
+    pub aarch64: Option<Arch>,
+    pub mips: Option<Arch>,
+    pub mips64: Option<Arch>,
+    pub mips64el: Option<Arch>,
 }
 
 #[derive(Deserialize, Serialize)]
-pub struct Download {
+pub struct Arch {
     pub url: String,          // The url will be download when install the package
     pub hash: Option<String>, // TODO: The hash256 of download resource
 }
@@ -82,6 +83,72 @@ pub fn new(formula_file: &Path) -> Result<Formula, Report> {
     };
 
     Ok(config)
+}
+
+impl Formula {
+    fn get_current_os(&self) -> Option<&Platform> {
+        if cfg!(target_os = "macos") {
+            self.darwin.as_ref()
+        } else if cfg!(target_os = "windows") {
+            self.windows.as_ref()
+        } else if cfg!(target_os = "linux") {
+            self.linux.as_ref()
+        } else {
+            None
+        }
+    }
+    fn get_current_arch(&self) -> Option<&Arch> {
+        if let Some(os) = self.get_current_os() {
+            if cfg!(target_arch = "x86") {
+                os.x86.as_ref()
+            } else if cfg!(target_arch = "x86_64") {
+                os.x86_64.as_ref()
+            } else if cfg!(target_arch = "arm") {
+                os.arm.as_ref()
+            } else if cfg!(target_arch = "aarch64") {
+                os.aarch64.as_ref()
+            } else if cfg!(target_arch = "mips") {
+                os.mips.as_ref()
+            } else if cfg!(target_arch = "mips64") {
+                os.mips64.as_ref()
+            } else if cfg!(target_arch = "mips64el") {
+                os.mips64el.as_ref()
+            } else {
+                None
+            }
+        } else {
+            None
+        }
+    }
+
+    pub fn get_current_download_url(&self, version: &str) -> Result<String, Report> {
+        #[derive(Serialize)]
+        struct URLTemplateContext {
+            name: String,
+            bin: String,
+            version: String,
+        }
+
+        if let Some(arch) = self.get_current_arch() {
+            let render_context = URLTemplateContext {
+                name: self.package.name.clone(),
+                bin: self.package.bin.clone(),
+                version: version.to_string(),
+            };
+
+            let mut tt = TinyTemplate::new();
+            tt.add_template("url_template", &arch.url)?;
+
+            let renderer_url = tt.render("url_template", &render_context)?;
+
+            Ok(renderer_url)
+        } else {
+            Err(eyre::format_err!(
+                "the package '{}' not support your system",
+                self.package.name
+            ))
+        }
+    }
 }
 
 #[cfg(test)]

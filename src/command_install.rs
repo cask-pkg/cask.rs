@@ -17,7 +17,6 @@ use std::time::{SystemTime, UNIX_EPOCH};
 
 use eyre::Report;
 use serde::Serialize;
-use tinytemplate::TinyTemplate;
 
 #[derive(Serialize)]
 struct URLTemplateContext {
@@ -48,7 +47,6 @@ pub async fn install(
     {
         Ok(()) => {
             if !cask_file_path.exists() {
-                // remove cloned repo
                 fs::remove_dir_all(formula_cloned_dir)?;
                 return Err(eyre::format_err!(
                     "{} is not a valid formula!",
@@ -56,33 +54,19 @@ pub async fn install(
                 ));
             }
 
-            let f = formula::new(&cask_file_path)?;
+            match formula::new(&cask_file_path) {
+                Ok(r) => {
+                    fs::remove_dir_all(formula_cloned_dir)?;
+                    Ok(r)
+                }
+                Err(e) => {
+                    fs::remove_dir_all(formula_cloned_dir)?;
 
-            Ok(f)
+                    Err(e)
+                }
+            }
         }
         Err(e) => Err(e),
-    }?;
-
-    let option_target = if cfg!(target_os = "macos") {
-        package_formula.darwin.as_ref()
-    } else if cfg!(target_os = "windows") {
-        package_formula.windows.as_ref()
-    } else if cfg!(target_os = "linux") {
-        package_formula.linux.as_ref()
-    } else {
-        fs::remove_dir_all(formula_cloned_dir)?;
-        return Err(eyre::format_err!(
-            "{} not support your system",
-            package_name
-        ));
-    };
-
-    let target = match option_target {
-        Some(p) => Ok(p),
-        None => Err(eyre::format_err!(
-            "{} not support your system",
-            package_name
-        )),
     }?;
 
     let download_version = {
@@ -148,60 +132,24 @@ version = "{}"
         formula_file.write_all(cask_file_content.as_bytes())?;
     }
 
-    // remove cloned repo
-    fs::remove_dir_all(formula_cloned_dir)?;
+    let url = package_formula.get_current_download_url(&download_version)?;
 
-    let option_arch = if cfg!(target_arch = "x86") {
-        target.x86.as_ref()
-    } else if cfg!(target_arch = "x86_64") {
-        target.x86_64.as_ref()
-    } else if cfg!(target_arch = "arm") {
-        target.arm.as_ref()
-    } else if cfg!(target_arch = "aarch64") {
-        target.aarch64.as_ref()
-    } else if cfg!(target_arch = "mips") {
-        target.mips.as_ref()
-    } else if cfg!(target_arch = "mips64") {
-        target.mips64.as_ref()
-    } else if cfg!(target_arch = "mips64el") {
-        target.mips64el.as_ref()
-    } else {
-        None
-    };
-
-    let arch = match option_arch {
-        Some(a) => Ok(a),
-        None => Err(eyre::format_err!("{} not support your arch", package_name)),
-    }?;
-
-    let tar_file_path = &package_dir
-        .join("version")
+    let tar_file_path = &cask
+        .package_bin_dir(package_name)
         .join(format!("{}.tar.gz", &download_version));
 
-    // renderer url
-    let rendered_url = {
-        let render_context = URLTemplateContext {
-            name: package_formula.package.name.clone(),
-            bin: package_formula.package.bin.clone(),
-            version: download_version.clone(),
-        };
-        let mut tt = TinyTemplate::new();
-        tt.add_template("url_template", &arch.url)?;
+    util::download(&url, tar_file_path).await?;
 
-        tt.render("url_template", &render_context)?
-    };
+    // create soft link in bin folder
+    #[cfg(target_family = "unix")]
+    let executable_name = package_formula.package.bin.clone();
+    #[cfg(target_family = "windows")]
+    let executable_name = format!("{}.exe", &package_formula.package.bin);
 
-    util::download(&rendered_url, tar_file_path).await?;
+    let output_file_path =
+        extractor::extract(tar_file_path, &executable_name, &package_dir.join("bin"))?;
 
-    let bin_name = if cfg!(target_os = "windows") {
-        format!("{}.exe", &package_formula.package.bin)
-    } else {
-        package_formula.package.bin.clone()
-    };
-
-    let output_file_path = extractor::extract(tar_file_path, &bin_name, &package_dir.join("bin"))?;
-
-    let symlink_file = cask.package_bin_dir(package_name).join(bin_name);
+    let symlink_file = cask.package_bin_dir(package_name).join(executable_name);
     if symlink_file.exists() {
         fs::remove_file(&symlink_file)?;
     }

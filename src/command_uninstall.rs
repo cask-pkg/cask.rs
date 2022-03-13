@@ -5,15 +5,7 @@ use crate::formula;
 use std::fs;
 
 use eyre::Report;
-use serde::Serialize;
 use sha2::{Digest, Sha256};
-
-#[derive(Serialize)]
-struct URLTemplateContext {
-    name: String,
-    bin: String,
-    version: String,
-}
 
 pub async fn uninstall(package_name: &str) -> Result<(), Report> {
     let hash_of_package = {

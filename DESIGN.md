@@ -82,3 +82,30 @@ cask install github.com/<username>/<repo>
 ```
 
 for more information about [Cask.toml](Cask.toml.md)
+
+## How do I publish a new version to an exist package?
+
+To publish a new version, just add a new version in the record of the version of `Cask.Toml`.
+
+```diff
+[package]
+name = "github.com/<username>/<repo>"
+bin = "gpm"
+- versions = ["0.1.0"]
++ versions = ["0.2.0", "0.1.0"]
+authors = ["Username <email@email.com>"]
+keywords = ["key", "word"]
+repository = "https://github.com/<username>/<repo>"
+description = """
+description of package.
+"""
+
+[darwin]
+x86_64 = { url = "https://github.com/<username>/<repo>/releases/download/v{version}/darwin_amd64.tar.gz" }
+
+[windows]
+x86_64 = { url = "https://github.com/<username>/<repo>/releases/download/v{version}/windows_amd64.tar.gz" }
+
+[linux]
+x86_64 = { url = "https://github.com/<username>/<repo>/releases/download/v{version}/linux_amd64.tar.gz" }
+```

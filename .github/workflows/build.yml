@@ -60,6 +60,8 @@ jobs:
 
           rustup target add x86_64-unknown-linux-musl
 
+          cargo build --release --locked --target x86_64-unknown-linux-musl
+
           tar -cvzf target/x86_64-unknown-linux-musl/release/cask_linux_amd64.tar.gz --directory=target/x86_64-unknown-linux-musl/release cask
 
       - name: Build (mac)

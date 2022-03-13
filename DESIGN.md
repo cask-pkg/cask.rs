@@ -73,6 +73,12 @@ x86_64 = { url = "https://github.com/<username>/<repo>/releases/download/v{versi
 x86_64 = { url = "https://github.com/<username>/<repo>/releases/download/v{version}/linux_amd64.tar.gz" }
 ```
 
-Please modify the information above, eg. username, version, etc.
+modify the information above, eg. username, version, etc. and then push to remote.
+
+try install the package
+
+```bash
+cask install github.com/<username>/<repo>
+```
 
 for more information about [Cask.toml](Cask.toml.md)

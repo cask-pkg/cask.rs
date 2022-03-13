@@ -102,9 +102,13 @@ pub struct DownloadTarget {
     pub ext: String,
 }
 
+fn get_formula_git_url(package_name: &str) -> String {
+    format!("https://{}-cask.git", package_name)
+}
+
 // fetch remote formula
 pub fn fetch(package_name: &str) -> Result<Formula, Report> {
-    let cask_git_url = format!("https://{}-cask.git", package_name);
+    let cask_git_url = get_formula_git_url(package_name);
 
     let unix_time = {
         let start = SystemTime::now();

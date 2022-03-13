@@ -122,7 +122,7 @@ impl Cask {
         Ok(())
     }
 
-    pub fn _package_formula(&self, package_name: &str) -> Result<formula::Formula, Report> {
+    pub fn package_formula(&self, package_name: &str) -> Result<formula::Formula, Report> {
         let package_dir = self.package_dir(package_name);
         let formula_file_path = package_dir.join("Cask.toml");
 

@@ -50,12 +50,13 @@ cask uninstall github.com/axetroy/gpm.rs
 
 ## Command
 
-| Command                            | Description                 |
-| ---------------------------------- | --------------------------- |
-| cask install \<PACKAGE\> [VERSION] | Install package             |
-| cask uninstall \<PACKAGE\>         | Uninstall package           |
-| cask info \<PACKAGE\>              | Show information of package |
-| cask list                          | List installed package      |
+| Command                            | Description                           |
+| ---------------------------------- | ------------------------------------- |
+| cask install \<PACKAGE\> [VERSION] | Install package                       |
+| cask uninstall \<PACKAGE\>         | Uninstall package                     |
+| cask info \<PACKAGE\>              | Show information of installed package |
+| cask search \<PACKAGE\>            | Show information of remote package    |
+| cask list                          | List installed package                |
 
 ## Requirement
 

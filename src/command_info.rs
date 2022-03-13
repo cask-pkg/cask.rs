@@ -1,19 +1,24 @@
 #![deny(warnings)]
 
-use crate::formula;
+use crate::cask;
 
 use eyre::Report;
 
-pub async fn info(package_name: &str) -> Result<(), Report> {
-    let package_formula = formula::fetch(package_name)?;
+pub async fn info(cask: cask::Cask, package_name: &str) -> Result<(), Report> {
+    let package_dir = cask.package_dir(package_name);
+    let package_formula = cask.package_formula(package_name)?;
 
     let msg = format!(
         r#"{}
 Package: {}
-Repository: {}"#,
+Version: {}
+Repository: {}
+Location: {}"#,
         package_formula.package.description,
         package_formula.package.name,
-        package_formula.package.repository
+        package_formula.cask.unwrap().version,
+        package_formula.package.repository,
+        package_dir.display()
     );
 
     print!("{}", msg);

@@ -69,8 +69,8 @@ async fn main() {
     cask.init().expect("init cask fail");
 
     cask.check_bin_path().unwrap_or_else(|e| {
-        println!("{}", e);
-        println!("Manually add the directory to your $HOME/.bash_profile (or similar)");
+        eprintln!("{}", e);
+        eprintln!("Manually add the directory to your $HOME/.bash_profile (or similar)");
         process::exit(1);
     });
 
@@ -114,7 +114,7 @@ async fn main() {
                 .values_of_os("")
                 .unwrap_or_default()
                 .collect::<Vec<_>>();
-            println!("Unknown the command {:?} with argument {:?}", ext, args);
+            eprintln!("Unknown the command {:?} with argument {:?}", ext, args);
             app.print_help().unwrap();
             process::exit(0x1);
         }

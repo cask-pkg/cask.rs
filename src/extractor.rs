@@ -209,8 +209,6 @@ mod tests {
 
         let extracted_file_path = extractor::extract(&tar_file_path, "test", &dest_dir).unwrap();
 
-        println!("extracted_file_path: {}", extracted_file_path.display());
-
         let meta = fs::metadata(&extracted_file_path).unwrap();
 
         assert_eq!(meta.len(), 12);

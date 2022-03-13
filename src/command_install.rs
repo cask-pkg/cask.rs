@@ -20,7 +20,7 @@ pub async fn install(
     package_name: &str,
     version: Option<&str>,
 ) -> Result<(), Report> {
-    println!("Fetching {} formula...", package_name);
+    eprintln!("Fetching {} formula...", package_name);
 
     let package_formula = formula::fetch(package_name)?;
 
@@ -118,8 +118,8 @@ repository = "{}"
         formula_file.write_all(package_formula.get_file_content().as_bytes())?;
     }
 
-    println!(
-        "The package '{} {}'  has been installed!",
+    eprintln!(
+        "The package '{} {}' has been installed!",
         &package_formula.package.name, download_version
     );
 

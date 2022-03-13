@@ -1,7 +1,8 @@
 #![deny(warnings)]
 
 use core::result::Result;
-use std::fs::File;
+use std::fs::{self, File};
+use std::io;
 use std::path::{Path, PathBuf};
 
 use eyre::Report;
@@ -84,6 +85,44 @@ pub fn extract(
         } else {
             Ok(output_file_path)
         }
+    } else if tar_file_name.ends_with(".zip") {
+        let tar_file = File::open(&tar_file_path)?;
+        let mut archive = zip::ZipArchive::new(tar_file).unwrap();
+
+        for i in 0..archive.len() {
+            let mut file = archive.by_index(i).unwrap();
+
+            if file.is_dir() {
+                continue;
+            }
+
+            if file.name() == binary_name {
+                binary_found = true;
+                let mut output_file = fs::File::create(&output_file_path)?;
+                io::copy(&mut file, &mut output_file)?;
+
+                // Get and Set permissions
+                #[cfg(unix)]
+                {
+                    use std::os::unix::prelude::PermissionsExt;
+
+                    if let Some(mode) = file.unix_mode() {
+                        fs::set_permissions(&output_file_path, fs::Permissions::from_mode(mode))?;
+                    };
+                };
+
+                break;
+            }
+        }
+
+        if !binary_found {
+            Err(eyre::format_err!(
+                "can not found binary file '{}' in tar",
+                binary_name
+            ))
+        } else {
+            Ok(output_file_path)
+        }
     } else {
         Err(eyre::format_err!(
             "Can not extract file from file '{}'",
@@ -105,6 +144,32 @@ mod tests {
             .join("extractor");
 
         let tar_file_path = extractor_dir.join("test.tar");
+
+        let dest_dir = extractor_dir;
+
+        let r = extractor::extract(&tar_file_path, "test", &dest_dir);
+
+        assert!(r.is_ok());
+
+        let extracted_file_path = dest_dir.join("test");
+
+        let meta = fs::metadata(&extracted_file_path).unwrap();
+
+        assert_eq!(meta.len(), 12);
+
+        let content = fs::read_to_string(&extracted_file_path).unwrap();
+
+        assert_eq!(content, "hello world\n");
+    }
+
+    #[test]
+    fn test_extract_zip() {
+        let extractor_dir = env::current_dir()
+            .unwrap()
+            .join("fixtures")
+            .join("extractor");
+
+        let tar_file_path = extractor_dir.join("test.zip");
 
         let dest_dir = extractor_dir;
 

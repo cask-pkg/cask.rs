@@ -34,15 +34,6 @@ pub async fn install(
             } else {
                 Ok(v.to_owned())
             }
-        } else if let Some(v) = &package_formula.package.version {
-            if !package_formula.package.versions.contains(v) {
-                Err(eyre::format_err!(
-                    "can not found version '{}' of formula",
-                    v
-                ))
-            } else {
-                Ok(v.clone())
-            }
         } else if package_formula.package.versions.is_empty() {
             Err(eyre::format_err!("can not found any version of formula"))
         } else {

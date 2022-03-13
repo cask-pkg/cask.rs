@@ -42,7 +42,6 @@ pub struct Cask {
 pub struct Package {
     pub name: String,                  // The package name
     pub bin: String,                   // The binary name of package
-    pub version: Option<String>,       // Specify the download package version.
     pub versions: Vec<String>,         // The version of package
     pub authors: Vec<String>,          // The author of package
     pub keywords: Option<Vec<String>>, // The keywords of package
@@ -269,9 +268,8 @@ mod tests {
 
         let rc = formula::new(&config_path).unwrap();
 
-        assert_eq!(rc.package.name, "gpm");
+        assert_eq!(rc.package.name, "github.com/axetroy/gpm.rs");
         assert_eq!(rc.package.bin, "gpm");
-        assert!(rc.package.version.is_none());
         assert_eq!(rc.package.versions, vec!["0.1.12", "0.1.11"]);
         assert_eq!(rc.package.authors, vec!["Axetroy <axetroy.dev@gmail.com>"]);
         assert_eq!(

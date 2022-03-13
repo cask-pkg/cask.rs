@@ -100,15 +100,18 @@ version = "{}"
     let output_file_path =
         extractor::extract(tar_file_path, &executable_name, &package_dir.join("bin"))?;
 
-    let symlink_file = cask.bin_dir().join(executable_name);
-    if symlink_file.exists() {
-        fs::remove_file(&symlink_file)?;
+    // create symlink to $CASK_ROOT/bin
+    {
+        let symlink_file = cask.bin_dir().join(executable_name);
+        if symlink_file.exists() {
+            fs::remove_file(&symlink_file)?;
+        }
+
+        #[cfg(target_family = "unix")]
+        std::os::unix::fs::symlink(output_file_path, &symlink_file)?;
+        #[cfg(target_family = "windows")]
+        std::os::windows::fs::symlink_file(output_file_path, &symlink_file)?;
     }
-    // create soft link in bin folder
-    #[cfg(target_family = "unix")]
-    std::os::unix::fs::symlink(output_file_path, &symlink_file)?;
-    #[cfg(target_family = "windows")]
-    std::os::windows::fs::symlink_file(output_file_path, &symlink_file)?;
 
     Ok(())
 }

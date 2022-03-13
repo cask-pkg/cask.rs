@@ -9,7 +9,7 @@
 
 A universal distributed binary distribution manage tool.
 
-### Install
+## Install
 
 1. Shell (Mac/Linux)
 
@@ -45,6 +45,10 @@ cask uninstall github.com/axetroy/gpm.rs
 | cask uninstall \<PACKAGE\>         | Uninstall package           |
 | cask info \<PACKAGE\>              | Show information of package |
 | cask list                          | List installed package      |
+
+## Requirement
+
+Cask depends on [Git](https://git-scm.com)
 
 ## LICENSE
 

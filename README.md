@@ -28,7 +28,7 @@ cask uninstall github.com/axetroy/gpm.rs
 | Command                           | Description                 |
 | --------------------------------- | --------------------------- |
 | gpm install \<PACKAGE\> [VERSION] | Install package             |
-| gpm uninstall \<PACKAGE\>         | Uninstall package explorer  |
+| gpm uninstall \<PACKAGE\>         | Uninstall package           |
 | gpm info \<PACKAGE\>              | Show information of package |
 
 ## LICENSE

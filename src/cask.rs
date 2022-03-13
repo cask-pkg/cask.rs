@@ -52,7 +52,7 @@ impl Cask {
 
                     let abs_path = Path::new(&abs_path_str);
 
-                    if abs_path == self.bin_dir() {
+                    if format!("{}", abs_path.display()) == format!("{}", self.bin_dir().display()) {
                         return Ok(());
                     }
                 }

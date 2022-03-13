@@ -2,10 +2,10 @@
 
 mod command_info;
 mod command_install;
+mod extractor;
 mod formula;
 mod git;
 mod util;
-mod extractor;
 
 use std::process;
 

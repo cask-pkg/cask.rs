@@ -3,7 +3,7 @@
 use core::result::Result;
 use std::fs::File;
 use std::io::Write;
-use std::path::{Path};
+use std::path::Path;
 use std::{cmp::min, fs};
 
 use chrono::prelude::{DateTime, Utc};

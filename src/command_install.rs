@@ -140,7 +140,6 @@ version = "{}"
 
     util::download(&url, tar_file_path).await?;
 
-    // create soft link in bin folder
     #[cfg(target_family = "unix")]
     let executable_name = package_formula.package.bin.clone();
     #[cfg(target_family = "windows")]

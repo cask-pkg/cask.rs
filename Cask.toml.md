@@ -66,3 +66,8 @@ Every arch got a [Resource Target Object](#Resource-Target)
 | -------- | ------------------------------------------------------------- | ------ | -------- | ------- |
 | **url**  | The url of resource that will be download                     | string | true     |         |
 | checksum | The checksum(SHA256) of resource. Check checksum if provided. | string |          |         |
+
+## Example
+
+- [github.com/axetroy/gpm.rs-cask](https://github.com/axetroy/gpm.rs-cask)
+- [github.com/axetroy/dvm-cask](https://github.com/axetroy/dvm-cask)

@@ -75,11 +75,4 @@ x86_64 = { url = "https://github.com/<username>/<repo>/releases/download/v{versi
 
 Please modify the information above, eg. username, version, etc.
 
-example:
-
-- [github.com/axetroy/gpm.rs-cask](https://github.com/axetroy/gpm.rs-cask)
-- [github.com/axetroy/dvm-cask](https://github.com/axetroy/dvm-cask)
-
-### Advanced of `Cask.toml`
-
-[Cask.toml.md](Cask.toml.md)
+for more information about [Cask.toml](Cask.toml.md)

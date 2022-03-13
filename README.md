@@ -14,7 +14,7 @@ A universal distributed binary distribution manage tool.
 
 [Installation](#Installation) |
 [Usage](#Usage) |
-[Changelog](CHANGELOG.md) |
+[How to add my package?](DESIGN.md#how-do-i-publish-myothers-package) |
 [Design](DESIGN.md) |
 [Contributing](CONTRIBUTING.md)
 

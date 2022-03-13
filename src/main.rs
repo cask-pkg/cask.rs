@@ -1,5 +1,6 @@
 // #![deny(warnings)]
 
+mod cask;
 mod command_info;
 mod command_install;
 mod command_uninstall;
@@ -55,19 +56,25 @@ async fn main() {
 
     let matches = app.clone().get_matches();
 
+    let home_dir = dirs::home_dir().expect("can not get home dir");
+
+    let cask = cask::new(&home_dir.join(".cask"));
+
+    cask.init().expect("init cask fail");
+
     match matches.subcommand() {
         Some(("install", sub_matches)) => {
             let package_name = sub_matches.value_of("PACKAGE").expect("required");
             let version = sub_matches.value_of("VERSION");
 
-            let f = command_install::install(package_name, version);
+            let f = command_install::install(cask, package_name, version);
 
             executor::block_on(f).expect("install package fail!");
         }
         Some(("uninstall", sub_matches)) => {
             let package_name = sub_matches.value_of("PACKAGE").expect("required");
 
-            let f = command_uninstall::uninstall(package_name);
+            let f = command_uninstall::uninstall(cask, package_name);
 
             executor::block_on(f).expect("uninstall package fail!");
         }

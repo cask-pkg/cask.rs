@@ -1,5 +1,6 @@
 #![deny(warnings)]
 
+use crate::cask;
 use crate::extractor;
 use crate::formula;
 use crate::git;
@@ -16,7 +17,6 @@ use std::time::{SystemTime, UNIX_EPOCH};
 
 use eyre::Report;
 use serde::Serialize;
-use sha2::{Digest, Sha256};
 use tinytemplate::TinyTemplate;
 
 #[derive(Serialize)]
@@ -26,7 +26,11 @@ struct URLTemplateContext {
     version: String,
 }
 
-pub async fn install(package_name: &str, version: Option<&str>) -> Result<(), Report> {
+pub async fn install(
+    cask: cask::Cask,
+    package_name: &str,
+    version: Option<&str>,
+) -> Result<(), Report> {
     let cask_git_url = format!("https://{}-cask.git", package_name);
 
     let unix_time = {
@@ -81,23 +85,6 @@ pub async fn install(package_name: &str, version: Option<&str>) -> Result<(), Re
         )),
     }?;
 
-    let hash_of_package = {
-        let mut hasher = Sha256::new();
-
-        hasher.update(package_name);
-        format!("{:x}", hasher.finalize())
-    };
-
-    let home_dir = match dirs::home_dir() {
-        Some(p) => Ok(p),
-        None => Err(eyre::format_err!("can not get $HOME dir")),
-    }?;
-
-    let cask_dir = home_dir.join(".cask");
-    let cask_dir_bin = cask_dir.join("bin");
-    let cask_dir_formula = cask_dir.join("formula");
-    let package_dir = cask_dir_formula.join(hash_of_package);
-
     let download_version = {
         if let Some(v) = version {
             if !package_formula.package.versions.contains(&v.to_string()) {
@@ -125,21 +112,10 @@ pub async fn install(package_name: &str, version: Option<&str>) -> Result<(), Re
     }?;
 
     // init formula folder
+    cask.init_package(package_name)?;
+
+    let package_dir = cask.package_dir(package_name);
     {
-        if !&cask_dir_bin.exists() {
-            fs::create_dir_all(&cask_dir_bin)?;
-        }
-
-        if !&cask_dir_formula.exists() {
-            fs::create_dir_all(&cask_dir_formula)?;
-        }
-
-        if !&package_dir.exists() {
-            fs::create_dir_all(&package_dir)?;
-            fs::create_dir_all(&package_dir.join("bin"))?;
-            fs::create_dir_all(&package_dir.join("version"))?;
-        }
-
         let cask_file_content = {
             let cask_file = File::open(&cask_file_path)?;
             let mut buf_reader = BufReader::new(&cask_file);
@@ -225,7 +201,7 @@ version = "{}"
 
     let output_file_path = extractor::extract(tar_file_path, &bin_name, &package_dir.join("bin"))?;
 
-    let symlink_file = cask_dir_bin.join(bin_name);
+    let symlink_file = cask.package_bin_dir(package_name).join(bin_name);
     if symlink_file.exists() {
         fs::remove_file(&symlink_file)?;
     }

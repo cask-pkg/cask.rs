@@ -3,7 +3,7 @@
 use crate::git;
 
 use std::fs::File;
-use std::io::Read;
+use std::io::{ErrorKind, Read};
 use std::path::Path;
 use std::time::{SystemTime, UNIX_EPOCH};
 use std::{env, fs};
@@ -71,9 +71,10 @@ pub struct Arch {
 pub fn new(formula_file: &Path) -> Result<Formula, Report> {
     let mut file = match File::open(formula_file) {
         Ok(f) => f,
-        Err(e) => {
-            return Err(eyre::Report::from(e));
-        }
+        Err(e) => match e.kind() {
+            ErrorKind::NotFound => Err(eyre::format_err!("the formula does not exist")),
+            other_error => Err(eyre::format_err!("{:?}", other_error)),
+        }?,
     };
 
     let mut file_content = String::new();

@@ -2,7 +2,7 @@
 
 use core::result::Result;
 use std::path::Path;
-use std::process::{Command as ChildProcess, Stdio};
+use std::process::{Command as ChildProcess};
 
 use eyre::Report;
 
@@ -11,8 +11,6 @@ pub fn clone(url: &str, dest: &Path, args: Vec<&str>) -> Result<(), Report> {
         .arg("clone")
         .args(args)
         .arg(url)
-        .stdout(Stdio::null())
-        .stderr(Stdio::null())
         .arg(dest.to_str().unwrap())
         .spawn()
     {

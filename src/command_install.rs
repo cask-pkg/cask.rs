@@ -20,6 +20,8 @@ pub async fn install(
     package_name: &str,
     version: Option<&str>,
 ) -> Result<(), Report> {
+    println!("Fetching {} formula...", package_name);
+
     let package_formula = formula::fetch(package_name)?;
 
     let download_version = {

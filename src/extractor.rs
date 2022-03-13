@@ -168,4 +168,28 @@ mod tests {
 
         fs::remove_file(&extracted_file_path).unwrap();
     }
+
+    #[test]
+    fn test_extract_tar_gz_with_prune() {
+        let extractor_dir = env::current_dir()
+            .unwrap()
+            .join("fixtures")
+            .join("extractor");
+
+        let tar_file_path = extractor_dir.join("prune_darwin_amd64.tar.gz");
+
+        let dest_dir = extractor_dir;
+
+        let r = extractor::extract(&tar_file_path, "prune", &dest_dir);
+
+        assert!(r.is_ok());
+
+        let extracted_file_path = dest_dir.join("prune");
+
+        let meta = fs::metadata(&extracted_file_path).unwrap();
+
+        assert_eq!(meta.len(), 137_656);
+
+        fs::remove_file(&extracted_file_path).unwrap();
+    }
 }

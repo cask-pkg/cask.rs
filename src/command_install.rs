@@ -3,17 +3,13 @@
 use crate::cask;
 use crate::extractor;
 use crate::formula;
-use crate::git;
 use crate::util;
 use crate::util::iso8601;
 
-use std::env;
 use std::fs;
 use std::fs::File;
-use std::io::BufReader;
-use std::io::Read;
 use std::io::Write;
-use std::time::{SystemTime, UNIX_EPOCH};
+use std::time::SystemTime;
 
 use eyre::Report;
 use serde::Serialize;
@@ -30,44 +26,7 @@ pub async fn install(
     package_name: &str,
     version: Option<&str>,
 ) -> Result<(), Report> {
-    let cask_git_url = format!("https://{}-cask.git", package_name);
-
-    let unix_time = {
-        let start = SystemTime::now();
-
-        let t = start.duration_since(UNIX_EPOCH)?;
-
-        t.as_secs()
-    };
-
-    let formula_cloned_dir = env::temp_dir().join(format!("cask_{}", unix_time));
-    let cask_file_path = formula_cloned_dir.join("Cask.toml");
-
-    let package_formula = match git::clone(&cask_git_url, &formula_cloned_dir, vec!["--depth", "1"])
-    {
-        Ok(()) => {
-            if !cask_file_path.exists() {
-                fs::remove_dir_all(formula_cloned_dir)?;
-                return Err(eyre::format_err!(
-                    "{} is not a valid formula!",
-                    package_name
-                ));
-            }
-
-            match formula::new(&cask_file_path) {
-                Ok(r) => {
-                    fs::remove_dir_all(formula_cloned_dir)?;
-                    Ok(r)
-                }
-                Err(e) => {
-                    fs::remove_dir_all(formula_cloned_dir)?;
-
-                    Err(e)
-                }
-            }
-        }
-        Err(e) => Err(e),
-    }?;
+    let package_formula = formula::fetch(package_name)?;
 
     let download_version = {
         if let Some(v) = version {
@@ -99,16 +58,9 @@ pub async fn install(
     cask.init_package(package_name)?;
 
     let package_dir = cask.package_dir(package_name);
+
+    // init Cask information in Cask.toml
     {
-        let cask_file_content = {
-            let cask_file = File::open(&cask_file_path)?;
-            let mut buf_reader = BufReader::new(&cask_file);
-            let mut file_content = String::new();
-            buf_reader.read_to_string(&mut file_content)?;
-
-            file_content
-        };
-
         let file_path = &package_dir.join("Cask.toml");
 
         let mut formula_file = File::create(&file_path)?;
@@ -129,13 +81,13 @@ version = "{}"
             .as_str()
             .as_bytes(),
         )?;
-        formula_file.write_all(cask_file_content.as_bytes())?;
+        formula_file.write_all(package_formula.get_file_content().as_bytes())?;
     }
 
     let url = package_formula.get_current_download_url(&download_version)?;
 
     let tar_file_path = &cask
-        .package_bin_dir(package_name)
+        .package_version_dir(package_name)
         .join(format!("{}.tar.gz", &download_version));
 
     util::download(&url, tar_file_path).await?;
@@ -148,7 +100,7 @@ version = "{}"
     let output_file_path =
         extractor::extract(tar_file_path, &executable_name, &package_dir.join("bin"))?;
 
-    let symlink_file = cask.package_bin_dir(package_name).join(executable_name);
+    let symlink_file = cask.bin_dir().join(executable_name);
     if symlink_file.exists() {
         fs::remove_file(&symlink_file)?;
     }

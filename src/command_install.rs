@@ -47,9 +47,38 @@ pub async fn install(
     }?;
 
     // init formula folder
-    cask.init_package(package_name)?;
+    cask.init_package(&package_formula.package.name)?;
 
-    let package_dir = cask.package_dir(package_name);
+    let package_dir = cask.package_dir(&package_formula.package.name);
+
+    let url = package_formula.get_current_download_url(&download_version)?;
+
+    let tar_file_path = &cask
+        .package_version_dir(&package_formula.package.name)
+        .join(format!("{}.tar.gz", &download_version));
+
+    util::download(&url, tar_file_path).await?;
+
+    #[cfg(target_family = "unix")]
+    let executable_name = package_formula.package.bin.clone();
+    #[cfg(target_family = "windows")]
+    let executable_name = format!("{}.exe", &package_formula.package.bin);
+
+    let output_file_path =
+        extractor::extract(tar_file_path, &executable_name, &package_dir.join("bin"))?;
+
+    // create symlink to $CASK_ROOT/bin
+    {
+        let symlink_file = cask.bin_dir().join(executable_name);
+        if symlink_file.exists() {
+            fs::remove_file(&symlink_file)?;
+        }
+
+        #[cfg(target_family = "unix")]
+        std::os::unix::fs::symlink(output_file_path, &symlink_file)?;
+        #[cfg(target_family = "windows")]
+        std::os::windows::fs::symlink_file(output_file_path, &symlink_file)?;
+    }
 
     // init Cask information in Cask.toml
     {
@@ -76,38 +105,9 @@ version = "{}"
         formula_file.write_all(package_formula.get_file_content().as_bytes())?;
     }
 
-    let url = package_formula.get_current_download_url(&download_version)?;
-
-    let tar_file_path = &cask
-        .package_version_dir(package_name)
-        .join(format!("{}.tar.gz", &download_version));
-
-    util::download(&url, tar_file_path).await?;
-
-    #[cfg(target_family = "unix")]
-    let executable_name = package_formula.package.bin.clone();
-    #[cfg(target_family = "windows")]
-    let executable_name = format!("{}.exe", &package_formula.package.bin);
-
-    let output_file_path =
-        extractor::extract(tar_file_path, &executable_name, &package_dir.join("bin"))?;
-
-    // create symlink to $CASK_ROOT/bin
-    {
-        let symlink_file = cask.bin_dir().join(executable_name);
-        if symlink_file.exists() {
-            fs::remove_file(&symlink_file)?;
-        }
-
-        #[cfg(target_family = "unix")]
-        std::os::unix::fs::symlink(output_file_path, &symlink_file)?;
-        #[cfg(target_family = "windows")]
-        std::os::windows::fs::symlink_file(output_file_path, &symlink_file)?;
-    }
-
     println!(
         "The package '{} {}'  has been installed!",
-        package_name, download_version
+        &package_formula.package.name, download_version
     );
 
     Ok(())

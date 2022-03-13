@@ -11,11 +11,11 @@ use tar::Archive;
 
 pub fn extract(
     tar_file_path: &Path,
-    binary_name: &str,
+    extract_file_name: &str,
     dest_dir: &Path,
 ) -> Result<PathBuf, Report> {
     let tar_file_name = tar_file_path.file_name().unwrap().to_str().unwrap();
-    let output_file_path = dest_dir.join(binary_name);
+    let output_file_path = dest_dir.join(extract_file_name);
     let mut binary_found = false;
 
     if tar_file_name.ends_with(".tar.gz") {
@@ -36,7 +36,7 @@ pub fn extract(
             let file_path = file.path()?;
 
             if let Some(file_name) = file_path.file_name() {
-                if file_name.to_str().unwrap() == binary_name {
+                if file_name.to_str().unwrap() == extract_file_name {
                     binary_found = true;
                     file.unpack(&output_file_path)?;
                     break;
@@ -47,7 +47,7 @@ pub fn extract(
         if !binary_found {
             Err(eyre::format_err!(
                 "can not found binary file '{}' in tar",
-                binary_name
+                extract_file_name
             ))
         } else {
             Ok(output_file_path)
@@ -69,7 +69,7 @@ pub fn extract(
             let file_path = file.path()?;
 
             if let Some(file_name) = file_path.file_name() {
-                if file_name.to_str().unwrap() == binary_name {
+                if file_name.to_str().unwrap() == extract_file_name {
                     binary_found = true;
                     file.unpack(&output_file_path)?;
                     break;
@@ -80,7 +80,7 @@ pub fn extract(
         if !binary_found {
             Err(eyre::format_err!(
                 "can not found binary file '{}' in tar",
-                binary_name
+                extract_file_name
             ))
         } else {
             Ok(output_file_path)
@@ -96,7 +96,7 @@ pub fn extract(
                 continue;
             }
 
-            if file.name() == binary_name {
+            if file.name() == extract_file_name {
                 binary_found = true;
                 let mut output_file = fs::File::create(&output_file_path)?;
                 io::copy(&mut file, &mut output_file)?;
@@ -118,7 +118,7 @@ pub fn extract(
         if !binary_found {
             Err(eyre::format_err!(
                 "can not found binary file '{}' in tar",
-                binary_name
+                extract_file_name
             ))
         } else {
             Ok(output_file_path)

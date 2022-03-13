@@ -62,9 +62,9 @@ pub struct Platform {
 
 #[derive(Deserialize, Serialize)]
 pub struct Arch {
-    pub url: String,          // The url will be download when install the package
-    pub hash: Option<String>, // TODO: The hash256 of download resource
-    pub ext: Option<String>,  // The extension name of download resource
+    pub url: String,              // The url will be download when install the package
+    pub checksum: Option<String>, // The hash256 of download resource
+    pub ext: Option<String>, // The extension name of download resource. optional value: ".tar.gz" ".tar" ".zip"
 }
 
 pub fn new(formula_file: &Path) -> Result<Formula, Report> {
@@ -98,6 +98,7 @@ pub fn new(formula_file: &Path) -> Result<Formula, Report> {
 
 pub struct DownloadTarget {
     pub url: String,
+    pub checksum: Option<String>,
     pub ext: String,
 }
 
@@ -231,6 +232,7 @@ impl Formula {
 
             Ok(DownloadTarget {
                 url: renderer_url,
+                checksum: arch.checksum.clone(),
                 ext: ext_name,
             })
         } else {

@@ -8,10 +8,12 @@ use crate::util::iso8601;
 
 use std::fs;
 use std::fs::File;
+use std::io;
 use std::io::Write;
 use std::time::SystemTime;
 
 use eyre::Report;
+use sha2::{Digest, Sha256};
 
 pub async fn install(
     cask: cask::Cask,
@@ -53,11 +55,27 @@ pub async fn install(
 
     let download_target = package_formula.get_current_download_url(&download_version)?;
 
-    let tar_file_path = &cask
+    let tar_file_path = cask
         .package_version_dir(&package_formula.package.name)
         .join(format!("{}.{}", &download_version, download_target.ext));
 
-    util::download(&download_target.url, tar_file_path).await?;
+    util::download(&download_target.url, &tar_file_path).await?;
+
+    if let Some(checksum) = download_target.checksum {
+        let mut file = File::open(&tar_file_path)?;
+        let mut hasher = Sha256::new();
+        io::copy(&mut file, &mut hasher)?;
+        drop(file);
+        let hash = format!("{:x}", hasher.finalize());
+        if hash != checksum {
+            fs::remove_file(tar_file_path)?;
+            return Err(eyre::format_err!(
+                "The file SHA256 is '{}' but expect '{}'",
+                hash,
+                checksum
+            ));
+        }
+    }
 
     #[cfg(target_family = "unix")]
     let executable_name = package_formula.package.bin.clone();
@@ -65,7 +83,7 @@ pub async fn install(
     let executable_name = format!("{}.exe", &package_formula.package.bin);
 
     let output_file_path =
-        extractor::extract(tar_file_path, &executable_name, &package_dir.join("bin"))?;
+        extractor::extract(&tar_file_path, &executable_name, &package_dir.join("bin"))?;
 
     // create symlink to $CASK_ROOT/bin
     {

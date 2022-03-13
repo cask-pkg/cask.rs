@@ -1,10 +1,10 @@
 #![deny(warnings)]
 
 use core::result::Result;
-use std::cmp::min;
 use std::fs::File;
 use std::io::Write;
-use std::path::Path;
+use std::path::{Path};
+use std::{cmp::min, fs};
 
 use chrono::prelude::{DateTime, Utc};
 use eyre::Report;
@@ -35,6 +35,10 @@ pub async fn download(url: &str, filepath: &Path) -> Result<(), Report> {
     .template("{msg}\n{spinner:.green} [{elapsed_precise}] [{wide_bar:.cyan/blue}] {bytes}/{total_bytes} ({bytes_per_sec}, {eta})")
     .progress_chars("#>-"));
     pb.set_message(format!("Downloading {}", url));
+
+    if filepath.exists() {
+        fs::remove_file(filepath)?;
+    }
 
     let mut dest = File::create(filepath)?;
 

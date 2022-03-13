@@ -1,8 +1,5 @@
 #![deny(warnings)]
 
-extern crate flate2;
-extern crate tar;
-
 use crate::formula;
 use crate::git;
 

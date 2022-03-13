@@ -1,8 +1,6 @@
 #![deny(warnings)]
 
-extern crate flate2;
-extern crate tar;
-
+use crate::extractor;
 use crate::formula;
 use crate::git;
 use crate::util;
@@ -17,10 +15,8 @@ use std::io::Write;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 use eyre::Report;
-use flate2::read::GzDecoder;
 use serde::Serialize;
 use sha2::{Digest, Sha256};
-use tar::Archive;
 use tinytemplate::TinyTemplate;
 
 #[derive(Serialize)]
@@ -205,7 +201,6 @@ version = "{}"
     let tar_file_path = &package_dir
         .join("version")
         .join(format!("{}.tar.gz", &download_version));
-    let tar_file_name = tar_file_path.file_name().unwrap().to_str().unwrap();
 
     // renderer url
     let rendered_url = {
@@ -222,54 +217,23 @@ version = "{}"
 
     util::download(&rendered_url, tar_file_path).await?;
 
-    let tar_file = File::open(tar_file_path)?;
-
     let bin_name = if cfg!(target_os = "windows") {
         format!("{}.exe", &package_formula.package.bin)
     } else {
         package_formula.package.bin.clone()
     };
 
-    let mut bin_found = false;
+    let output_file_path = extractor::extract(tar_file_path, &bin_name, &package_dir.join("bin"))?;
 
-    let output_file_path = package_dir.join("bin").join(&bin_name);
-
-    // .tar.gz
-    if tar_file_name.ends_with(".tar.gz") {
-        let tar = GzDecoder::new(&tar_file);
-        let mut archive = Archive::new(tar);
-
-        let files = archive.entries()?;
-
-        for e in files {
-            let mut entry = e?;
-
-            let entry_file = entry.path()?;
-
-            if let Some(file_name) = entry_file.file_name() {
-                if file_name.to_str().unwrap() == bin_name {
-                    entry.unpack(&output_file_path)?;
-                    bin_found = true;
-                    break;
-                }
-            }
-        }
-    } else {
-        return Err(eyre::format_err!("not support the download file"));
+    let symlink_file = cask_dir_bin.join(bin_name);
+    if symlink_file.exists() {
+        fs::remove_file(&symlink_file)?;
     }
-
-    if !bin_found {
-        return Err(eyre::format_err!(
-            "can not found binary file '{}' in tar",
-            bin_name
-        ));
-    } else {
-        // create soft link in bin folder
-        #[cfg(target_family = "unix")]
-        std::os::unix::fs::symlink(output_file_path, cask_dir_bin.join(bin_name))?;
-        #[cfg(target_family = "windows")]
-        std::os::windows::fs::symlink_file(output_file_path, cask_dir_bin.join(bin_name))?;
-    }
+    // create soft link in bin folder
+    #[cfg(target_family = "unix")]
+    std::os::unix::fs::symlink(output_file_path, &symlink_file)?;
+    #[cfg(target_family = "windows")]
+    std::os::windows::fs::symlink_file(output_file_path, &symlink_file)?;
 
     Ok(())
 }

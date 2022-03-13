@@ -5,6 +5,7 @@ mod command_install;
 mod formula;
 mod git;
 mod util;
+mod extractor;
 
 use std::process;
 

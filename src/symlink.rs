@@ -1,18 +1,24 @@
-use eyre::Report;
 use std::fs;
-use std::fs::File;
-use std::io::Write;
 use std::path::Path;
 
+use eyre::Report;
+
 pub fn symlink(src: &Path, dest: &Path) -> Result<(), Report> {
-    if cfg!(unix) {
+    #[cfg(unix)]
+    {
         if dest.exists() {
             fs::remove_file(&dest)?;
         }
         std::os::unix::fs::symlink(&src, &dest)?;
-    } else {
+    }
+
+    #[cfg(windows)]
+    {
+        use std::fs::File;
+        use std::io::Write;
+
         // instead of create a symlink in windows
-        // we should generate a bat file like this
+        // we should generate a bat/shell file like this
         let filename = (*dest)
             .to_path_buf()
             .file_name()
@@ -67,7 +73,7 @@ SETLOCAL
 basedir=`dirname "$0"`
 
 case `uname` in
-    *CYGWIN*) basedir=`cygpath -w "$basedir"`;;
+*CYGWIN*) basedir=`cygpath -w "$basedir"`;;
 esac
 
 "{}" "$@"

@@ -82,9 +82,6 @@ pub async fn install(
     // create symlink to $CASK_ROOT/bin
     {
         let symlink_file = cask.bin_dir().join(&package_formula.package.bin);
-        if symlink_file.exists() {
-            fs::remove_file(&symlink_file)?;
-        }
 
         symlink::symlink(&output_file_path, &symlink_file)?;
     }

@@ -14,15 +14,16 @@ pub async fn uninstall(cask: cask::Cask, package_name: &str) -> Result<(), Repor
     if formula_file_path.exists() {
         let package_formula = formula::new(&formula_file_path)?;
 
-        #[cfg(target_family = "unix")]
-        let symlink_name = package_formula.package.bin;
-        #[cfg(target_family = "windows")]
-        let symlink_name = format!("{}.bat", &package_formula.package.bin);
+        if cfg!(unix) {
+            fs::remove_file(cask.bin_dir().join(package_formula.package.bin))?;
+        } else {
+            let bat_file_path = cask
+                .bin_dir()
+                .join(package_formula.package.bin.clone() + ".bat");
+            let bash_file_path = cask.bin_dir().join(package_formula.package.bin + "");
 
-        let symlink_file = cask.bin_dir().join(symlink_name);
-
-        if symlink_file.exists() {
-            fs::remove_file(symlink_file)?;
+            fs::remove_file(bat_file_path)?;
+            fs::remove_file(bash_file_path)?;
         }
     }
 

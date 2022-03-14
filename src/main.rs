@@ -1,6 +1,7 @@
 // #![deny(warnings)]
 
 mod cask;
+mod command_clean;
 mod command_info;
 mod command_install;
 mod command_list;
@@ -66,7 +67,8 @@ async fn main() {
                 .about("Show information of installed package")
                 .arg(arg!(<PACKAGE> "The package name"))
                 .arg_required_else_help(true),
-        );
+        )
+        .subcommand(Command::new("clean").about("Clear residual data"));
 
     let matches = app.clone().get_matches();
 
@@ -115,6 +117,11 @@ async fn main() {
             let package_name = sub_matches.value_of("PACKAGE").expect("required");
 
             let f = command_info::info(cask, package_name);
+
+            executor::block_on(f).expect("info installed package fail!");
+        }
+        Some(("clean", _sub_matches)) => {
+            let f = command_clean::clean(cask);
 
             executor::block_on(f).expect("info installed package fail!");
         }

@@ -59,7 +59,7 @@ impl Cask {
                 }
 
                 Err(eyre::format_err!(
-                    "Make sure '{}' has been add to your $PATH environment variable.",
+                    "make sure '{}' has been add to your $PATH environment variable.",
                     self.bin_dir().display()
                 ))
             }

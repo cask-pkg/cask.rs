@@ -70,8 +70,9 @@ async fn main() {
     cask.init().expect("init cask fail");
 
     cask.check_bin_path().unwrap_or_else(|e| {
-        eprintln!("{}", e);
-        eprintln!("Manually add the directory to your $HOME/.bash_profile (or similar)");
+        eprintln!("{}\n", e);
+        eprintln!("manually add the directory to your $HOME/.bash_profile (or similar)\n");
+        eprintln!("then create a new session\n");
         process::exit(1);
     });
 

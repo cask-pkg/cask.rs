@@ -9,6 +9,7 @@ mod command_uninstall;
 mod extractor;
 mod formula;
 mod git;
+mod symlink;
 mod util;
 
 use std::process;

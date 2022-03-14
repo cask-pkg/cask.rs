@@ -3,6 +3,7 @@
 use crate::cask;
 use crate::extractor;
 use crate::formula;
+use crate::symlink;
 use crate::util;
 use crate::util::iso8601;
 
@@ -85,10 +86,7 @@ pub async fn install(
             fs::remove_file(&symlink_file)?;
         }
 
-        #[cfg(target_family = "unix")]
-        std::os::unix::fs::symlink(output_file_path, &symlink_file)?;
-        #[cfg(target_family = "windows")]
-        std::os::windows::fs::symlink_file(output_file_path, &symlink_file)?;
+        symlink::symlink(&output_file_path, &symlink_file)?;
     }
 
     // init Cask information in Cask.toml

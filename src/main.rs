@@ -31,6 +31,7 @@ async fn main() {
         .allow_invalid_utf8_for_external_subcommands(true)
         .subcommand(
             Command::new("install")
+                .alias("i")
                 .about("Install package")
                 .arg(arg!(<PACKAGE> "The package name"))
                 .arg(
@@ -43,11 +44,16 @@ async fn main() {
         )
         .subcommand(
             Command::new("uninstall")
+                .alias("un")
                 .about("Uninstall package")
                 .arg(arg!(<PACKAGE> "The package name"))
                 .arg_required_else_help(true),
         )
-        .subcommand(Command::new("list").about("List installed package"))
+        .subcommand(
+            Command::new("list")
+                .alias("ls")
+                .about("List installed package"),
+        )
         .subcommand(
             Command::new("search")
                 .about("Show information of remote package")

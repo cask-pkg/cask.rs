@@ -6,6 +6,7 @@ mod command_install;
 mod command_list;
 mod command_search;
 mod command_uninstall;
+mod downloader;
 mod extractor;
 mod formula;
 mod git;

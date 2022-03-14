@@ -1,10 +1,10 @@
 #![deny(warnings)]
 
 use crate::cask;
+use crate::downloader;
 use crate::extractor;
 use crate::formula;
 use crate::symlink;
-use crate::util;
 use crate::util::iso8601;
 
 use std::fs;
@@ -53,7 +53,7 @@ pub async fn install(
         .package_version_dir(&package_formula.package.name)
         .join(format!("{}.{}", &download_version, download_target.ext));
 
-    util::download(&download_target.url, &tar_file_path).await?;
+    downloader::download(&download_target.url, &tar_file_path).await?;
 
     if let Some(checksum) = download_target.checksum {
         let mut file = File::open(&tar_file_path)?;

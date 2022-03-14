@@ -13,8 +13,8 @@ pub fn symlink(src: &Path, dest: &Path) -> Result<(), Report> {
             Err() => {
                 // https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/mklink
                 match ChildProcess::new("mklink")
-                    .arg(&src.as_os_str().to_str().unwrap())
                     .arg(&dest.as_os_str().to_str().unwrap())
+                    .arg(&src.as_os_str().to_str().unwrap())
                     .spawn()
                 {
                     Ok(mut child) => match child.wait() {

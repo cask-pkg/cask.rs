@@ -8,7 +8,9 @@ use std::fs;
 use eyre::Report;
 
 pub async fn uninstall(cask: cask::Cask, package_name: &str) -> Result<(), Report> {
-    let formula_file_path = cask.package_dir(package_name).join("Cask.toml");
+    let package_dir = cask.package_dir(package_name);
+
+    let formula_file_path = package_dir.join("Cask.toml");
 
     // remove symlink file
     if formula_file_path.exists() {
@@ -35,8 +37,8 @@ pub async fn uninstall(cask: cask::Cask, package_name: &str) -> Result<(), Repor
         }
     }
 
-    if cask.package_dir(package_name).exists() {
-        fs::remove_dir_all(cask.package_dir(package_name))?;
+    if package_dir.exists() {
+        fs::remove_dir_all(package_dir)?;
     } else {
         return Err(eyre::format_err!(
             "can not found the installed package '{}'",

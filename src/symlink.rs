@@ -53,3 +53,41 @@ pub fn symlink(src: &Path, dest: &Path) -> Result<(), Report> {
 
     Ok(())
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::symlink;
+    use std::env;
+
+    #[test]
+    fn test_symlink() {
+        let cwd = env::current_dir().unwrap();
+
+        let src = cwd
+            .join("fixtures")
+            .join("symlink")
+            .join("src")
+            .join("test");
+
+        let dest = cwd
+            .join("fixtures")
+            .join("symlink")
+            .join("dest")
+            .join("test");
+
+        symlink::symlink(&src, &dest).unwrap();
+
+        #[cfg(unix)]
+        assert!(dest.is_symlink());
+        #[cfg(windows)]
+        {
+            assert!(!dest.is_symlink());
+            assert!(dest.is_file());
+
+            let bat = dest.parent().unwrap().join("test.bat");
+
+            assert!(!bat.is_symlink());
+            assert!(bat.is_file());
+        }
+    }
+}

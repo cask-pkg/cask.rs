@@ -8,9 +8,9 @@ pub fn symlink(src: &Path, dest: &Path) -> Result<(), Report> {
     {
         use std::process::Command as ChildProcess;
 
-        match std::os::windows::fs::symlink_file(&src, &desk) {
-            Ok() => Ok(()),
-            Err() => {
+        match std::os::windows::fs::symlink_file(&src, &dest) {
+            Ok(()) => Ok(()),
+            Err(_) => {
                 // https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/mklink
                 match ChildProcess::new("mklink")
                     .arg(&dest.as_os_str().to_str().unwrap())

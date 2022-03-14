@@ -15,11 +15,11 @@ pub async fn uninstall(cask: cask::Cask, package_name: &str) -> Result<(), Repor
         let package_formula = formula::new(&formula_file_path)?;
 
         #[cfg(target_family = "unix")]
-        let executable_name = package_formula.package.bin;
+        let symlink_name = package_formula.package.bin;
         #[cfg(target_family = "windows")]
-        let executable_name = format!("{}.exe", &package_formula.package.bin);
+        let symlink_name = format!("{}.bat", &package_formula.package.bin);
 
-        let symlink_file = cask.bin_dir().join(executable_name);
+        let symlink_file = cask.bin_dir().join(symlink_name);
 
         if symlink_file.exists() {
             fs::remove_file(symlink_file)?;

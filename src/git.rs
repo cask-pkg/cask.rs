@@ -19,12 +19,15 @@ pub fn clone(url: &str, dest: &Path, args: Vec<&str>) -> Result<(), Report> {
                 if state.success() {
                     Ok(())
                 } else {
-                    Err(Report::msg("git clone process fail"))
+                    Err(eyre::format_err!(
+                        "exit code: {}",
+                        state.code().unwrap_or(1),
+                    ))
                 }
             }
-            Err(e) => Err(eyre::format_err!("clone formula fail: {}", e)),
+            Err(e) => Err(eyre::format_err!("{}", e)),
         },
-        Err(e) => Err(eyre::format_err!("run git clone command fail: {}", e)),
+        Err(e) => Err(eyre::format_err!("{}", e)),
     }
 }
 

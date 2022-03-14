@@ -1,22 +1,17 @@
+use eyre::Report;
 use std::fs;
+use std::fs::File;
+use std::io::Write;
 use std::path::Path;
 
-use eyre::Report;
-
 pub fn symlink(src: &Path, dest: &Path) -> Result<(), Report> {
-    #[cfg(unix)]
-    {
+    if cfg!(unix) {
         if dest.exists() {
             fs::remove_file(&dest)?;
         }
+        #[cfg(unix)]
         std::os::unix::fs::symlink(&src, &dest)?;
-    }
-
-    #[cfg(windows)]
-    {
-        use std::fs::File;
-        use std::io::Write;
-
+    } else {
         // instead of create a symlink in windows
         // we should generate a bat/shell file like this
         let filename = (*dest)

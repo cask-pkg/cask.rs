@@ -34,7 +34,7 @@ pub fn extract(
             match ChildProcess::new(tar_command_path)
                 .current_dir(dest_dir)
                 .arg("-zvxf")
-                .arg(tar_file_path)
+                .arg(&*tar_file_path.as_os_str().to_string_lossy())
                 .arg(extract_file_name)
                 .spawn()
             {
@@ -96,7 +96,7 @@ pub fn extract(
             match ChildProcess::new(tar_command_path)
                 .current_dir(dest_dir)
                 .arg("-xvf")
-                .arg(tar_file_path)
+                .arg(&*tar_file_path.as_os_str().to_string_lossy())
                 .arg(extract_file_name)
                 .spawn()
             {

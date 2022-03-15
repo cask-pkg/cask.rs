@@ -7,7 +7,7 @@ use crate::formula;
 
 use eyre::Report;
 
-pub async fn list(cask: cask::Cask) -> Result<(), Report> {
+pub async fn list(cask: &cask::Cask) -> Result<(), Report> {
     cask.init()?;
 
     let formula_dir = cask.formula_dir();

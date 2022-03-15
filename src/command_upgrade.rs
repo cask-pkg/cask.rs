@@ -6,14 +6,14 @@ use crate::formula;
 
 use eyre::Report;
 
-pub async fn upgrade(cask: cask::Cask, package_name: &str) -> Result<(), Report> {
+pub async fn upgrade(cask: &cask::Cask, package_name: &str) -> Result<(), Report> {
     let package_formula = cask.package_formula(package_name)?;
 
     let cask_info = package_formula.cask.ok_or_else(|| {
         eyre::format_err!("can not parse cask property of file '{}'", package_name)
     })?;
 
-    let remote_formula = formula::fetch(&cask, package_name, true)?;
+    let remote_formula = formula::fetch(cask, package_name, true)?;
 
     if remote_formula.package.versions.is_empty() {
         return Err(eyre::format_err!(

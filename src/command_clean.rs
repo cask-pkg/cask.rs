@@ -7,7 +7,7 @@ use std::fs;
 
 use eyre::Report;
 
-pub async fn clean(cask: cask::Cask) -> Result<(), Report> {
+pub async fn clean(cask: &cask::Cask) -> Result<(), Report> {
     // clear formula dir
     let formula_dir = cask.formula_dir();
 

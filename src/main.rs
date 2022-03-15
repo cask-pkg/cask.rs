@@ -15,7 +15,7 @@ mod git;
 mod symlink;
 mod util;
 
-use std::process;
+use std::{fs, process};
 
 use clap::{arg, Arg, Command};
 use futures::executor;
@@ -95,45 +95,49 @@ async fn main() {
             let package_name = sub_matches.value_of("PACKAGE").expect("required");
             let version = sub_matches.value_of("VERSION");
 
-            let f = command_install::install(cask, package_name, version);
-
-            executor::block_on(f).expect("install package fail!");
+            executor::block_on(command_install::install(&cask, package_name, version))
+                .map_err(|err| {
+                    let dir = cask.package_dir(package_name);
+                    fs::remove_dir_all(dir).ok();
+                    err
+                })
+                .expect("install package fail!");
         }
         Some(("uninstall", sub_matches)) => {
             let package_name = sub_matches.value_of("PACKAGE").expect("required");
 
-            let f = command_uninstall::uninstall(cask, package_name);
+            let f = command_uninstall::uninstall(&cask, package_name);
 
             executor::block_on(f).expect("uninstall package fail!");
         }
         Some(("list", _sub_matches)) => {
-            let f = command_list::list(cask);
+            let f = command_list::list(&cask);
 
             executor::block_on(f).expect("list packages fail!");
         }
         Some(("search", sub_matches)) => {
             let package_name = sub_matches.value_of("PACKAGE").expect("required");
 
-            let f = command_search::search(cask, package_name);
+            let f = command_search::search(&cask, package_name);
 
             executor::block_on(f).expect("search remote package fail!");
         }
         Some(("info", sub_matches)) => {
             let package_name = sub_matches.value_of("PACKAGE").expect("required");
 
-            let f = command_info::info(cask, package_name);
+            let f = command_info::info(&cask, package_name);
 
             executor::block_on(f).expect("info installed package fail!");
         }
         Some(("upgrade", sub_matches)) => {
             let package_name = sub_matches.value_of("PACKAGE").expect("required");
 
-            let f = command_upgrade::upgrade(cask, package_name);
+            let f = command_upgrade::upgrade(&cask, package_name);
 
             executor::block_on(f).expect("info installed package fail!");
         }
         Some(("clean", _sub_matches)) => {
-            let f = command_clean::clean(cask);
+            let f = command_clean::clean(&cask);
 
             executor::block_on(f).expect("info installed package fail!");
         }

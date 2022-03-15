@@ -7,7 +7,7 @@ use std::fs;
 
 use eyre::Report;
 
-pub async fn uninstall(cask: cask::Cask, package_name: &str) -> Result<(), Report> {
+pub async fn uninstall(cask: &cask::Cask, package_name: &str) -> Result<(), Report> {
     let package_dir = cask.package_dir(package_name);
 
     let formula_file_path = package_dir.join("Cask.toml");

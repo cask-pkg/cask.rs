@@ -17,13 +17,13 @@ use eyre::Report;
 use sha2::{Digest, Sha256};
 
 pub async fn install(
-    cask: cask::Cask,
+    cask: &cask::Cask,
     package_name: &str,
     version: Option<&str>,
 ) -> Result<(), Report> {
     eprintln!("Fetching {} formula...", package_name);
 
-    let package_formula = formula::fetch(&cask, package_name, false)?;
+    let package_formula = formula::fetch(cask, package_name, false)?;
 
     let download_version = {
         if let Some(v) = version {

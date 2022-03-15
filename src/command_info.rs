@@ -4,7 +4,7 @@ use crate::cask;
 
 use eyre::Report;
 
-pub async fn info(cask: cask::Cask, package_name: &str) -> Result<(), Report> {
+pub async fn info(cask: &cask::Cask, package_name: &str) -> Result<(), Report> {
     let package_dir = cask.package_dir(package_name);
     let package_formula = cask.package_formula(package_name)?;
 

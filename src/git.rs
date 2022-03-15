@@ -23,10 +23,17 @@ pub fn clone(url: &str, dest: &Path, args: Vec<&str>) -> Result<(), Report> {
             if state.success() {
                 Ok(())
             } else {
-                Err(eyre::format_err!(
-                    "exit code: {}",
-                    state.code().unwrap_or(1),
-                ))
+                let exit_code = state.code().unwrap_or(1);
+
+                if exit_code == 128 {
+                    eprintln!("It looks like the package does not support Cask");
+                    eprintln!(
+                        "If you are the package owner, try to create a new repository '{}' and add a Cask.toml file",
+                        url
+                    )
+                }
+
+                Err(eyre::format_err!("exit code: {}", exit_code,))
             }
         }
         Err(e) => Err(eyre::format_err!("{}", e)),

@@ -28,11 +28,13 @@ fn extract_tar_gz(
         println!("open tar: {}", &*src_filepath.as_os_str().to_string_lossy());
 
         // bsdtar 3.5.1 - libarchive 3.5.1 zlib/1.2.11 liblzma/5.0.5 bz2lib/1.0.8
+        // https://www.freebsd.org/cgi/man.cgi?query=bsdtar&sektion=1&manpath=FreeBSD+8.3-RELEASE
         #[cfg(target_os = "macos")]
         let args = vec![extract_file_name];
         #[cfg(windows)]
         let args = vec![extract_file_name];
         // tar (GNU tar) 1.29
+        // https://www.gnu.org/software/tar/manual/html_node/extracting-files.html
         #[cfg(target_os = "linux")]
         let args = vec![extract_file_name];
 

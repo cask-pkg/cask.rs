@@ -47,7 +47,10 @@ jobs:
             ${{ matrix.config.os }}-
 
       - name: Run cargo test
-        run: make test
+        run: |
+          tar --version
+          tar --help
+          make test
 
       - name: Run command
         run: cargo run -- --help

@@ -51,7 +51,7 @@ pub async fn install(
 
     let tar_file_path = cask
         .package_version_dir(&package_formula.package.name)
-        .join(format!("{}.{}", &download_version, download_target.ext));
+        .join(format!("{}{}", &download_version, download_target.ext));
 
     downloader::download(&download_target.url, &tar_file_path).await?;
 

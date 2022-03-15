@@ -4,10 +4,12 @@ use core::result::Result;
 use std::fs::{self, File};
 use std::io;
 use std::path::{Path, PathBuf};
+use std::process::Command as ChildProcess;
 
 use eyre::Report;
 use libflate::gzip::Decoder as GzDecoder;
 use tar::Archive;
+use which::which;
 
 pub fn extract(
     tar_file_path: &Path,
@@ -22,65 +24,119 @@ pub fn extract(
     let err_not_support = eyre::format_err!("not support extract file from '{}'", tar_file_name);
 
     if tar_file_name.ends_with(".tar.gz") {
-        let tar_file = File::open(&tar_file_path)?;
-        let input = GzDecoder::new(&tar_file)?;
-        let mut archive = Archive::new(input);
+        // use tar command
+        // wait for fix: https://github.com/alexcrichton/tar-rs/issues/286
+        if let Ok(tar_command_path) = which("tar") {
+            match ChildProcess::new(tar_command_path)
+                .current_dir(dest_dir)
+                .arg("-zxf")
+                .arg(tar_file_path)
+                .arg(extract_file_name)
+                .spawn()
+            {
+                Ok(mut child) => match child.wait() {
+                    Ok(state) => {
+                        if state.success() {
+                            Ok(output_file_path)
+                        } else {
+                            Err(eyre::format_err!(
+                                "exit code: {}",
+                                state.code().unwrap_or(1),
+                            ))
+                        }
+                    }
+                    Err(e) => Err(eyre::format_err!("{}", e)),
+                },
+                Err(e) => Err(eyre::format_err!("{}", e)),
+            }
+        } else {
+            let tar_file = File::open(&tar_file_path)?;
+            let input = GzDecoder::new(&tar_file)?;
+            let mut archive = Archive::new(input);
 
-        archive.set_unpack_xattrs(true);
-        archive.set_overwrite(true);
-        archive.set_preserve_permissions(true);
-        archive.set_preserve_mtime(true);
+            archive.set_unpack_xattrs(true);
+            archive.set_overwrite(true);
+            archive.set_preserve_permissions(true);
+            archive.set_preserve_mtime(true);
 
-        let files = archive.entries()?;
+            let files = archive.entries()?;
 
-        for entry in files {
-            let mut file = entry?;
+            for entry in files {
+                let mut file = entry?;
 
-            let file_path = file.path()?;
+                let file_path = file.path()?;
 
-            if let Some(file_name) = file_path.file_name() {
-                if file_name.to_str().unwrap() == extract_file_name {
-                    binary_found = true;
-                    file.unpack(&output_file_path)?;
-                    break;
+                if let Some(file_name) = file_path.file_name() {
+                    if file_name.to_str().unwrap() == extract_file_name {
+                        binary_found = true;
+                        file.unpack(&output_file_path)?;
+                        break;
+                    }
                 }
             }
-        }
 
-        if !binary_found {
-            Err(err_not_found)
-        } else {
-            Ok(output_file_path)
+            if !binary_found {
+                Err(err_not_found)
+            } else {
+                Ok(output_file_path)
+            }
         }
     } else if tar_file_name.ends_with(".tar") {
-        let tar_file = File::open(&tar_file_path)?;
-        let mut archive = Archive::new(tar_file);
+        // use tar command
+        // wait for fix: https://github.com/alexcrichton/tar-rs/issues/286
+        if let Ok(tar_command_path) = which("tar") {
+            match ChildProcess::new(tar_command_path)
+                .current_dir(dest_dir)
+                .arg("-xf")
+                .arg(tar_file_path)
+                .arg(extract_file_name)
+                .spawn()
+            {
+                Ok(mut child) => match child.wait() {
+                    Ok(state) => {
+                        if state.success() {
+                            Ok(output_file_path)
+                        } else {
+                            Err(eyre::format_err!(
+                                "exit code: {}",
+                                state.code().unwrap_or(1),
+                            ))
+                        }
+                    }
+                    Err(e) => Err(eyre::format_err!("{}", e)),
+                },
+                Err(e) => Err(eyre::format_err!("{}", e)),
+            }
+        } else {
+            let tar_file = File::open(&tar_file_path)?;
+            let mut archive = Archive::new(tar_file);
 
-        archive.set_unpack_xattrs(true);
-        archive.set_overwrite(true);
-        archive.set_preserve_permissions(true);
-        archive.set_preserve_mtime(true);
+            archive.set_unpack_xattrs(true);
+            archive.set_overwrite(true);
+            archive.set_preserve_permissions(true);
+            archive.set_preserve_mtime(true);
 
-        let files = archive.entries()?;
+            let files = archive.entries()?;
 
-        for entry in files {
-            let mut file = entry?;
+            for entry in files {
+                let mut file = entry?;
 
-            let file_path = file.path()?;
+                let file_path = file.path()?;
 
-            if let Some(file_name) = file_path.file_name() {
-                if file_name.to_str().unwrap() == extract_file_name {
-                    binary_found = true;
-                    file.unpack(&output_file_path)?;
-                    break;
+                if let Some(file_name) = file_path.file_name() {
+                    if file_name.to_str().unwrap() == extract_file_name {
+                        binary_found = true;
+                        file.unpack(&output_file_path)?;
+                        break;
+                    }
                 }
             }
-        }
 
-        if !binary_found {
-            Err(err_not_found)
-        } else {
-            Ok(output_file_path)
+            if !binary_found {
+                Err(err_not_found)
+            } else {
+                Ok(output_file_path)
+            }
         }
     } else if tar_file_name.ends_with(".zip") {
         let tar_file = File::open(&tar_file_path)?;
@@ -225,5 +281,24 @@ mod tests {
         let meta = fs::metadata(&extracted_file_path).unwrap();
 
         assert_eq!(meta.len(), 137_656);
+    }
+
+    #[test]
+    fn test_extract_tar_gz_with_prune_win() {
+        let extractor_dir = env::current_dir()
+            .unwrap()
+            .join("fixtures")
+            .join("extractor");
+
+        let tar_file_path = extractor_dir.join("prune_window_386.tar.gz");
+
+        let dest_dir = extractor_dir;
+
+        let extracted_file_path =
+            extractor::extract(&tar_file_path, "prune.exe", &dest_dir).unwrap();
+
+        let meta = fs::metadata(&extracted_file_path).unwrap();
+
+        assert_eq!(meta.len(), 657_408);
     }
 }

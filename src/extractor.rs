@@ -196,7 +196,8 @@ mod tests {
 
         let dest_dir = extractor_dir;
 
-        let extracted_file_path = extractor::extract(&tar_file_path, &dest_dir, "test_tar").unwrap();
+        let extracted_file_path =
+            extractor::extract(&tar_file_path, &dest_dir, "test_tar").unwrap();
 
         let meta = fs::metadata(&extracted_file_path).unwrap();
 
@@ -218,7 +219,8 @@ mod tests {
 
         let dest_dir = extractor_dir;
 
-        let extracted_file_path = extractor::extract(&tar_file_path, &dest_dir, "test_zip").unwrap();
+        let extracted_file_path =
+            extractor::extract(&tar_file_path, &dest_dir, "test_zip").unwrap();
 
         let meta = fs::metadata(&extracted_file_path).unwrap();
 

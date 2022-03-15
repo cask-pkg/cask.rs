@@ -27,7 +27,13 @@ pub async fn clean(cask: cask::Cask) -> Result<(), Report> {
         {
             for download_resource in fs::read_dir(version_dir)? {
                 let resource_file_path = download_resource?;
-                fs::remove_file(&resource_file_path.path())?;
+                fs::remove_file(&resource_file_path.path()).map_err(|err| {
+                    eyre::format_err!(
+                        "can not remove file '{}': {}",
+                        resource_file_path.path().display(),
+                        err
+                    )
+                })?;
             }
         }
 
@@ -66,7 +72,13 @@ pub async fn clean(cask: cask::Cask) -> Result<(), Report> {
                     } else if symlink.is_file() {
                         // shell script
                         {
-                            let file_content = fs::read_to_string(&symlink)?;
+                            let file_content = fs::read_to_string(&symlink).map_err(|err| {
+                                eyre::format_err!(
+                                    "can not read file '{}': {}",
+                                    symlink.display(),
+                                    err
+                                )
+                            })?;
                             if file_content.contains(path_str) {
                                 fs::remove_file(symlink).ok();
                             }
@@ -76,9 +88,20 @@ pub async fn clean(cask: cask::Cask) -> Result<(), Report> {
                         {
                             let bat_file_path =
                                 path.parent().unwrap().join(f.package.bin.clone() + ".bat");
-                            let file_content = fs::read_to_string(&bat_file_path)?;
-                            if file_content.contains(path_str) {
-                                fs::remove_file(bat_file_path).ok();
+
+                            if bat_file_path.exists() {
+                                let file_content =
+                                    fs::read_to_string(&bat_file_path).map_err(|err| {
+                                        eyre::format_err!(
+                                            "can not read file '{}': {}",
+                                            bat_file_path.display(),
+                                            err
+                                        )
+                                    })?;
+
+                                if file_content.contains(path_str) {
+                                    fs::remove_file(bat_file_path).ok();
+                                }
                             }
                         }
                     } else {

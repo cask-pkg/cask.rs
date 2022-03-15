@@ -29,7 +29,7 @@ pub fn extract(
         if let Ok(tar_command_path) = which("tar") {
             match ChildProcess::new(tar_command_path)
                 .current_dir(dest_dir)
-                .arg("-zxf")
+                .arg("-zvxf")
                 .arg(tar_file_path)
                 .arg(extract_file_name)
                 .spawn()
@@ -87,7 +87,7 @@ pub fn extract(
         if let Ok(tar_command_path) = which("tar") {
             match ChildProcess::new(tar_command_path)
                 .current_dir(dest_dir)
-                .arg("-xf")
+                .arg("-xvf")
                 .arg(tar_file_path)
                 .arg(extract_file_name)
                 .spawn()

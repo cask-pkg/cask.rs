@@ -11,178 +11,172 @@ use libflate::gzip::Decoder as GzDecoder;
 use tar::Archive;
 use which::which;
 
-pub fn extract(
-    tar_file_path: &Path,
-    extract_file_name: &str,
+fn extract_tar_gz(
+    src_filepath: &Path,
     dest_dir: &Path,
+    extract_file_name: &str,
 ) -> Result<PathBuf, Report> {
-    let tar_file_name = tar_file_path.file_name().unwrap().to_str().unwrap();
     let output_file_path = dest_dir.join(extract_file_name);
-    let mut binary_found = false;
 
-    let err_not_found = eyre::format_err!("can not found the file '{}' in tar", extract_file_name);
-    let err_not_support = eyre::format_err!("not support extract file from '{}'", tar_file_name);
-
-    if tar_file_name.ends_with(".tar.gz") {
-        // use tar command
-        // wait for fix: https://github.com/alexcrichton/tar-rs/issues/286
-        if let Ok(tar_command_path) = which("tar") {
-            fs::create_dir_all(dest_dir).map_err(|e| {
-                eyre::format_err!("can not create folder '{}': {}", dest_dir.display(), e)
-            })?;
-
-            match ChildProcess::new(tar_command_path)
-                .current_dir(dest_dir)
-                .arg("-zvxf")
-                .arg(&*tar_file_path.as_os_str().to_string_lossy())
-                .arg(extract_file_name)
-                .spawn()
-            {
-                Ok(mut child) => match child.wait() {
-                    Ok(state) => {
-                        if state.success() {
-                            Ok(output_file_path)
-                        } else {
-                            Err(eyre::format_err!(
-                                "exit code: {}",
-                                state.code().unwrap_or(1),
-                            ))
-                        }
-                    }
-                    Err(e) => Err(eyre::format_err!("{}", e)),
-                },
-                Err(e) => Err(eyre::format_err!("{}", e)),
-            }
-        } else {
-            let tar_file = File::open(&tar_file_path)?;
-            let input = GzDecoder::new(&tar_file)?;
-            let mut archive = Archive::new(input);
-
-            archive.set_unpack_xattrs(true);
-            archive.set_overwrite(true);
-            archive.set_preserve_permissions(true);
-            archive.set_preserve_mtime(true);
-
-            let files = archive.entries()?;
-
-            for entry in files {
-                let mut file = entry?;
-
-                let file_path = file.path()?;
-
-                if let Some(file_name) = file_path.file_name() {
-                    if file_name.to_str().unwrap() == extract_file_name {
-                        binary_found = true;
-                        file.unpack(&output_file_path)?;
-                        break;
-                    }
-                }
-            }
-
-            if !binary_found {
-                Err(err_not_found)
-            } else {
-                Ok(output_file_path)
-            }
-        }
-    } else if tar_file_name.ends_with(".tar") {
+    // use tar command
+    // wait for fix: https://github.com/alexcrichton/tar-rs/issues/286
+    if let Ok(tar_command_path) = which("tar") {
         fs::create_dir_all(dest_dir).map_err(|e| {
             eyre::format_err!("can not create folder '{}': {}", dest_dir.display(), e)
         })?;
 
-        // use tar command
-        // wait for fix: https://github.com/alexcrichton/tar-rs/issues/286
-        if let Ok(tar_command_path) = which("tar") {
-            match ChildProcess::new(tar_command_path)
-                .current_dir(dest_dir)
-                .arg("-xvf")
-                .arg(&*tar_file_path.as_os_str().to_string_lossy())
-                .arg(extract_file_name)
-                .spawn()
-            {
-                Ok(mut child) => match child.wait() {
-                    Ok(state) => {
-                        if state.success() {
-                            Ok(output_file_path)
-                        } else {
-                            Err(eyre::format_err!(
-                                "exit code: {}",
-                                state.code().unwrap_or(1),
-                            ))
-                        }
-                    }
-                    Err(e) => Err(eyre::format_err!("{}", e)),
-                },
-                Err(e) => Err(eyre::format_err!("{}", e)),
-            }
-        } else {
-            let tar_file = File::open(&tar_file_path)?;
-            let mut archive = Archive::new(tar_file);
-
-            archive.set_unpack_xattrs(true);
-            archive.set_overwrite(true);
-            archive.set_preserve_permissions(true);
-            archive.set_preserve_mtime(true);
-
-            let files = archive.entries()?;
-
-            for entry in files {
-                let mut file = entry?;
-
-                let file_path = file.path()?;
-
-                if let Some(file_name) = file_path.file_name() {
-                    if file_name.to_str().unwrap() == extract_file_name {
-                        binary_found = true;
-                        file.unpack(&output_file_path)?;
-                        break;
+        match ChildProcess::new(tar_command_path)
+            .current_dir(dest_dir)
+            .arg("-zvxf")
+            .arg(&*src_filepath.as_os_str())
+            .arg(extract_file_name)
+            .spawn()
+        {
+            Ok(mut child) => match child.wait() {
+                Ok(state) => {
+                    if state.success() {
+                        Ok(output_file_path)
+                    } else {
+                        Err(eyre::format_err!(
+                            "exit code: {}",
+                            state.code().unwrap_or(1),
+                        ))
                     }
                 }
-            }
-
-            if !binary_found {
-                Err(err_not_found)
-            } else {
-                Ok(output_file_path)
-            }
-        }
-    } else if tar_file_name.ends_with(".zip") {
-        let tar_file = File::open(&tar_file_path)?;
-        let mut archive = zip::ZipArchive::new(tar_file).unwrap();
-
-        for i in 0..archive.len() {
-            let mut file = archive.by_index(i).unwrap();
-
-            if file.is_dir() {
-                continue;
-            }
-
-            if file.name() == extract_file_name {
-                binary_found = true;
-                let mut output_file = fs::File::create(&output_file_path)?;
-                io::copy(&mut file, &mut output_file)?;
-
-                // Get and Set permissions
-                #[cfg(unix)]
-                {
-                    use std::os::unix::prelude::PermissionsExt;
-
-                    if let Some(mode) = file.unix_mode() {
-                        fs::set_permissions(&output_file_path, fs::Permissions::from_mode(mode))?;
-                    };
-                };
-
-                break;
-            }
-        }
-
-        if !binary_found {
-            Err(err_not_found)
-        } else {
-            Ok(output_file_path)
+                Err(e) => Err(eyre::format_err!("{}", e)),
+            },
+            Err(e) => Err(eyre::format_err!("{}", e)),
         }
     } else {
-        Err(err_not_support)
+        let tar_file = File::open(&src_filepath)?;
+        let input = GzDecoder::new(&tar_file)?;
+        let mut archive = Archive::new(input);
+
+        archive.set_unpack_xattrs(true);
+        archive.set_overwrite(true);
+        archive.set_preserve_permissions(true);
+        archive.set_preserve_mtime(true);
+
+        let files = archive.entries()?;
+
+        for entry in files {
+            let mut file = entry?;
+
+            let file_path = file.path()?;
+
+            if let Some(file_name) = file_path.file_name() {
+                if file_name.to_str().unwrap() == extract_file_name {
+                    file.unpack(&output_file_path)?;
+                    return Ok(output_file_path);
+                }
+            }
+        }
+
+        Err(eyre::format_err!(
+            "can not found the file '{}' in tar",
+            extract_file_name
+        ))
+    }
+}
+
+fn extract_tar(
+    src_filepath: &Path,
+    dest_dir: &Path,
+    extract_file_name: &str,
+) -> Result<PathBuf, Report> {
+    let output_file_path = dest_dir.join(extract_file_name);
+
+    let tar_file = File::open(&src_filepath)?;
+    let mut archive = Archive::new(tar_file);
+
+    archive.set_unpack_xattrs(true);
+    archive.set_overwrite(true);
+    archive.set_preserve_permissions(true);
+    archive.set_preserve_mtime(true);
+
+    let files = archive.entries()?;
+
+    for entry in files {
+        let mut file = entry?;
+
+        let file_path = file.path()?;
+
+        if let Some(file_name) = file_path.file_name() {
+            if file_name.to_str().unwrap() == extract_file_name {
+                file.unpack(&output_file_path)?;
+                return Ok(output_file_path);
+            }
+        }
+    }
+
+    Err(eyre::format_err!(
+        "can not found the file '{}' in tar",
+        extract_file_name
+    ))
+}
+
+fn extract_zip(
+    src_filepath: &Path,
+    dest_dir: &Path,
+    extract_file_name: &str,
+) -> Result<PathBuf, Report> {
+    let output_file_path = dest_dir.join(extract_file_name);
+
+    let tar_file = File::open(&src_filepath)?;
+    let mut archive = zip::ZipArchive::new(tar_file).unwrap();
+
+    for i in 0..archive.len() {
+        let mut file = archive.by_index(i).unwrap();
+
+        if file.is_dir() {
+            continue;
+        }
+
+        if file.name() == extract_file_name {
+            let mut output_file = fs::File::create(&output_file_path)?;
+            io::copy(&mut file, &mut output_file)?;
+
+            // Get and Set permissions
+            #[cfg(unix)]
+            {
+                use std::os::unix::prelude::PermissionsExt;
+
+                if let Some(mode) = file.unix_mode() {
+                    fs::set_permissions(&output_file_path, fs::Permissions::from_mode(mode))?;
+                };
+            };
+
+            return Ok(output_file_path);
+        }
+    }
+
+    Err(eyre::format_err!(
+        "can not found the file '{}' in tar",
+        extract_file_name
+    ))
+}
+
+pub fn extract(
+    tarball: &Path,
+    dest_dir: &Path,
+    extract_file_name: &str,
+) -> Result<PathBuf, Report> {
+    let tar_file_name = tarball.file_name().unwrap().to_str().unwrap();
+
+    fs::create_dir_all(dest_dir)
+        .map_err(|e| eyre::format_err!("can not create folder '{}': {}", dest_dir.display(), e))?;
+
+    if tar_file_name.ends_with(".tar.gz") {
+        extract_tar_gz(tarball, dest_dir, extract_file_name)
+    } else if tar_file_name.ends_with(".tar") {
+        extract_tar(tarball, dest_dir, extract_file_name)
+    } else if tar_file_name.ends_with(".zip") {
+        extract_zip(tarball, dest_dir, extract_file_name)
+    } else {
+        Err(eyre::format_err!(
+            "not support extract file from '{}'",
+            tar_file_name
+        ))
     }
 }
 
@@ -198,11 +192,11 @@ mod tests {
             .join("fixtures")
             .join("extractor");
 
-        let tar_file_path = extractor_dir.join("test_1.tar");
+        let tar_file_path = extractor_dir.join("test_tar.tar");
 
         let dest_dir = extractor_dir;
 
-        let extracted_file_path = extractor::extract(&tar_file_path, "test_1", &dest_dir).unwrap();
+        let extracted_file_path = extractor::extract(&tar_file_path, &dest_dir, "test_tar").unwrap();
 
         let meta = fs::metadata(&extracted_file_path).unwrap();
 
@@ -220,11 +214,11 @@ mod tests {
             .join("fixtures")
             .join("extractor");
 
-        let tar_file_path = extractor_dir.join("test.zip");
+        let tar_file_path = extractor_dir.join("test_zip.zip");
 
         let dest_dir = extractor_dir;
 
-        let extracted_file_path = extractor::extract(&tar_file_path, "test", &dest_dir).unwrap();
+        let extracted_file_path = extractor::extract(&tar_file_path, &dest_dir, "test_zip").unwrap();
 
         let meta = fs::metadata(&extracted_file_path).unwrap();
 
@@ -246,7 +240,7 @@ mod tests {
 
         let dest_dir = extractor_dir;
 
-        let r = extractor::extract(&tar_file_path, "not_exist", &dest_dir);
+        let r = extractor::extract(&tar_file_path, &dest_dir, "not_exist");
 
         assert!(r.is_err());
     }
@@ -262,7 +256,7 @@ mod tests {
 
         let dest_dir = extractor_dir;
 
-        let extracted_file_path = extractor::extract(&tar_file_path, "test", &dest_dir).unwrap();
+        let extracted_file_path = extractor::extract(&tar_file_path, &dest_dir, "test").unwrap();
 
         let meta = fs::metadata(&extracted_file_path).unwrap();
 
@@ -284,7 +278,7 @@ mod tests {
 
         let dest_dir = extractor_dir;
 
-        let extracted_file_path = extractor::extract(&tar_file_path, "prune", &dest_dir).unwrap();
+        let extracted_file_path = extractor::extract(&tar_file_path, &dest_dir, "prune").unwrap();
 
         let meta = fs::metadata(&extracted_file_path).unwrap();
 
@@ -303,7 +297,7 @@ mod tests {
         let dest_dir = extractor_dir;
 
         let extracted_file_path =
-            extractor::extract(&tar_file_path, "prune.exe", &dest_dir).unwrap();
+            extractor::extract(&tar_file_path, &dest_dir, "prune.exe").unwrap();
 
         let meta = fs::metadata(&extracted_file_path).unwrap();
 

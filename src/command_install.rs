@@ -77,7 +77,7 @@ pub async fn install(
     let executable_name = format!("{}.exe", &package_formula.package.bin);
 
     let output_file_path =
-        extractor::extract(&tar_file_path, &executable_name, &package_dir.join("bin"))?;
+        extractor::extract(&tar_file_path, &package_dir.join("bin"), &executable_name)?;
 
     // create symlink to $CASK_ROOT/bin
     {

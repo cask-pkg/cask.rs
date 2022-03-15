@@ -12,6 +12,7 @@ mod downloader;
 mod extractor;
 mod formula;
 mod git;
+mod shell;
 mod symlink;
 mod util;
 

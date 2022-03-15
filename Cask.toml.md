@@ -13,6 +13,12 @@ repository = "https://github.com/<username>/<repo>"
 description = """
 description of package.
 """
+preinstall = """
+echo "Stating install gpm"
+"""
+postinstall = """
+echo "Hello from gpm"
+"""
 
 [darwin]
 x86_64 = { url = "https://github.com/<username>/<repo>/releases/download/v{version}/darwin_amd64.tar.gz" }
@@ -33,6 +39,10 @@ As you can see, it only contains a few top-level fields:
 - [linux](#Platform-specify-configuration)
 
 - [windows](#Platform-specify-configuration)
+
+- [preinstall](#Preinstall)
+
+- [postinstall](#Postinstall)
 
 ## Package
 
@@ -66,6 +76,18 @@ Every arch got a [Resource Target Object](#Resource-Target)
 | -------- | ------------------------------------------------------------- | ------ | -------- | ------- |
 | **url**  | The url of resource that will be download                     | string | true     |         |
 | checksum | The checksum(SHA256) of resource. Check checksum if provided. | string |          |         |
+
+## Preinstall
+
+The script will run before install package.
+
+The command will run in formula repository dir.
+
+## Postinstall
+
+The script will run after install package
+
+The command will run in formula repository dir.
 
 ## Example
 

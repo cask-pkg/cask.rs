@@ -4,6 +4,7 @@ use crate::cask;
 use crate::downloader;
 use crate::extractor;
 use crate::formula;
+use crate::shell;
 use crate::symlink;
 use crate::util::iso8601;
 
@@ -24,6 +25,22 @@ pub async fn install(
     eprintln!("Fetching {} formula...", package_name);
 
     let package_formula = formula::fetch(cask, package_name, false)?;
+
+    if let Some(scripts) = &package_formula.preinstall {
+        let script_cwd = cask.package_dir(package_name).join("repository");
+        for script in scripts.split('\n').map(|s| s.trim_start()) {
+            if script.is_empty() {
+                continue;
+            }
+
+            if script.starts_with('#') {
+                continue;
+            }
+
+            eprintln!("run preinstall hook: '{}'", script);
+            shell::run(&script_cwd, script)?;
+        }
+    }
 
     let download_version = {
         if let Some(v) = version {
@@ -111,6 +128,22 @@ repository = "{}"
             .as_bytes(),
         )?;
         formula_file.write_all(package_formula.get_file_content().as_bytes())?;
+    }
+
+    if let Some(scripts) = &package_formula.postinstall {
+        let script_cwd = cask.package_dir(package_name).join("repository");
+        for script in scripts.split('\n').map(|s| s.trim_start()) {
+            if script.is_empty() {
+                continue;
+            }
+
+            if script.starts_with('#') {
+                continue;
+            }
+
+            eprintln!("run postinstall hook: '{}'", script);
+            shell::run(&script_cwd, script)?;
+        }
     }
 
     eprintln!(

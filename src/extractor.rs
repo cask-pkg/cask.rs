@@ -27,11 +27,20 @@ fn extract_tar_gz(
 
         println!("open tar: {}", &*src_filepath.as_os_str().to_string_lossy());
 
+        // bsd tar
+        #[cfg(target_os = "macos")]
+        let args = vec![extract_file_name];
+        #[cfg(windows)]
+        let args = vec![extract_file_name];
+        // gnu tar
+        #[cfg(target_os = "linux")]
+        let args = vec!["-T", extract_file_name];
+
         match ChildProcess::new(tar_command_path)
             .current_dir(dest_dir)
             .arg("-zvxf")
             .arg(&*src_filepath.as_os_str().to_string_lossy())
-            .arg(extract_file_name)
+            .args(args)
             .spawn()
         {
             Ok(mut child) => match child.wait() {

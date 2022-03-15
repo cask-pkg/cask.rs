@@ -41,35 +41,39 @@ impl Cask {
     // check bin path of Cask
     pub fn check_bin_path(&self) -> Result<(), Report> {
         let key = "PATH";
-        match env::var_os(key) {
-            Some(paths) => {
-                for path in env::split_paths(&paths) {
-                    let abs_path_str = path.as_os_str().to_string_lossy().replace(
-                        '~',
-                        &dirs::home_dir()
-                            .ok_or_else(|| eyre::format_err!("can not get home dir"))?
-                            .as_os_str()
-                            .to_string_lossy(),
-                    );
 
-                    let abs_path = Path::new(&abs_path_str);
+        let paths = env::var_os(key)
+            .ok_or_else(|| eyre::format_err!("{} is not defined in the environment.", key))?;
 
-                    if format!("{}", abs_path.display()) == format!("{}", self.bin_dir().display())
-                    {
-                        return Ok(());
-                    }
-                }
+        for path in env::split_paths(&paths) {
+            let abs_path_str = path.as_os_str().to_string_lossy().replace(
+                '~',
+                &dirs::home_dir()
+                    .ok_or_else(|| eyre::format_err!("can not get home dir"))?
+                    .as_os_str()
+                    .to_string_lossy(),
+            );
 
-                Err(eyre::format_err!(
-                    "make sure '{}' has been add to your $PATH environment variable.",
-                    self.bin_dir().display()
-                ))
+            let abs_path = Path::new(&abs_path_str);
+
+            if format!("{}", abs_path.display()) == format!("{}", self.bin_dir().display()) {
+                return Ok(());
             }
-            None => Err(eyre::format_err!(
-                "{} is not defined in the environment.",
-                key
-            )),
         }
+
+        let msg = format!(
+            r#"REQUIREMENT:
+
+make sure '{}' has been add to your $PATH environment variable.
+
+manually add the directory to your $HOME/.bash_profile (or similar)
+
+then create a new session in terminal
+"#,
+            self.bin_dir().display()
+        );
+
+        Err(eyre::format_err!(msg))
     }
 
     pub fn root_dir(&self) -> PathBuf {

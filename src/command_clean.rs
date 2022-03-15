@@ -49,10 +49,10 @@ pub async fn clean(cask: cask::Cask) -> Result<(), Report> {
             for bin_entry in fs::read_dir(bin_dir)? {
                 let entry = bin_entry?;
                 let path = entry.path();
-                let path_str = path.to_str().unwrap();
+                let path_str = path.to_string_lossy().to_string();
                 let filename = entry.file_name();
 
-                if *filename.to_str().unwrap() != bin_name {
+                if *filename.to_string_lossy() != bin_name {
                     // remove extra executable
                     let symlink = cask.bin_dir().join(f.package.bin.clone());
 
@@ -60,7 +60,7 @@ pub async fn clean(cask: cask::Cask) -> Result<(), Report> {
                         match fs::read_link(&symlink) {
                             Ok(p) => {
                                 // if symlink is point to the binary file, then remove it
-                                if p.as_os_str().to_str().unwrap() == path_str {
+                                if p.as_os_str().to_string_lossy() == path_str {
                                     fs::remove_file(&symlink).ok();
                                 }
                             }
@@ -79,15 +79,22 @@ pub async fn clean(cask: cask::Cask) -> Result<(), Report> {
                                     err
                                 )
                             })?;
-                            if file_content.contains(path_str) {
+                            if file_content.contains(&path_str) {
                                 fs::remove_file(symlink).ok();
                             }
                         }
 
                         // batch script
                         {
-                            let bat_file_path =
-                                path.parent().unwrap().join(f.package.bin.clone() + ".bat");
+                            let bat_file_path = path
+                                .parent()
+                                .ok_or_else(|| {
+                                    eyre::format_err!(
+                                        "cant not get parent folder of '{}'",
+                                        path.display()
+                                    )
+                                })?
+                                .join(f.package.bin.clone() + ".bat");
 
                             if bat_file_path.exists() {
                                 let file_content =
@@ -99,7 +106,7 @@ pub async fn clean(cask: cask::Cask) -> Result<(), Report> {
                                         )
                                     })?;
 
-                                if file_content.contains(path_str) {
+                                if file_content.contains(&path_str) {
                                     fs::remove_file(bat_file_path).ok();
                                 }
                             }

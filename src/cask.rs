@@ -44,11 +44,13 @@ impl Cask {
         match env::var_os(key) {
             Some(paths) => {
                 for path in env::split_paths(&paths) {
-                    let abs_path_str = path
-                        .as_os_str()
-                        .to_str()
-                        .unwrap()
-                        .replace('~', dirs::home_dir().unwrap().as_os_str().to_str().unwrap());
+                    let abs_path_str = path.as_os_str().to_string_lossy().replace(
+                        '~',
+                        &dirs::home_dir()
+                            .ok_or_else(|| eyre::format_err!("can not get home dir"))?
+                            .as_os_str()
+                            .to_string_lossy(),
+                    );
 
                     let abs_path = Path::new(&abs_path_str);
 

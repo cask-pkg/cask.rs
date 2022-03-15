@@ -14,7 +14,7 @@ Mainly have a few more troublesome things:
 
 2. Package manager usually has a center
 
-   eg. `Brew` need to add package information to [homebrew-core](https://github.com/Homebrew/homebrew-core) then it can install directly. Of course, this is not necessary.
+   eg. `homebrew` need to add package information to [homebrew-core](https://github.com/Homebrew/homebrew-core) then it can install directly. Of course, this is not necessary.
 
 3. Write too much installation script
 

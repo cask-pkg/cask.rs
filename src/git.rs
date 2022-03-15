@@ -7,26 +7,28 @@ use std::process::Command as ChildProcess;
 use eyre::Report;
 
 pub fn clone(url: &str, dest: &Path, args: Vec<&str>) -> Result<(), Report> {
-    match ChildProcess::new("git")
+    let mut child = match ChildProcess::new("git")
         .arg("clone")
         .args(args)
         .arg(url)
         .arg(dest.to_str().unwrap())
         .spawn()
     {
-        Ok(mut child) => match child.wait() {
-            Ok(state) => {
-                if state.success() {
-                    Ok(())
-                } else {
-                    Err(eyre::format_err!(
-                        "exit code: {}",
-                        state.code().unwrap_or(1),
-                    ))
-                }
+        Ok(child) => Ok(child),
+        Err(e) => Err(eyre::format_err!("{}", e)),
+    }?;
+
+    match child.wait() {
+        Ok(state) => {
+            if state.success() {
+                Ok(())
+            } else {
+                Err(eyre::format_err!(
+                    "exit code: {}",
+                    state.code().unwrap_or(1),
+                ))
             }
-            Err(e) => Err(eyre::format_err!("{}", e)),
-        },
+        }
         Err(e) => Err(eyre::format_err!("{}", e)),
     }
 }

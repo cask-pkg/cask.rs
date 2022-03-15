@@ -25,10 +25,12 @@ fn extract_tar_gz(
             eyre::format_err!("can not create folder '{}': {}", dest_dir.display(), e)
         })?;
 
+        println!("open tar: {}", &*src_filepath.as_os_str().to_string_lossy());
+
         match ChildProcess::new(tar_command_path)
             .current_dir(dest_dir)
             .arg("-zvxf")
-            .arg(&*src_filepath.as_os_str())
+            .arg(&*src_filepath.as_os_str().to_string_lossy())
             .arg(extract_file_name)
             .spawn()
         {

@@ -30,8 +30,8 @@ pub fn symlink(src: &Path, dest: &Path) -> Result<(), Report> {
 
             let mut bat_file = File::create(bat_file_path)?;
 
-            let bat_script =
-                include_str!("./exe.bat").replace("{filepath}", src.as_os_str().to_str().unwrap());
+            let bat_script = include_str!("./script/exe.bat")
+                .replace("{filepath}", src.as_os_str().to_str().unwrap());
 
             bat_file.write_all(bat_script.as_str().as_bytes())?;
         }
@@ -44,8 +44,8 @@ pub fn symlink(src: &Path, dest: &Path) -> Result<(), Report> {
 
             let mut shell_file = File::create(shell_file_path)?;
 
-            let bat_script =
-                include_str!("./exe.sh").replace("{filepath}", src.as_os_str().to_str().unwrap());
+            let bat_script = include_str!("./script/exe.sh")
+                .replace("{filepath}", src.as_os_str().to_str().unwrap());
 
             shell_file.write_all(bat_script.as_str().as_bytes())?;
         }

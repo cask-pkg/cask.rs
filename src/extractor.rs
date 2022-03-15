@@ -25,8 +25,6 @@ fn extract_tar_gz(
             eyre::format_err!("can not create folder '{}': {}", dest_dir.display(), e)
         })?;
 
-        println!("open tar: {}", &*src_filepath.as_os_str().to_string_lossy());
-
         // bsdtar 3.5.1 - libarchive 3.5.1 zlib/1.2.11 liblzma/5.0.5 bz2lib/1.0.8
         // https://www.freebsd.org/cgi/man.cgi?query=bsdtar&sektion=1&manpath=FreeBSD+8.3-RELEASE
         #[cfg(target_os = "macos")]
@@ -40,7 +38,7 @@ fn extract_tar_gz(
 
         match ChildProcess::new(tar_command_path)
             .current_dir(dest_dir)
-            .arg("-zvxf")
+            .arg("-zxf")
             .arg(&*src_filepath.as_os_str().to_string_lossy())
             .args(args)
             .spawn()
@@ -280,24 +278,6 @@ mod tests {
         let content = fs::read_to_string(&extracted_file_path).unwrap();
 
         assert_eq!(content, "hello world\n");
-    }
-
-    #[test]
-    fn test_extract_tar_gz_with_prune() {
-        let extractor_dir = env::current_dir()
-            .unwrap()
-            .join("fixtures")
-            .join("extractor");
-
-        let tar_file_path = extractor_dir.join("prune_darwin_amd64.tar.gz");
-
-        let dest_dir = extractor_dir;
-
-        let extracted_file_path = extractor::extract(&tar_file_path, &dest_dir, "prune").unwrap();
-
-        let meta = fs::metadata(&extracted_file_path).unwrap();
-
-        assert_eq!(meta.len(), 137_656);
     }
 
     #[test]

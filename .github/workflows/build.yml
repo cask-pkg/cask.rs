@@ -4,11 +4,25 @@ on: [push, pull_request]
 
 jobs:
   build:
-    name: ${{ matrix.kind }} ${{ matrix.os }}
+    name: ${{ matrix.target }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-11, ubuntu-latest, windows-latest]
+        include:
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-musl
+
+          - os: ubuntu-latest
+            target: aarch64-unknown-linux-musl
+
+          - os: macos-11
+            target: x86_64-apple-darwin
+
+          - os: macos-11
+            target: aarch64-apple-darwin
 
     env:
       CARGO_INCREMENTAL: 0
@@ -50,40 +64,53 @@ jobs:
           restore-keys: |
             ${{ matrix.config.os }}-
 
-      - name: Build (linux)
-        if: startsWith(matrix.os, 'ubuntu')
+      - name: Build (linux) - x86_64-unknown-linux-musl
+        if: startsWith(matrix.os, 'ubuntu') && startsWith(matrix.target, 'x86_64-unknown-linux-musl')
         run: |
-          # for build aarch64-unknown-linux-musl
-          sudo apt-get update
-          # install linker
-          sudo apt-get -y install gcc-x86-64-linux-gnu gcc-aarch64-linux-gnu gcc-mips-linux-gnu gcc-mips64-linux-gnuabi64 gcc-mips64el-linux-gnuabi64
+          sudo apt-get install -y musl-tools
 
-          sudo apt-get install -y musl-tools clang llvm
+          wget --quiet https://musl.cc/x86_64-linux-musl-cross.tgz
 
-          rustup target add x86_64-unknown-linux-musl
+          tar -xvzf x86_64-linux-musl-cross.tgz
 
-          cargo build --release --locked --target x86_64-unknown-linux-musl
+          export PATH=$PATH:$(pwd)/x86_64-linux-musl-cross/bin
 
-          tar -cvzf target/x86_64-unknown-linux-musl/release/cask_linux_amd64.tar.gz --directory=target/x86_64-unknown-linux-musl/release cask
+          rustup target add ${{ matrix.target }}
+
+          cargo build --release --locked --target ${{ matrix.target }}
+
+          tar -cvzf target/${{ matrix.target }}/release/cask_${{ matrix.target }}.tar.gz --directory=target/${{ matrix.target }}/release cask
+
+      - name: Build (linux) - aarch64-unknown-linux-musl
+        if: startsWith(matrix.os, 'ubuntu') && startsWith(matrix.target, 'aarch64-unknown-linux-musl')
+        run: |
+          wget --quiet https://musl.cc/aarch64-linux-musl-cross.tgz
+
+          tar -xvzf aarch64-linux-musl-cross.tgz
+
+          export PATH=$PATH:$(pwd)/aarch64-linux-musl-cross/bin
+
+          rustup target add ${{ matrix.target }}
+
+          cargo build --release --locked --target ${{ matrix.target }}
+
+          tar -cvzf target/${{ matrix.target }}/release/cask_${{ matrix.target }}.tar.gz --directory=target/${{ matrix.target }}/release cask
 
       - name: Build (mac)
         if: startsWith(matrix.os, 'macOS')
         run: |
-          rustup target add x86_64-apple-darwin
-          rustup target add aarch64-apple-darwin
-          cargo build --release --locked --target x86_64-apple-darwin
-          cargo build --release --locked --target aarch64-apple-darwin
-          tar -cvzf target/x86_64-apple-darwin/release/cask_darwin_amd64.tar.gz --directory=target/x86_64-apple-darwin/release cask
-          tar -cvzf target/aarch64-apple-darwin/release/cask_darwin_arm64.tar.gz --directory=target/aarch64-apple-darwin/release cask
+          rustup target add ${{ matrix.target }}
+          cargo build --release --locked --target ${{ matrix.target }}
+          tar -cvzf target/${{ matrix.target }}/release/cask_${{ matrix.target }}.tar.gz --directory=target/${{ matrix.target }}/release cask
 
       - name: Build (windows)
         if: startsWith(matrix.os, 'windows')
         run: |
-          rustup target add x86_64-pc-windows-msvc
+          rustup target add ${{ matrix.target }}
 
-          cargo build --release --locked --target x86_64-pc-windows-msvc
+          cargo build --release --locked --target ${{ matrix.target }}
 
-          tar -cvzf target/x86_64-pc-windows-msvc/release/cask_windows_amd64.tar.gz --directory=target/x86_64-pc-windows-msvc/release cask.exe
+          tar -cvzf target/${{ matrix.target }}/release/cask_${{ matrix.target }}.tar.gz --directory=target/${{ matrix.target }}/release cask.exe
 
       - name: Release to Github
         uses: softprops/action-gh-release@v1
@@ -92,9 +119,10 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
         with:
           files: |
-            target/x86_64-pc-windows-msvc/release/cask_windows_amd64.tar.gz
+            target/x86_64-pc-windows-msvc/release/cask_x86_64-pc-windows-msvc.tar.gz
 
-            target/x86_64-unknown-linux-musl/release/cask_linux_amd64.tar.gz
+            target/x86_64-unknown-linux-musl/release/cask_x86_64-unknown-linux-musl.tar.gz
+            target/aarch64-unknown-linux-musl/release/cask_aarch64-unknown-linux-musl.tar.gz
 
             target/x86_64-apple-darwin/release/cask_darwin_amd64.tar.gz
             target/aarch64-apple-darwin/release/cask_darwin_arm64.tar.gz

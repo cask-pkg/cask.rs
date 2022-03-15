@@ -18,6 +18,9 @@ pub fn extract(
     let output_file_path = dest_dir.join(extract_file_name);
     let mut binary_found = false;
 
+    let err_not_found = eyre::format_err!("can not found the file '{}' in tar", extract_file_name);
+    let err_not_support = eyre::format_err!("not support extract file from '{}'", tar_file_name);
+
     if tar_file_name.ends_with(".tar.gz") {
         let tar_file = File::open(&tar_file_path)?;
         let input = GzDecoder::new(&tar_file)?;
@@ -45,10 +48,7 @@ pub fn extract(
         }
 
         if !binary_found {
-            Err(eyre::format_err!(
-                "can not found binary file '{}' in tar",
-                extract_file_name
-            ))
+            Err(err_not_found)
         } else {
             Ok(output_file_path)
         }
@@ -78,10 +78,7 @@ pub fn extract(
         }
 
         if !binary_found {
-            Err(eyre::format_err!(
-                "can not found binary file '{}' in tar",
-                extract_file_name
-            ))
+            Err(err_not_found)
         } else {
             Ok(output_file_path)
         }
@@ -116,18 +113,12 @@ pub fn extract(
         }
 
         if !binary_found {
-            Err(eyre::format_err!(
-                "can not found binary file '{}' in tar",
-                extract_file_name
-            ))
+            Err(err_not_found)
         } else {
             Ok(output_file_path)
         }
     } else {
-        Err(eyre::format_err!(
-            "Can not extract file from file '{}'",
-            tar_file_name
-        ))
+        Err(err_not_support)
     }
 }
 

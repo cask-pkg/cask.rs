@@ -27,6 +27,10 @@ pub fn extract(
         // use tar command
         // wait for fix: https://github.com/alexcrichton/tar-rs/issues/286
         if let Ok(tar_command_path) = which("tar") {
+            fs::create_dir_all(dest_dir).map_err(|e| {
+                eyre::format_err!("can not create folder '{}': {}", dest_dir.display(), e)
+            })?;
+
             match ChildProcess::new(tar_command_path)
                 .current_dir(dest_dir)
                 .arg("-zvxf")
@@ -82,6 +86,10 @@ pub fn extract(
             }
         }
     } else if tar_file_name.ends_with(".tar") {
+        fs::create_dir_all(dest_dir).map_err(|e| {
+            eyre::format_err!("can not create folder '{}': {}", dest_dir.display(), e)
+        })?;
+
         // use tar command
         // wait for fix: https://github.com/alexcrichton/tar-rs/issues/286
         if let Ok(tar_command_path) = which("tar") {

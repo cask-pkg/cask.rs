@@ -67,6 +67,7 @@ cask uninstall github.com/axetroy/gpm.rs
 | cask uninstall \<PACKAGE\>         | Uninstall package                     |
 | cask info \<PACKAGE\>              | Show information of installed package |
 | cask search \<PACKAGE\>            | Show information of remote package    |
+| cask upgrade \<PACKAGE\>           | Upgrade package to latest             |
 | cask list                          | List installed package                |
 | cask clean                         | Clear residual data                   |
 

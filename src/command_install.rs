@@ -118,5 +118,10 @@ repository = "{}"
         &package_formula.package.name, download_version
     );
 
+    eprintln!(
+        "Try run the command '{} --help' to make sure it works!",
+        &package_formula.package.bin,
+    );
+
     Ok(())
 }

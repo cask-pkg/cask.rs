@@ -7,6 +7,7 @@ mod command_install;
 mod command_list;
 mod command_search;
 mod command_uninstall;
+mod command_upgrade;
 mod downloader;
 mod extractor;
 mod formula;
@@ -68,6 +69,12 @@ async fn main() {
                 .arg(arg!(<PACKAGE> "The package name"))
                 .arg_required_else_help(true),
         )
+        .subcommand(
+            Command::new("upgrade")
+                .about("Upgrade package to latest")
+                .arg(arg!(<PACKAGE> "The package name"))
+                .arg_required_else_help(true),
+        )
         .subcommand(Command::new("clean").about("Clear residual data"));
 
     let matches = app.clone().get_matches();
@@ -115,6 +122,13 @@ async fn main() {
             let package_name = sub_matches.value_of("PACKAGE").expect("required");
 
             let f = command_info::info(cask, package_name);
+
+            executor::block_on(f).expect("info installed package fail!");
+        }
+        Some(("upgrade", sub_matches)) => {
+            let package_name = sub_matches.value_of("PACKAGE").expect("required");
+
+            let f = command_upgrade::upgrade(cask, package_name);
 
             executor::block_on(f).expect("info installed package fail!");
         }

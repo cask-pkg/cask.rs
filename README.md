@@ -10,7 +10,7 @@
 ![License](https://img.shields.io/github/license/axetroy/cask.rs.svg)
 ![Repo Size](https://img.shields.io/github/repo-size/axetroy/cask.rs.svg)
 
-A universal distributed binary distribution manage tool.
+A universal, distributed package manager.
 
 [Installation](#Installation) |
 [Usage](#Usage) |
@@ -20,6 +20,16 @@ A universal distributed binary distribution manage tool.
 [Cask.toml](Cask.toml.md)
 
 </div>
+
+Refuse to write the installation script. Refuse to upload packages to the center server. Refuse to write a cumbersome configuration.
+
+Then choose Cask
+
+Features:
+
+- [x] cross-platform support
+- [x] none center server
+- [x] easy to use
 
 ## Installation
 

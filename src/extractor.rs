@@ -49,7 +49,7 @@ fn extract_tar_gz(
                         Ok(output_file_path)
                     } else {
                         Err(eyre::format_err!(
-                            "exit code: {}",
+                            "unpack file and exit code: {}",
                             state.code().unwrap_or(1),
                         ))
                     }

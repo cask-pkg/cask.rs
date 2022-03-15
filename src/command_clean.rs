@@ -119,5 +119,7 @@ pub async fn clean(cask: cask::Cask) -> Result<(), Report> {
         }
     }
 
+    eprintln!("clear!");
+
     Ok(())
 }

@@ -41,7 +41,7 @@ pub async fn uninstall(cask: cask::Cask, package_name: &str) -> Result<(), Repor
         ));
     }
 
-    println!("The package '{}' has been uninstalled!", package_name);
+    eprintln!("The package '{}' has been uninstalled!", package_name);
 
     Ok(())
 }

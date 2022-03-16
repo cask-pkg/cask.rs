@@ -96,6 +96,8 @@ mod tests {
 
             let shell_content = fs::read_to_string(&dest).unwrap();
 
+            println!("{}", shell_content);
+
             assert!(shell_content
                 .contains(format!("# package: {}", "github.com/axetroy/test").as_str()));
             assert!(shell_content.contains(format!("# filepath: {}", dest.display()).as_str()));

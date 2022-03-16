@@ -94,7 +94,7 @@ mod tests {
 
             let d = fs::read_link(&dest).unwrap();
 
-            assert_eq!(format!("{}", d.display()), format!("{}", dest.display()));
+            assert_eq!(format!("{}", d.display()), format!("{}", src.display()));
         } else {
             assert!(dest.is_file());
 

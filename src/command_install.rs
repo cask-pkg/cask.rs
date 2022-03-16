@@ -26,8 +26,21 @@ pub async fn install(
 
     let package_formula = formula::fetch(cask, package_name, false)?;
 
+    // detect binary name conflict
+    for f in cask.list_formula()? {
+        if f.package.bin == package_formula.package.bin {
+            return Err(eyre::format_err!(
+                "The package '{}' binary file name conflict with '{}'",
+                &package_formula.package.name,
+                f.cask.map(|f| f.name).unwrap_or(f.package.name)
+            ));
+        }
+    }
+
     if let Some(scripts) = &package_formula.preinstall {
-        let script_cwd = cask.package_dir(package_name).join("repository");
+        let script_cwd = cask
+            .package_dir(&package_formula.package.name)
+            .join("repository");
         for script in scripts.split('\n').map(|s| s.trim_start()) {
             if script.is_empty() {
                 continue;
@@ -135,7 +148,10 @@ repository = "{}"
     }
 
     if let Some(scripts) = &package_formula.postinstall {
-        let script_cwd = cask.package_dir(package_name).join("repository");
+        let script_cwd = cask
+            .package_dir(&package_formula.package.name)
+            .join("repository");
+
         for script in scripts.split('\n').map(|s| s.trim_start()) {
             if script.is_empty() {
                 continue;

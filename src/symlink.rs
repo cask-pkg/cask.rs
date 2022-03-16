@@ -101,6 +101,7 @@ mod tests {
             let shell_content = fs::read_to_string(&dest).unwrap();
 
             println!("{}", shell_content);
+            println!(r#""{}" "$@""#, dest.display());
 
             assert!(shell_content
                 .contains(format!(r#"# package: {}"#, "github.com/axetroy/test").as_str()));
@@ -116,7 +117,7 @@ mod tests {
             assert!(bat_content
                 .contains(format!(r#":: package: {}"#, "github.com/axetroy/test").as_str()));
             assert!(bat_content.contains(format!(r#":: filepath: {}"#, src.display()).as_str()));
-            assert!(shell_content.contains(format!(r#""{}" %*"#, dest.display()).as_str()));
+            assert!(shell_content.contains(format!(r#""{}" "%*""#, dest.display()).as_str()));
         }
     }
 }

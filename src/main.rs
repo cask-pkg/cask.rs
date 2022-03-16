@@ -25,10 +25,10 @@ use futures::executor;
 async fn main() {
     let version = format!("v{}", env!("CARGO_PKG_VERSION"));
 
-    let mut app = Command::new("cask")
+    let mut app = Command::new(env!("CARGO_BIN_NAME"))
         .version(version.as_str())
-        .author("Axetroy <axetroy.dev@gmail.com>")
-        .about("General binary package management, written in Rust")
+        .about(env!("CARGO_PKG_DESCRIPTION"))
+        .author(env!("CARGO_PKG_AUTHORS"))
         .subcommand_required(true)
         .arg_required_else_help(true)
         .allow_external_subcommands(true)

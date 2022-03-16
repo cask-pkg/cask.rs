@@ -36,13 +36,13 @@ Features:
 1. Shell (Mac/Linux)
 
    ```bash
-   curl -fsSL https://github.com/release-lab/install/raw/v1/install.sh | bash -s -- -r=axetroy/cask.rs -e=cask
+   curl -fsSL https://github.com/axetroy/cask.rs/raw/main/install.sh | bash
    ```
 
 2. PowerShell (Windows):
 
-   ```powershell
-   $r="axetroy/cask.rs";$e="cask";iwr https://github.com/release-lab/install/raw/v1/install.ps1 -useb | iex
+   ```pwshell
+   iwr https://github.com/axetroy/cask.rs/raw/main/install.ps1 -useb | iex
    ```
 
 3. [Github release page](https://github.com/axetroy/cask.rs/releases)

@@ -31,6 +31,13 @@ get_arch() {
     esac
 }
 
+get_os(){
+    # darwin: Darwin
+    # linux: Linux
+    os=$(uname -s | awk '{print tolower($0)}')
+    echo $os
+}
+
 get_vendor(){
     # darwin: Darwin
     os=$(get_os)
@@ -44,15 +51,9 @@ get_vendor(){
     esac
 }
 
-get_os(){
-    # darwin: Darwin
-    # linux: Linux
-    os=$(uname -s | awk '{print tolower($0)}')
-}
-
 get_abi(){
     vendor=$(get_vendor)
-    case ${os} in
+    case ${vendor} in
         "apple" )
             echo ""
         ;;
@@ -66,9 +67,13 @@ downloadFolder="${HOME}/Downloads"
 mkdir -p ${downloadFolder} # make sure download folder exists
 os=$(get_os)
 arch=$(get_arch)
-file_name="${exe_name}_${arch}-${vendor}${abi}.tar.gz" # the file name should be download
+vendor=$(get_vendor)
+abi=$(get_abi)
+file_name="${exe_name}_${arch}-${vendor}-${os}${abi}.tar.gz" # the file name should be download
 downloaded_file="${downloadFolder}/${file_name}" # the file path should be download
 executable_folder="/usr/local/bin" # Eventually, the executable file will be placed here
+
+echo $file_name
 
 # if version is empty
 if [ -z "$version" ]; then

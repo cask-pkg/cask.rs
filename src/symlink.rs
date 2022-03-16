@@ -114,7 +114,7 @@ mod tests {
             assert!(bat_content
                 .contains(format!(r#":: package: {}"#, "github.com/axetroy/test").as_str()));
             assert!(bat_content.contains(format!(r#":: filepath: {}"#, src.display()).as_str()));
-            assert!(shell_content.contains(format!(r#""{}" "%*""#, src.display()).as_str()));
+            assert!(bat_content.contains(format!(r#""{}" "%*""#, src.display()).as_str()));
         }
     }
 }

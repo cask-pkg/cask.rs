@@ -24,9 +24,7 @@ pub fn symlink(src: &Path, dest: &Path, package_name: &str) -> Result<(), Report
             })?
             .to_owned();
 
-        let src_file_path = src.as_os_str().to_str().ok_or_else(|| {
-            eyre::format_err!("can not cover OsStr to str for '{}'", src.display())
-        })?;
+        let src_file_path = format!("{}", src.display());
 
         let dest_parent = dest
             .parent()
@@ -41,7 +39,7 @@ pub fn symlink(src: &Path, dest: &Path, package_name: &str) -> Result<(), Report
             let mut bat_file = File::create(bat_file_path)?;
 
             let bat_script = include_str!("./script/exe.bat")
-                .replace("{filepath}", src_file_path)
+                .replace("{filepath}", &src_file_path)
                 .replace("{package}", package_name);
 
             bat_file.write_all(bat_script.as_str().as_bytes())?;
@@ -56,7 +54,7 @@ pub fn symlink(src: &Path, dest: &Path, package_name: &str) -> Result<(), Report
             let mut shell_file = File::create(shell_file_path)?;
 
             let bat_script = include_str!("./script/exe.sh")
-                .replace("{filepath}", src_file_path)
+                .replace("{filepath}", &src_file_path)
                 .replace("{package}", package_name);
 
             shell_file.write_all(bat_script.as_str().as_bytes())?;
@@ -114,7 +112,7 @@ mod tests {
             assert!(bat_content
                 .contains(format!(r#":: package: {}"#, "github.com/axetroy/test").as_str()));
             assert!(bat_content.contains(format!(r#":: filepath: {}"#, src.display()).as_str()));
-            assert!(bat_content.contains(format!(r#""{}" "%*""#, src.display()).as_str()));
+            assert!(bat_content.contains(format!(r#""{}" %*"#, src.display()).as_str()));
         }
     }
 }

@@ -4,6 +4,7 @@ use crate::cask;
 use crate::formula;
 
 use std::fs;
+use std::io::ErrorKind;
 
 use eyre::Report;
 
@@ -64,9 +65,11 @@ pub async fn clean(cask: &cask::Cask) -> Result<(), Report> {
                                     fs::remove_file(&symlink).ok();
                                 }
                             }
-                            Err(_) => {
-                                // if path does not exist. then remove the symlink
-                                fs::remove_file(&symlink).ok();
+                            Err(err) => {
+                                if err.kind() == ErrorKind::NotFound {
+                                    // try to remove and ignore error
+                                    fs::remove_file(&symlink).ok();
+                                }
                             }
                         };
                     } else if symlink.is_file() {
@@ -113,6 +116,30 @@ pub async fn clean(cask: &cask::Cask) -> Result<(), Report> {
                         }
                     } else {
                         fs::remove_file(symlink).ok();
+                    }
+                }
+            }
+        }
+    }
+
+    // remove broken symlink
+    #[cfg(unix)]
+    {
+        let bin_dir = cask.bin_dir();
+
+        let dir = fs::read_dir(bin_dir)?;
+
+        for entry in dir {
+            let file = entry?.path();
+
+            if file.is_symlink() {
+                match fs::read_link(&file) {
+                    Ok(_) => (),
+                    Err(err) => {
+                        if err.kind() == ErrorKind::NotFound {
+                            // try to remove and ignore error
+                            fs::remove_file(file).ok();
+                        }
                     }
                 }
             }

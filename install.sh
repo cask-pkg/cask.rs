@@ -69,7 +69,7 @@ os=$(get_os)
 arch=$(get_arch)
 vendor=$(get_vendor)
 abi=$(get_abi)
-file_name="${exe_name}_${arch}-${vendor}-${os}${abi}.tar.gz" # the file name should be download
+file_name="${exe_name}-${arch}-${vendor}-${os}${abi}.tar.gz" # the file name should be download
 downloaded_file="${downloadFolder}/${file_name}" # the file path should be download
 executable_folder="/usr/local/bin" # Eventually, the executable file will be placed here
 

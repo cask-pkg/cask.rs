@@ -17,7 +17,7 @@ if ([Environment]::Is64BitProcess) {
 $BinDir = "$Home\bin"
 $downloadedTagGz = "$BinDir\${exeName}.tar.gz"
 $downloadedExe = "$BinDir\${exeName}.exe"
-$fileName = "${exeName}_${arch}-pc-windows-msvc"
+$fileName = "${exeName}-${arch}-pc-windows-msvc"
 
 # GitHub requires TLS 1.2
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12

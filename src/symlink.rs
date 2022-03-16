@@ -4,7 +4,7 @@ use std::fs::File;
 use std::io::Write;
 use std::path::Path;
 
-pub fn symlink(src: &Path, dest: &Path) -> Result<(), Report> {
+pub fn symlink(src: &Path, dest: &Path, package_name: &str) -> Result<(), Report> {
     if cfg!(unix) {
         if dest.exists() {
             fs::remove_file(&dest)?;
@@ -40,7 +40,9 @@ pub fn symlink(src: &Path, dest: &Path) -> Result<(), Report> {
 
             let mut bat_file = File::create(bat_file_path)?;
 
-            let bat_script = include_str!("./script/exe.bat").replace("{filepath}", src_file_path);
+            let bat_script = include_str!("./script/exe.bat")
+                .replace("{filepath}", src_file_path)
+                .replace("{package}", package_name);
 
             bat_file.write_all(bat_script.as_str().as_bytes())?;
         }
@@ -53,7 +55,9 @@ pub fn symlink(src: &Path, dest: &Path) -> Result<(), Report> {
 
             let mut shell_file = File::create(shell_file_path)?;
 
-            let bat_script = include_str!("./script/exe.sh").replace("{filepath}", src_file_path);
+            let bat_script = include_str!("./script/exe.sh")
+                .replace("{filepath}", src_file_path)
+                .replace("{package}", package_name);
 
             shell_file.write_all(bat_script.as_str().as_bytes())?;
         }
@@ -65,7 +69,7 @@ pub fn symlink(src: &Path, dest: &Path) -> Result<(), Report> {
 #[cfg(test)]
 mod tests {
     use crate::symlink;
-    use std::env;
+    use std::{env, fs};
 
     #[test]
     fn test_symlink() {
@@ -83,19 +87,29 @@ mod tests {
             .join("dest")
             .join("test");
 
-        symlink::symlink(&src, &dest).unwrap();
+        symlink::symlink(&src, &dest, "github.com/axetroy/test").unwrap();
 
-        #[cfg(unix)]
-        assert!(dest.is_symlink());
-        #[cfg(windows)]
-        {
-            assert!(!dest.is_symlink());
+        if cfg!(unix) {
+            assert!(dest.is_symlink());
+        } else {
             assert!(dest.is_file());
+
+            let shell_content = fs::read_to_string(&dest).unwrap();
+
+            assert!(shell_content
+                .contains(format!("# package: {}", "github.com/axetroy/test").as_str()));
+            assert!(shell_content.contains(format!("# filepath: {}", dest.display()).as_str()));
 
             let bat = dest.parent().unwrap().join("test.bat");
 
-            assert!(!bat.is_symlink());
-            assert!(bat.is_file());
+            assert!(&bat.is_file());
+
+            let bat_content = fs::read_to_string(&bat).unwrap();
+
+            assert!(
+                bat_content.contains(format!(":: package: {}", "github.com/axetroy/test").as_str())
+            );
+            assert!(bat_content.contains(format!(":: filepath: {}", dest.display()).as_str()));
         }
     }
 }

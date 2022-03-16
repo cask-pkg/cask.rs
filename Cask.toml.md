@@ -61,10 +61,8 @@ As you can see, it only contains a few top-level fields:
 
 Current Support the arch:
 
-- x86
 - x86_64
 - aarch64
-- mips
 - mips64
 - mips64el
 

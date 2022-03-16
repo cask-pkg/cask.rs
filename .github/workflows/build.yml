@@ -116,7 +116,7 @@ jobs:
           tar -cvzf target/${{ matrix.target }}/release/cask_${{ matrix.target }}.tar.gz --directory=target/${{ matrix.target }}/release cask.exe
 
       - name: Build (windows) - aarch64-pc-windows-msvc
-        if: startsWith(matrix.os, 'windows') && && startsWith(matrix.target, 'aarch64-pc-windows-msvc')
+        if: startsWith(matrix.os, 'windows') && startsWith(matrix.target, 'aarch64-pc-windows-msvc')
         run: |
           rustup target add ${{ matrix.target }}
 

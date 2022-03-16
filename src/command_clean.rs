@@ -53,8 +53,9 @@ pub async fn clean(cask: &cask::Cask) -> Result<(), Report> {
                 let path_str = path.to_string_lossy().to_string();
                 let filename = entry.file_name();
 
+                // if the file is not package binary file
+                // then is should be removed
                 if *filename.to_string_lossy() != bin_name {
-                    // remove extra executable
                     let symlink = cask.bin_dir().join(f.package.bin.clone());
 
                     if symlink.is_symlink() {
@@ -62,13 +63,23 @@ pub async fn clean(cask: &cask::Cask) -> Result<(), Report> {
                             Ok(p) => {
                                 // if symlink is point to the binary file, then remove it
                                 if p.as_os_str().to_string_lossy() == path_str {
-                                    fs::remove_file(&symlink).ok();
+                                    if let Ok(()) = fs::remove_file(&symlink) {
+                                        eprintln!(
+                                            "symlink file '{}' has been removed",
+                                            symlink.display()
+                                        );
+                                    }
                                 }
                             }
                             Err(err) => {
                                 if err.kind() == ErrorKind::NotFound {
                                     // try to remove and ignore error
-                                    fs::remove_file(&symlink).ok();
+                                    if let Ok(()) = fs::remove_file(&symlink) {
+                                        eprintln!(
+                                            "symlink file '{}' has been removed",
+                                            symlink.display()
+                                        );
+                                    }
                                 }
                             }
                         };
@@ -83,7 +94,12 @@ pub async fn clean(cask: &cask::Cask) -> Result<(), Report> {
                                 )
                             })?;
                             if file_content.contains(&path_str) {
-                                fs::remove_file(symlink).ok();
+                                if let Ok(()) = fs::remove_file(&symlink) {
+                                    eprintln!(
+                                        "shell script '{}' has been removed",
+                                        symlink.display()
+                                    );
+                                }
                             }
                         }
 
@@ -110,12 +126,17 @@ pub async fn clean(cask: &cask::Cask) -> Result<(), Report> {
                                     })?;
 
                                 if file_content.contains(&path_str) {
-                                    fs::remove_file(bat_file_path).ok();
+                                    if let Ok(()) = fs::remove_file(&bat_file_path) {
+                                        eprintln!(
+                                            "batch script '{}' has been removed",
+                                            bat_file_path.display()
+                                        );
+                                    }
                                 }
                             }
                         }
-                    } else {
-                        fs::remove_file(symlink).ok();
+                    } else if let Ok(()) = fs::remove_file(&symlink) {
+                        eprintln!("unknown file '{}' has been removed", symlink.display());
                     }
                 }
             }
@@ -138,7 +159,9 @@ pub async fn clean(cask: &cask::Cask) -> Result<(), Report> {
                     Err(err) => {
                         if err.kind() == ErrorKind::NotFound {
                             // try to remove and ignore error
-                            fs::remove_file(file).ok();
+                            if let Ok(()) = fs::remove_file(&file) {
+                                eprintln!("broken symlink '{}' has been removed", file.display());
+                            }
                         }
                     }
                 }

@@ -29,10 +29,12 @@ pub async fn install(
     // detect binary name conflict
     for f in cask.list_formula()? {
         if f.package.bin == package_formula.package.bin {
+            let exit_package_name = f.cask.map(|f| f.name).unwrap_or(f.package.name);
             return Err(eyre::format_err!(
-                "The package '{}' binary file name conflict with '{}'",
+                r#"The package '{}' binary file name conflict with '{}'\nTry uninstall '{}' and then reinstall."#,
                 &package_formula.package.name,
-                f.cask.map(|f| f.name).unwrap_or(f.package.name)
+                &exit_package_name,
+                &exit_package_name
             ));
         }
     }

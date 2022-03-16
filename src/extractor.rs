@@ -25,22 +25,12 @@ fn extract_tar_gz(
             eyre::format_err!("can not create folder '{}': {}", dest_dir.display(), e)
         })?;
 
-        // bsdtar 3.5.1 - libarchive 3.5.1 zlib/1.2.11 liblzma/5.0.5 bz2lib/1.0.8
-        // https://www.freebsd.org/cgi/man.cgi?query=bsdtar&sektion=1&manpath=FreeBSD+8.3-RELEASE
-        #[cfg(target_os = "macos")]
-        let args = vec![extract_file_name];
-        #[cfg(windows)]
-        let args = vec![extract_file_name];
-        // tar (GNU tar) 1.29
-        // https://www.gnu.org/software/tar/manual/html_node/extracting-files.html
-        #[cfg(target_os = "linux")]
-        let args = vec![extract_file_name];
-
         match ChildProcess::new(tar_command_path)
             .current_dir(dest_dir)
-            .arg("-zxf")
-            .arg(&*src_filepath.as_os_str().to_string_lossy())
-            .args(args)
+            .arg("-f")
+            .arg(format!("{}", src_filepath.display()))
+            .arg("-zx")
+            .arg(extract_file_name)
             .spawn()
         {
             Ok(mut child) => match child.wait() {
@@ -297,6 +287,8 @@ mod tests {
         let meta = fs::metadata(&extracted_file_path).unwrap();
 
         assert_eq!(meta.len(), 153_464);
+
+        fs::remove_file(extracted_file_path).ok();
     }
 
     #[test]

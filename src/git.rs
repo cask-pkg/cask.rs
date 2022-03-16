@@ -51,7 +51,11 @@ mod tests {
 
         let dest_dir = Path::new("./dist");
 
-        let r1 = git::clone(url1, dest_dir, vec![]);
+        let r1 = git::clone(
+            url1,
+            dest_dir,
+            vec!["--depth", "1", "--quiet", "--single-branch"],
+        );
 
         assert!(r1.is_ok());
         assert!(dest_dir.exists());

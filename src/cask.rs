@@ -136,4 +136,31 @@ then create a new session in terminal
 
         Ok(package_formula)
     }
+
+    pub fn list_formula(&self) -> Result<Vec<formula::Formula>, Report> {
+        let formula_dir = self.formula_dir();
+        let mut list: Vec<formula::Formula> = vec![];
+
+        let dir = fs::read_dir(formula_dir)?;
+
+        for entry in dir.into_iter().filter(|f| f.is_ok()).map(|f| f.unwrap()) {
+            let p = entry.path();
+
+            if !p.is_dir() {
+                continue;
+            }
+
+            let cask_file_path = p.join("Cask.toml");
+
+            if !cask_file_path.exists() {
+                continue;
+            }
+
+            let package_formula = formula::new(&cask_file_path)?;
+
+            list.push(package_formula);
+        }
+
+        Ok(list)
+    }
 }

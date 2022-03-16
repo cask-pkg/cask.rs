@@ -64,9 +64,9 @@ pub struct Platform {
 
 #[derive(Deserialize, Serialize)]
 pub struct Arch {
-    pub url: String,              // The url will be download when install the package
-    pub checksum: Option<String>, // The hash256 of download resource
-    pub ext: Option<String>, // The extension name of download resource. optional value: ".tar.gz" ".tar" ".zip"
+    pub url: String,               // The url will be download when install the package
+    pub checksum: Option<String>,  // The hash256 of download resource
+    pub extension: Option<String>, // The extension name of download resource. optional value: ".tar.gz" ".tar" ".zip"
 }
 
 pub fn new(formula_file: &Path) -> Result<Formula, Report> {
@@ -230,7 +230,7 @@ impl Formula {
 
             let renderer_url = tt.render("url_template", &render_context)?;
 
-            let ext_name = match &arch.ext {
+            let ext_name = match &arch.extension {
                 Some(s) => s.clone(),
                 None => {
                     let u = Url::parse(&renderer_url)?;

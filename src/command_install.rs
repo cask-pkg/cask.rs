@@ -100,7 +100,11 @@ pub async fn install(
     {
         let symlink_file = cask.bin_dir().join(&package_formula.package.bin);
 
-        symlink::symlink(&output_file_path, &symlink_file, &package_formula.package.name)?;
+        symlink::symlink(
+            &output_file_path,
+            &symlink_file,
+            &package_formula.package.name,
+        )?;
     }
 
     // init Cask information in Cask.toml

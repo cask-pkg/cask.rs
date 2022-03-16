@@ -104,7 +104,7 @@ mod tests {
 
             assert!(shell_content
                 .contains(format!(r#"# package: {}"#, "github.com/axetroy/test").as_str()));
-            assert!(shell_content.contains(format!(r#"# filepath: {}"#, dest.display()).as_str()));
+            assert!(shell_content.contains(format!(r#"# filepath: {}"#, src.display()).as_str()));
             assert!(shell_content.contains(format!(r#""{}" "$@""#, dest.display()).as_str()));
 
             let bat = dest.parent().unwrap().join("test.bat");
@@ -115,7 +115,7 @@ mod tests {
 
             assert!(bat_content
                 .contains(format!(r#":: package: {}"#, "github.com/axetroy/test").as_str()));
-            assert!(bat_content.contains(format!(r#":: filepath: {}"#, dest.display()).as_str()));
+            assert!(bat_content.contains(format!(r#":: filepath: {}"#, src.display()).as_str()));
             assert!(shell_content.contains(format!(r#""{}" %*"#, dest.display()).as_str()));
         }
     }

@@ -12,6 +12,9 @@ jobs:
           - os: windows-latest
             target: x86_64-pc-windows-msvc
 
+          - os: windows-latest
+            target: aarch64-pc-windows-msvc
+
           - os: ubuntu-latest
             target: x86_64-unknown-linux-musl
 
@@ -103,8 +106,17 @@ jobs:
           cargo build --release --locked --target ${{ matrix.target }}
           tar -cvzf target/${{ matrix.target }}/release/cask_${{ matrix.target }}.tar.gz --directory=target/${{ matrix.target }}/release cask
 
-      - name: Build (windows)
-        if: startsWith(matrix.os, 'windows')
+      - name: Build (windows) - x86_64-pc-windows-msvc
+        if: startsWith(matrix.os, 'windows') && startsWith(matrix.target, 'x86_64-pc-windows-msvc')
+        run: |
+          rustup target add ${{ matrix.target }}
+
+          cargo build --release --locked --target ${{ matrix.target }}
+
+          tar -cvzf target/${{ matrix.target }}/release/cask_${{ matrix.target }}.tar.gz --directory=target/${{ matrix.target }}/release cask.exe
+
+      - name: Build (windows) - aarch64-pc-windows-msvc
+        if: startsWith(matrix.os, 'windows') && && startsWith(matrix.target, 'aarch64-pc-windows-msvc')
         run: |
           rustup target add ${{ matrix.target }}
 
@@ -120,6 +132,7 @@ jobs:
         with:
           files: |
             target/x86_64-pc-windows-msvc/release/cask_x86_64-pc-windows-msvc.tar.gz
+            target/aarch64-pc-windows-msvc/release/cask_aarch64-pc-windows-msvc.tar.gz
 
             target/x86_64-unknown-linux-musl/release/cask_x86_64-unknown-linux-musl.tar.gz
             target/aarch64-unknown-linux-musl/release/cask_aarch64-unknown-linux-musl.tar.gz

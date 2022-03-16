@@ -18,9 +18,6 @@ jobs:
           - os: ubuntu-latest
             target: aarch64-unknown-linux-musl
 
-          - os: ubuntu-latest
-            target: mips64-unknown-linux-gnuabi64
-
           - os: macos-11
             target: x86_64-apple-darwin
 
@@ -92,21 +89,6 @@ jobs:
           tar -xvzf aarch64-linux-musl-cross.tgz
 
           export PATH=$PATH:$(pwd)/aarch64-linux-musl-cross/bin
-
-          rustup target add ${{ matrix.target }}
-
-          cargo build --release --locked --target ${{ matrix.target }}
-
-          tar -cvzf target/${{ matrix.target }}/release/cask_${{ matrix.target }}.tar.gz --directory=target/${{ matrix.target }}/release cask
-
-      - name: Build (linux) - mips64-unknown-linux-gnuabi64
-        if: startsWith(matrix.os, 'ubuntu') && startsWith(matrix.target, 'mips64-unknown-linux-gnuabi64')
-        run: |
-          wget --quiet https://musl.cc/mips64-linux-musl-cross.tgz
-
-          tar -xvzf mips64-linux-musl-cross.tgz
-
-          export PATH=$PATH:$(pwd)/mips64-linux-musl-cross/bin
 
           rustup target add ${{ matrix.target }}
 

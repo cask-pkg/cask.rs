@@ -138,6 +138,6 @@ jobs:
             target/aarch64-unknown-linux-musl/release/cask_aarch64-unknown-linux-musl.tar.gz
             target/mips64-unknown-linux-musl/release/cask_mips64-unknown-linux-musl.tar.gz
 
-            target/x86_64-apple-darwin/release/cask_darwin_amd64.tar.gz
-            target/aarch64-apple-darwin/release/cask_darwin_arm64.tar.gz
+            target/x86_64-apple-darwin/release/cask_x86_64-apple-darwin.tar.gz
+            target/aarch64-apple-darwin/release/cask_aarch64-apple-darwin.tar.gz
           draft: false

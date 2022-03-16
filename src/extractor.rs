@@ -25,12 +25,18 @@ fn extract_tar_gz(
             eyre::format_err!("can not create folder '{}': {}", dest_dir.display(), e)
         })?;
 
+        let args: Vec<String> = vec![
+            "-f".to_string(),
+            format!("{}", &src_filepath.display()),
+            "-zx".to_string(),
+            extract_file_name.to_string(),
+        ];
+
+        println!("{:?}", args);
+
         match ChildProcess::new(tar_command_path)
             .current_dir(dest_dir)
-            .arg("-f")
-            .arg(format!("{}", src_filepath.display()))
-            .arg("-zx")
-            .arg(extract_file_name)
+            .args(&args)
             .spawn()
         {
             Ok(mut child) => match child.wait() {

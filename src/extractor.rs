@@ -177,7 +177,7 @@ pub fn extract(
     fs::create_dir_all(dest_dir)
         .map_err(|e| eyre::format_err!("can not create folder '{}': {}", dest_dir.display(), e))?;
 
-    if tar_file_name.ends_with(".tar.gz") {
+    if tar_file_name.ends_with(".tar.gz") || tar_file_name.ends_with(".tgz") {
         extract_tar_gz(tarball, dest_dir, extract_file_name)
     } else if tar_file_name.ends_with(".tar") {
         extract_tar(tarball, dest_dir, extract_file_name)
@@ -278,6 +278,25 @@ mod tests {
         let content = fs::read_to_string(&extracted_file_path).unwrap();
 
         assert_eq!(content, "hello world\n");
+    }
+
+    #[test]
+    fn test_extract_tgz() {
+        let extractor_dir = env::current_dir()
+            .unwrap()
+            .join("fixtures")
+            .join("extractor");
+
+        let tar_file_path = extractor_dir.join("cross-env_darwin_amd64.tgz");
+
+        let dest_dir = extractor_dir;
+
+        let extracted_file_path =
+            extractor::extract(&tar_file_path, &dest_dir, "cross-env").unwrap();
+
+        let meta = fs::metadata(&extracted_file_path).unwrap();
+
+        assert_eq!(meta.len(), 153_464);
     }
 
     #[test]

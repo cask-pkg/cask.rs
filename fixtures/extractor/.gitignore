@@ -3,3 +3,4 @@ test_tar
 test_zip
 prune
 prune.exe
+cross-env

@@ -90,7 +90,11 @@ mod tests {
         symlink::symlink(&src, &dest, "github.com/axetroy/test").unwrap();
 
         if cfg!(unix) {
-            assert!(dest.is_symlink());
+            assert!(&dest.is_symlink());
+
+            let d = fs::read_link(&dest).unwrap();
+
+            assert_eq!(format!("{}", d.display()), format!("{}", dest.display()));
         } else {
             assert!(dest.is_file());
 
@@ -101,6 +105,7 @@ mod tests {
             assert!(shell_content
                 .contains(format!("# package: {}", "github.com/axetroy/test").as_str()));
             assert!(shell_content.contains(format!("# filepath: {}", dest.display()).as_str()));
+            assert!(shell_content.contains(format!(r#""{}" "$@""#, dest.display()).as_str()));
 
             let bat = dest.parent().unwrap().join("test.bat");
 
@@ -112,6 +117,7 @@ mod tests {
                 bat_content.contains(format!(":: package: {}", "github.com/axetroy/test").as_str())
             );
             assert!(bat_content.contains(format!(":: filepath: {}", dest.display()).as_str()));
+            assert!(shell_content.contains(format!(r#""{}" %*"#, dest.display()).as_str()));
         }
     }
 }

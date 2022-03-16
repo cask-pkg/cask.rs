@@ -73,8 +73,6 @@ file_name="${exe_name}_${arch}-${vendor}-${os}${abi}.tar.gz" # the file name sho
 downloaded_file="${downloadFolder}/${file_name}" # the file path should be download
 executable_folder="/usr/local/bin" # Eventually, the executable file will be placed here
 
-echo $file_name
-
 # if version is empty
 if [ -z "$version" ]; then
     asset_path=$(

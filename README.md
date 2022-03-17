@@ -82,6 +82,12 @@ cask uninstall github.com/axetroy/gpm.rs
 
 Cask depends on [Git](https://git-scm.com)
 
+## Contributors
+
+<a href="https://github.com/axetroy/cask.rs/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=axetroy/cask.rs" />
+</a>
+
 ## LICENSE
 
 The [MIT License](LICENSE)

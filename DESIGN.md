@@ -45,11 +45,9 @@ Cask is distributed, no servers, not to keep your package information.
 
 So you have to add the package yourself.
 
-eg. your repository address is `https://github.com/<username>/<repo>.git`.
+eg. your repository address is `https://github.com/<username>/<repo>.git`, you need to create a `Cask.toml` config file in the root of the repository.
 
-You need to create a new repository name `https://github.com/<username>/<repo>-cask.git`.
-
-And then create `Cask.toml` in the root of repository.
+Or you can create a new repository named `https://github.com/<username>/<repo>-cask.git` and then create `Cask.toml` in the root of the repository.
 
 ```toml
 [package]
@@ -75,7 +73,7 @@ x86_64 = { url = "https://github.com/<username>/<repo>/releases/download/v{versi
 
 modify the information above, eg. username, version, etc. and then push to remote.
 
-try install the package
+try to install the package
 
 ```bash
 cask install github.com/<username>/<repo>

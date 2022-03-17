@@ -132,11 +132,10 @@ pub async fn update(_cask: &cask::Cask) -> Result<(), Report> {
     let arch = get_arch();
     let vendor = get_vendor();
     let os = get_os();
-    let abi_op = get_abi();
 
     let mut filename = format!("{}-{}-{}-{}", env!("CARGO_BIN_NAME"), arch, vendor, os);
 
-    if let Some(abi) = abi_op {
+    if let Some(abi) = get_abi() {
         filename += format!("-{}", abi).as_str();
     }
 

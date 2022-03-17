@@ -148,7 +148,7 @@ repository = "{}"
                 package_formula.package.name,
                 iso8601(&SystemTime::now()),
                 download_version,
-                formula::get_formula_git_url(package_name)
+                package_formula.repository
             )
             .as_str()
             .as_bytes(),

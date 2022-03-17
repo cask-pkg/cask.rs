@@ -14,7 +14,7 @@ pub async fn uninstall(cask: &cask::Cask, package_name: &str) -> Result<(), Repo
 
     // remove symlink file
     if formula_file_path.exists() {
-        let package_formula = formula::new(&formula_file_path)?;
+        let package_formula = formula::new(&formula_file_path, "")?;
 
         if cfg!(unix) {
             let symlink_file = cask.bin_dir().join(package_formula.package.bin);

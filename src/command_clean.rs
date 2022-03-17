@@ -38,7 +38,7 @@ pub async fn clean(cask: &cask::Cask) -> Result<(), Report> {
             }
         }
 
-        let f = formula::new(&path.join("Cask.toml"))?;
+        let f = formula::new(&path.join("Cask.toml"), "")?;
 
         #[cfg(unix)]
         let bin_name = f.package.bin.clone();

@@ -132,7 +132,7 @@ then create a new session in terminal
         let package_dir = self.package_dir(package_name);
         let formula_file_path = package_dir.join("Cask.toml");
 
-        let package_formula = formula::new(&formula_file_path)?;
+        let package_formula = formula::new(&formula_file_path, "")?;
 
         Ok(package_formula)
     }
@@ -156,7 +156,7 @@ then create a new session in terminal
                 continue;
             }
 
-            let package_formula = formula::new(&cask_file_path)?;
+            let package_formula = formula::new(&cask_file_path, "")?;
 
             list.push(package_formula);
         }

@@ -87,6 +87,7 @@ pub fn clone(url: &str, dest: &Path, options: CloneOption) -> Result<(), Report>
     }
 
     let mut child = match ChildProcess::new("git")
+        .stderr(Stdio::null())
         .arg("clone")
         .arg(url)
         .args(args)
@@ -112,14 +113,6 @@ pub fn clone(url: &str, dest: &Path, options: CloneOption) -> Result<(), Report>
 
     if exit_code == 0 {
         return Ok(());
-    }
-
-    if exit_code == 128 {
-        eprintln!("It looks like the package does not support Cask");
-        eprintln!(
-            "If you are the package owner, try to create a new repository '{}' and add a Cask.toml file",
-            url
-        )
     }
 
     Err(eyre::format_err!(

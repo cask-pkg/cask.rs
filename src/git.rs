@@ -9,8 +9,8 @@ use eyre::Report;
 pub fn clone(url: &str, dest: &Path, args: Vec<&str>) -> Result<(), Report> {
     let mut child = match ChildProcess::new("git")
         .arg("clone")
-        .args(args)
         .arg(url)
+        .args(args)
         .arg(dest.to_str().unwrap())
         .spawn()
     {
@@ -54,7 +54,14 @@ mod tests {
         let r1 = git::clone(
             url1,
             dest_dir,
-            vec!["--depth", "1", "--quiet", "--single-branch"],
+            vec![
+                "--depth",
+                "1",
+                "--quiet",
+                "--single-branch",
+                "--filter=tree:0",
+                "--dissociate",
+            ],
         );
 
         assert!(r1.is_ok());

@@ -118,7 +118,6 @@ dependencies = [
  "reqwest",
  "semver",
  "serde",
- "serde_derive",
  "sha2",
  "tar",
  "tinytemplate",

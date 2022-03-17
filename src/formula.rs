@@ -10,13 +10,11 @@ use std::time::{SystemTime, UNIX_EPOCH};
 use std::{env, fs};
 
 use eyre::Report;
-use serde::Serialize;
-use serde_derive::Deserialize;
+use serde::{Deserialize, Serialize};
 use tinytemplate::TinyTemplate;
 use toml::from_str;
 use url::Url;
 
-// #[derive(Serialize)]
 #[derive(Deserialize, Serialize)]
 pub struct Formula {
     #[serde(skip)]

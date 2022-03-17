@@ -29,7 +29,10 @@ pub async fn install(
     // detect binary name conflict
     for f in cask.list_formula()? {
         if f.package.bin == package_formula.package.bin {
-            let exit_package_name = f.cask.map(|f| f.name).unwrap_or_else(|| f.package.name.clone());
+            let exit_package_name = f
+                .cask
+                .map(|f| f.name)
+                .unwrap_or_else(|| f.package.name.clone());
             if exit_package_name == f.package.name.clone() {
                 continue;
             }

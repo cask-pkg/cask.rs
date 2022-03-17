@@ -39,7 +39,7 @@ If you are not the publisher of the package, you don't need to care about this c
 
 In the following document, the more information of `Cask.toml` will be described.
 
-## How do I publish my package?
+## How do I publish package?
 
 Cask is distributed, no servers, not to keep your package information.
 
@@ -54,7 +54,7 @@ Or you can create a new repository named `https://github.com/<username>/<repo>-c
 name = "github.com/<username>/<repo>"
 bin = "gpm"
 # Cask will get versions from repository tags if versions field not provide.
-versions = ["0.1.0"]
+# versions = ["0.1.0"]
 authors = ["Username <email@email.com>"]
 keywords = ["key", "word"]
 repository = "https://github.com/<username>/<repo>"
@@ -84,7 +84,16 @@ for more information about [Cask.toml](Cask.toml.md)
 
 ## How do I publish a new version to an exist package?
 
-To publish a new version, just add a new version in the record of the version of `Cask.Toml`.
+if your `Cask.toml` file not provide the `package.versions` field
+
+you need to create a new tag and for your package repository. eg.
+
+```bash
+git tag v0.2.0
+git push --tags
+```
+
+or add a new version in the `package.versions` of `Cask.Toml`.
 
 ```diff
 [package]

@@ -160,7 +160,7 @@ pub fn clone(url: &str, dest: &Path, options: CloneOption) -> Result<(), Report>
     if exit_code == 128 {
         eprintln!("It looks like the package does not support Cask");
         eprintln!(
-            "If you are the package owner, see our documentation for how to publish a package: https://github.com/axetroy/cask.rs/blob/main/DESIGN.md#how-do-i-publish-my-package",
+            "If you are the package owner, see our documentation for how to publish a package: https://github.com/axetroy/cask.rs/blob/main/DESIGN.md#how-do-i-publish-package",
         );
     }
 

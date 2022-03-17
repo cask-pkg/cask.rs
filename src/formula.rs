@@ -122,28 +122,17 @@ pub fn get_formula_git_url(package_name: &str) -> String {
 
 pub fn fetch(cask: &cask::Cask, package_name: &str, temp: bool) -> Result<Formula, Report> {
     eprintln!("Fetching {} formula...", package_name);
-    // try to fetch the URL in {package}-cask format
-    match fetch_with_url(
-        cask,
-        package_name,
-        &get_formula_git_cask_url(package_name),
-        temp,
-    ) {
-        Ok(f) => Ok(f),
-        // getting an error, fallback to the URL in {package} format
-        Err(_) => {
-            match fetch_with_url(cask, package_name, &get_formula_git_url(package_name), temp) {
-                Ok(f) => Ok(f),
-                Err(e) => {
-                    eprintln!("It looks like the package does not support Cask");
-                    eprintln!(
-                        "If you are the package owner, see our documentation for how to publish a package: https://github.com/axetroy/cask.rs/blob/main/DESIGN.md#how-do-i-publish-my-package",
-                    );
-                    Err(e)
-                }
-            }
-        }
+
+    let package_cask_repo_url = get_formula_git_cask_url(package_name);
+    let package_repo_url = get_formula_git_url(package_name);
+
+    let is_exist_cask_repo = git::check_exist(&package_cask_repo_url)?;
+
+    if is_exist_cask_repo {
+        return fetch_with_url(cask, package_name, &package_cask_repo_url, temp);
     }
+
+    fetch_with_url(cask, package_name, &package_repo_url, temp)
 }
 
 // fetch remote formula

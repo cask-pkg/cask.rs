@@ -133,6 +133,7 @@ pub fn clone(url: &str, dest: &Path, options: CloneOption) -> Result<(), Report>
         .arg(url)
         .args(args)
         .arg(dest.to_str().unwrap())
+        .env("GIT_TERMINAL_PROMPT", "0")
         .spawn()
     {
         Ok(child) => Ok(child),
@@ -156,8 +157,57 @@ pub fn clone(url: &str, dest: &Path, options: CloneOption) -> Result<(), Report>
         return Ok(());
     }
 
+    if exit_code == 128 {
+        eprintln!("It looks like the package does not support Cask");
+        eprintln!(
+            "If you are the package owner, see our documentation for how to publish a package: https://github.com/axetroy/cask.rs/blob/main/DESIGN.md#how-do-i-publish-my-package",
+        );
+    }
+
     Err(eyre::format_err!(
         "clone repository fail and exit code: {}",
+        exit_code,
+    ))
+}
+
+// check remote repository exist or not
+pub fn check_exist(url: &str) -> Result<bool, Report> {
+    let mut child = match ChildProcess::new("git")
+        .arg("ls-remote")
+        .arg("-h")
+        .arg(url)
+        .stderr(Stdio::null())
+        .stdout(Stdio::null())
+        .env("GIT_TERMINAL_PROMPT", "0")
+        .spawn()
+    {
+        Ok(child) => Ok(child),
+        Err(e) => Err(eyre::format_err!("{}", e)),
+    }?;
+
+    let timeout = Duration::from_secs(30);
+
+    let state = match child.wait_timeout(timeout)? {
+        Some(status) => status.code(),
+        None => {
+            // child hasn't exited yet
+            child.kill()?;
+            child.wait()?.code()
+        }
+    };
+
+    let exit_code = state.unwrap_or(1);
+
+    if exit_code == 0 {
+        return Ok(true);
+    }
+
+    if exit_code == 128 {
+        return Ok(false);
+    }
+
+    Err(eyre::format_err!(
+        "check repository fail and exit code: {}",
         exit_code,
     ))
 }
@@ -286,5 +336,25 @@ mod tests {
         .collect();
 
         assert_eq!(tags, expect);
+    }
+
+    #[test]
+    fn test_check_exist_if_exist() {
+        let url1 = "https://github.com/axetroy/cask.rs.git";
+
+        let r1 = git::check_exist(url1);
+
+        assert!(r1.is_ok());
+        assert!(r1.unwrap());
+    }
+
+    #[test]
+    fn test_check_exist_if_not_exist() {
+        let url1 = "https://github.com/axetroy/not_exist.git";
+
+        let r1 = git::check_exist(url1);
+
+        assert!(r1.is_ok());
+        assert!(!r1.unwrap())
     }
 }

@@ -152,18 +152,18 @@ pub async fn update(_cask: &cask::Cask) -> Result<(), Report> {
     downloader::download(&resource_url, &resource_file_path).await?;
 
     #[cfg(unix)]
-    let exe_name = env!("CARGO_BIN_NAME");
+    let exe_name = env!("CARGO_BIN_NAME").to_string();
     #[cfg(windows)]
     let exe_name = format!("{}.exe", env!("CARGO_BIN_NAME"));
 
-    let binary_file_path = extractor::extract(&resource_file_path, &env::temp_dir(), exe_name)?;
+    let binary_file_path = extractor::extract(&resource_file_path, &env::temp_dir(), &exe_name)?;
 
     // remove tarball file
     fs::remove_file(&resource_file_path).ok();
 
     let current_bin_path = env::current_exe()?;
 
-    let temp_file = env::temp_dir().join(format!("old_{}", { exe_name }));
+    let temp_file = env::temp_dir().join(format!("old_{}", exe_name));
 
     fs::rename(&current_bin_path, &temp_file)?;
     fs::rename(binary_file_path, &current_bin_path)?;

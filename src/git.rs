@@ -37,7 +37,10 @@ pub fn check_exist(url: &str) -> Result<bool, Report> {
                     return Ok(false);
                 }
 
-                Err(eyre::format_err!("exit code: {}", exit_code,))
+                Err(eyre::format_err!(
+                    "check repository fail and exit code: {}",
+                    exit_code
+                ))
             }
         }
         Err(e) => Err(eyre::format_err!("{}", e)),
@@ -100,7 +103,10 @@ pub fn clone(url: &str, dest: &Path, options: CloneOption) -> Result<(), Report>
                     )
                 }
 
-                Err(eyre::format_err!("exit code: {}", exit_code,))
+                Err(eyre::format_err!(
+                    "check repository fail and exit code: {}",
+                    exit_code,
+                ))
             }
         }
         Err(e) => Err(eyre::format_err!("{}", e)),

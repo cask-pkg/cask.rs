@@ -129,7 +129,7 @@ pub fn fetch(cask: &cask::Cask, package_name: &str, temp: bool) -> Result<Formul
                 Err(e) => {
                     eprintln!("It looks like the package does not support Cask");
                     eprintln!(
-                        "If you are the package owner, see our documentation for how to publish a package: https://github.com/axetroy/cask.rs/blob/main/DESIGN.md#how-do-i-publish-myothers-package",
+                        "If you are the package owner, see our documentation for how to publish a package: https://github.com/axetroy/cask.rs/blob/main/DESIGN.md#how-do-i-publish-my-package",
                     );
                     Err(e)
                 }

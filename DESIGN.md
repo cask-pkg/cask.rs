@@ -39,7 +39,7 @@ If you are not the publisher of the package, you don't need to care about this c
 
 In the following document, the more information of `Cask.toml` will be described.
 
-## How do I publish my/others package?
+## How do I publish my package?
 
 Cask is distributed, no servers, not to keep your package information.
 

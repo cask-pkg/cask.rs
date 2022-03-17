@@ -14,7 +14,7 @@ A universal, distributed package manager.
 
 [Installation](#Installation) |
 [Usage](#Usage) |
-[How to publish package?](DESIGN.md#how-do-i-publish-myothers-package) |
+[How to publish package?](DESIGN.md#how-do-i-publish-my-package) |
 [Design](DESIGN.md) |
 [Contributing](CONTRIBUTING.md) |
 [Cask.toml](Cask.toml.md)

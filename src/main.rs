@@ -7,6 +7,7 @@ mod command_install;
 mod command_list;
 mod command_search;
 mod command_uninstall;
+mod command_update;
 mod command_upgrade;
 mod downloader;
 mod extractor;
@@ -76,6 +77,7 @@ async fn main() {
                 .arg(arg!(<PACKAGE> "The package name"))
                 .arg_required_else_help(true),
         )
+        .subcommand(Command::new("update").about("Update Cask to the newest version"))
         .subcommand(Command::new("clean").about("Clear residual data"));
 
     let matches = app.clone().get_matches();
@@ -141,6 +143,11 @@ async fn main() {
             let f = command_clean::clean(&cask);
 
             executor::block_on(f).expect("info installed package fail!");
+        }
+        Some(("update", _sub_matches)) => {
+            let f = command_update::update(&cask);
+
+            executor::block_on(f).expect("self-update fail!");
         }
         Some((ext, sub_matches)) => {
             let args = sub_matches

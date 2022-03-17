@@ -49,6 +49,12 @@ Features:
 
    Download the executable, then put it in the `$PATH` directory.
 
+4. Upgrade from existing version
+
+   ```bash
+   cask update
+   ```
+
 ## Usage
 
 ```sh
@@ -70,6 +76,7 @@ cask uninstall github.com/axetroy/gpm.rs
 | cask upgrade \<PACKAGE\>           | Upgrade package to latest             |
 | cask list                          | List installed package                |
 | cask clean                         | Clear residual data                   |
+| cask update                        | Update Cask to the newest version     |
 
 ## Requirement
 

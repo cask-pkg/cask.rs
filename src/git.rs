@@ -1,8 +1,10 @@
 use core::result::Result;
 use std::path::Path;
 use std::process::{Command as ChildProcess, Stdio};
+use std::time::Duration;
 
 use eyre::Report;
+use wait_timeout::ChildExt;
 
 pub struct CloneOption {
     pub depth: Option<i32>,
@@ -26,21 +28,27 @@ pub fn check_exist(url: &str) -> Result<bool, Report> {
         Err(e) => Err(eyre::format_err!("{}", e)),
     }?;
 
-    match child.wait() {
-        Ok(state) => {
-            if state.success() {
-                Ok(true)
-            } else {
-                let exit_code = state.code().unwrap_or(1);
+    let timeout = Duration::from_secs(30);
 
-                if exit_code == 128 {
-                    return Ok(false);
+    match child.wait_timeout(timeout) {
+        Ok(state_op) => {
+            if let Some(state) = state_op {
+                if state.success() {
+                    Ok(true)
+                } else {
+                    let exit_code = state.code().unwrap_or(1);
+
+                    if exit_code == 128 {
+                        return Ok(false);
+                    }
+
+                    Err(eyre::format_err!(
+                        "check repository fail and exit code: {}",
+                        exit_code
+                    ))
                 }
-
-                Err(eyre::format_err!(
-                    "check repository fail and exit code: {}",
-                    exit_code
-                ))
+            } else {
+                return Err(eyre::format_err!("check repository fail"));
             }
         }
         Err(e) => Err(eyre::format_err!("{}", e)),

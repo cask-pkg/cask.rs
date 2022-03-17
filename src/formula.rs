@@ -20,7 +20,7 @@ use url::Url;
 #[derive(Deserialize, Serialize)]
 pub struct Formula {
     #[serde(skip)]
-    pub file_content: String, // The file content
+    pub file_content: String, // The file content of this formula
     #[serde(skip)]
     pub repository: String, // The repository of this formula
     #[serde(skip)]

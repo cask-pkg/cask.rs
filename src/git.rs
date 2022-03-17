@@ -50,7 +50,10 @@ pub fn check_exist(url: &str) -> Result<bool, Report> {
         return Ok(false);
     }
 
-    Ok(false)
+    Err(eyre::format_err!(
+        "check repository fail and exit code: {}",
+        exit_code,
+    ))
 }
 
 // clone repository into dest dir

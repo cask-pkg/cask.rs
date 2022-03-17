@@ -15,6 +15,7 @@ if ([Environment]::Is64BitProcess) {
 }
 
 $BinDir = "$Home\bin"
+$CaskBinDir = "$Home\.cask\bin"
 $downloadedTagGz = "$BinDir\${exeName}.tar.gz"
 $downloadedExe = "$BinDir\${exeName}.exe"
 $fileName = "${exeName}-${arch}-pc-windows-msvc"
@@ -69,9 +70,17 @@ Remove-Item $downloadedTagGz
 
 $User = [EnvironmentVariableTarget]::User
 $Path = [Environment]::GetEnvironmentVariable('Path', $User)
+
+# add $HOME\bin to $PATH
 if (!(";$Path;".ToLower() -like "*;$BinDir;*".ToLower())) {
   [Environment]::SetEnvironmentVariable('Path', "$Path;$BinDir", $User)
   $Env:Path += ";$BinDir"
+}
+
+# add $HOME\.cask\bin to $PATH
+if (!(";$Path;".ToLower() -like "*;$CaskBinDir;*".ToLower())) {
+  [Environment]::SetEnvironmentVariable('Path', "$Path;$CaskBinDir", $User)
+  $Env:Path += ";$CaskBinDir"
 }
 
 Write-Output "${exeName} was installed successfully to $downloadedExe"

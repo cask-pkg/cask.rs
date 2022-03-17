@@ -120,19 +120,38 @@ pub fn get_formula_git_url(package_name: &str) -> String {
     format!("https://{}.git", package_name)
 }
 
+fn print_publishing_msg() {
+    eprintln!(
+        r#"It looks like the package does not support Cask
+If you are the package owner, see our documentation for how to publish a package:
+https://github.com/axetroy/cask.rs/blob/main/DESIGN.md#how-do-i-publish-package"#
+    );
+}
+
 pub fn fetch(cask: &cask::Cask, package_name: &str, temp: bool) -> Result<Formula, Report> {
     eprintln!("Fetching {} formula...", package_name);
 
     let package_cask_repo_url = get_formula_git_cask_url(package_name);
     let package_repo_url = get_formula_git_url(package_name);
 
-    let is_exist_cask_repo = git::check_exist(&package_cask_repo_url)?;
+    let is_cask_repo_exist = git::check_exist(&package_cask_repo_url)?;
 
-    if is_exist_cask_repo {
+    if is_cask_repo_exist {
         return fetch_with_url(cask, package_name, &package_cask_repo_url, temp);
     }
 
-    fetch_with_url(cask, package_name, &package_repo_url, temp)
+    let is_repo_exist = git::check_exist(&package_repo_url)?;
+
+    if is_repo_exist {
+        return fetch_with_url(cask, package_name, &package_repo_url, temp);
+    }
+
+    print_publishing_msg();
+
+    Err(eyre::format_err!(
+        "fail to fetch package formula '{}'",
+        package_name
+    ))
 }
 
 // fetch remote formula
@@ -177,6 +196,8 @@ pub fn fetch_with_url(
     ) {
         Ok(()) => {
             if !cask_file_path.exists() {
+                print_publishing_msg();
+
                 if temp {
                     fs::remove_dir_all(formula_cloned_dir)?;
                 }

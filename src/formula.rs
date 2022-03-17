@@ -138,7 +138,13 @@ pub fn fetch(cask: &cask::Cask, package_name: &str, temp: bool) -> Result<Formul
     match git::clone(
         &cask_git_url,
         &formula_cloned_dir,
-        vec!["--depth=1", "--quiet", "--single-branch", "--filter=tree:0"],
+        git::CloneOption {
+            depth: Some(1),
+            quiet: Some(true),
+            single_branch: Some(true),
+            dissociate: Some(true),
+            filter: Some("tree:0".to_string()),
+        },
     ) {
         Ok(()) => {
             if !cask_file_path.exists() {

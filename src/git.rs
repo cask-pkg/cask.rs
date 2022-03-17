@@ -6,7 +6,43 @@ use std::process::Command as ChildProcess;
 
 use eyre::Report;
 
-pub fn clone(url: &str, dest: &Path, args: Vec<&str>) -> Result<(), Report> {
+pub struct CloneOption {
+    pub depth: Option<i32>,
+    pub quiet: Option<bool>,
+    pub single_branch: Option<bool>,
+    pub dissociate: Option<bool>,
+    pub filter: Option<String>,
+}
+
+pub fn clone(url: &str, dest: &Path, options: CloneOption) -> Result<(), Report> {
+    let mut args: Vec<String> = vec![];
+
+    if let Some(depth) = options.depth {
+        args.push(format!("--depth={}", depth))
+    }
+
+    if let Some(quiet) = options.quiet {
+        if quiet {
+            args.push("--quiet".to_string())
+        }
+    }
+
+    if let Some(dissociate) = options.dissociate {
+        if dissociate {
+            args.push("--dissociate".to_string())
+        }
+    }
+
+    if let Some(single_branch) = options.single_branch {
+        if single_branch {
+            args.push("--single-branch".to_string())
+        }
+    }
+
+    if let Some(filter) = options.filter {
+        args.push(format!("--filter={}", filter))
+    }
+
     let mut child = match ChildProcess::new("git")
         .arg("clone")
         .arg(url)
@@ -54,14 +90,13 @@ mod tests {
         let r1 = git::clone(
             url1,
             dest_dir,
-            vec![
-                "--depth",
-                "1",
-                "--quiet",
-                "--single-branch",
-                "--filter=tree:0",
-                "--dissociate",
-            ],
+            git::CloneOption {
+                depth: Some(1),
+                quiet: Some(true),
+                single_branch: Some(true),
+                dissociate: Some(true),
+                filter: Some("tree:0".to_string()),
+            },
         );
 
         assert!(r1.is_ok());

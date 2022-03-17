@@ -38,7 +38,7 @@ pub async fn install(
             }
 
             return Err(eyre::format_err!(
-                r#"The package '{}' binary file name conflict with '{}'. Try uninstall '{}' and then reinstall."#,
+                r#"The package '{}' binary file name conflict with '{}'. Try uninstall '{}' and try again."#,
                 &package_formula.package.name,
                 &exist_package_name,
                 &exist_package_name

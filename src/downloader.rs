@@ -14,7 +14,13 @@ pub async fn download(url: &str, filepath: &Path) -> Result<(), Report> {
 
     let res = client.get(url).send().await?;
 
-    assert_eq!(res.status(), 200);
+    if res.status() != 200 {
+        return Err(eyre::format_err!(
+            "Download {} fail with http code {}",
+            &url,
+            res.status()
+        ));
+    }
 
     let total_size = res
         .content_length()

@@ -22,8 +22,6 @@ pub async fn install(
     package_name: &str,
     version: Option<&str>,
 ) -> Result<(), Report> {
-    eprintln!("Fetching {} formula...", package_name);
-
     let package_formula = formula::fetch(cask, package_name, false)?;
 
     // detect binary name conflict

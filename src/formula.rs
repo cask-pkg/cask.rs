@@ -121,6 +121,7 @@ pub fn get_formula_git_url(package_name: &str) -> String {
 }
 
 pub fn fetch(cask: &cask::Cask, package_name: &str, temp: bool) -> Result<Formula, Report> {
+    eprintln!("Fetching {} formula...", package_name);
     // try to fetch the URL in {package}-cask format
     match fetch_with_url(
         cask,

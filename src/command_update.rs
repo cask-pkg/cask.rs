@@ -124,7 +124,7 @@ pub async fn update(_cask: &cask::Cask) -> Result<(), Report> {
         )
     })?;
 
-    if !latest_remote_version.eq(&current_version) {
+    if latest_remote_version > current_version {
         eprintln!("You are using the latest version of Cask");
         return Ok(());
     }

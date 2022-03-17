@@ -48,7 +48,7 @@ pub struct Cask {
 pub struct Package {
     pub name: String,                  // The package name
     pub bin: String,                   // The binary name of package
-    pub versions: Vec<String>,         // The version of package
+    pub versions: Option<Vec<String>>, // The version of package. If versions are not provide, cask will automatically get the versions from the repository tags.
     pub authors: Vec<String>,          // The author of package
     pub keywords: Option<Vec<String>>, // The keywords of package
     pub repository: String,            // The repository url
@@ -314,6 +314,15 @@ impl Formula {
             ))
         }
     }
+
+    // get all remote versions
+    pub fn get_versions(&self) -> Result<Vec<String>, Report> {
+        if let Some(versions) = &self.package.versions {
+            Ok(versions.to_vec())
+        } else {
+            git::get_versions(&self.package.repository)
+        }
+    }
 }
 
 #[cfg(test)]
@@ -339,7 +348,7 @@ mod tests {
         );
         assert_eq!(rc.package.name, "github.com/axetroy/gpm.rs");
         assert_eq!(rc.package.bin, "gpm");
-        assert_eq!(rc.package.versions, vec!["0.1.12", "0.1.11"]);
+        assert_eq!(rc.package.versions.unwrap(), vec!["0.1.12", "0.1.11"]);
         assert_eq!(rc.package.authors, vec!["Axetroy <axetroy.dev@gmail.com>"]);
         assert_eq!(
             rc.package.keywords.unwrap(),

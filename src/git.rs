@@ -1,3 +1,5 @@
+#![deny(warnings)]
+
 use core::result::Result;
 use std::path::Path;
 use std::process::{Command as ChildProcess, Stdio};

@@ -53,6 +53,7 @@ Or you can create a new repository named `https://github.com/<username>/<repo>-c
 [package]
 name = "github.com/<username>/<repo>"
 bin = "gpm"
+# Cask will get versions from repository tags if versions field not provide.
 versions = ["0.1.0"]
 authors = ["Username <email@email.com>"]
 keywords = ["key", "word"]

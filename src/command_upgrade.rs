@@ -19,14 +19,16 @@ pub async fn upgrade(cask: &cask::Cask, package_name: &str) -> Result<(), Report
 
     let remote_formula = formula::fetch(cask, package_name, true)?;
 
-    if remote_formula.package.versions.is_empty() {
+    let remote_versions = remote_formula.get_versions()?;
+
+    if remote_versions.is_empty() {
         return Err(eyre::format_err!(
             "can not found any version on '{}' remote",
             package_name
         ));
     }
 
-    let latest_str = &remote_formula.package.versions[0];
+    let latest_str = &remote_versions[0];
 
     let latest = Version::parse(latest_str)
         .map_err(|e| eyre::format_err!("invalid semver version '{}': {}", latest_str, e))?;

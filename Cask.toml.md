@@ -6,6 +6,7 @@ This is the basic configuration of `Cask.Toml`.
 [package]
 name = "github.com/<username>/<repo>"
 bin = "gpm"
+# Cask will get versions from repository tags if versions field not provide.
 versions = ["0.1.0"]
 authors = ["Username <email@email.com>"]
 keywords = ["key", "word"]
@@ -46,16 +47,16 @@ As you can see, it only contains a few top-level fields:
 
 ## Package
 
-| Field           | Description                                                  | type            | required | example                                   |
-| --------------- | ------------------------------------------------------------ | --------------- | -------- | ----------------------------------------- |
-| **name**        | The name of package                                          | string          | true     | `"github.com/axetroy/gpm.rs"`             |
-| **description** | The description information of package                       | string          | true     | `"The description"`                       |
-| **bin**         | The non-extension binary name of package                     | string          | true     | `"gpm"`                                   |
-| **repository**  | The repository url of package                                | string          | true     | `"https://github.com/axetroy/gpm.rs.git"` |
-| **versions**    | The versions of package.<br/>The latest version at the head. | Array\<string\> | true     | `["0.1.12", "0.1.11"]`                    |
-| authors         | Show information of remote package                           | Array\<string\> |          | `["Axetroy <axetroy.dev@gmail.com>"]`     |
-| keywords        | The keywords of package                                      | Array\<string\> |          | `["foo", "bar"]`                          |
-| license         | The license of package                                       | string          |          | `"MIT"`                                   |
+| Field           | Description                                                                                                                                      | type            | required | example                                   |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ | --------------- | -------- | ----------------------------------------- |
+| **name**        | The name of package                                                                                                                              | string          | true     | `"github.com/axetroy/gpm.rs"`             |
+| **description** | The description information of package                                                                                                           | string          | true     | `"The description"`                       |
+| **bin**         | The non-extension binary name of package                                                                                                         | string          | true     | `"gpm"`                                   |
+| **repository**  | The repository url of package                                                                                                                    | string          | true     | `"https://github.com/axetroy/gpm.rs.git"` |
+| **versions**    | The versions without 'v' prefix of package.<br/>The latest version at the head.<br/> Cask will get versions from repository tags if not provide. | Array\<string\> |          | `["0.1.12", "0.1.11"]`                    |
+| authors         | Show information of remote package                                                                                                               | Array\<string\> |          | `["Axetroy <axetroy.dev@gmail.com>"]`     |
+| keywords        | The keywords of package                                                                                                                          | Array\<string\> |          | `["foo", "bar"]`                          |
+| license         | The license of package                                                                                                                           | string          |          | `"MIT"`                                   |
 
 ## Platform-specify-configuration
 

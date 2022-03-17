@@ -1,8 +1,6 @@
-#![deny(warnings)]
-
 use core::result::Result;
 use std::path::Path;
-use std::process::Command as ChildProcess;
+use std::process::{Command as ChildProcess, Stdio};
 
 use eyre::Report;
 
@@ -14,6 +12,38 @@ pub struct CloneOption {
     pub filter: Option<String>,
 }
 
+// check remote repository exist or not
+pub fn check_exist(url: &str) -> Result<bool, Report> {
+    let mut child = match ChildProcess::new("git")
+        .arg("ls-remote")
+        .arg("-h")
+        .arg(url)
+        .stdout(Stdio::null())
+        .spawn()
+    {
+        Ok(child) => Ok(child),
+        Err(e) => Err(eyre::format_err!("{}", e)),
+    }?;
+
+    match child.wait() {
+        Ok(state) => {
+            if state.success() {
+                Ok(true)
+            } else {
+                let exit_code = state.code().unwrap_or(1);
+
+                if exit_code == 128 {
+                    return Ok(false);
+                }
+
+                Err(eyre::format_err!("exit code: {}", exit_code,))
+            }
+        }
+        Err(e) => Err(eyre::format_err!("{}", e)),
+    }
+}
+
+// clone repository into dest dir
 pub fn clone(url: &str, dest: &Path, options: CloneOption) -> Result<(), Report> {
     let mut args: Vec<String> = vec![];
 
@@ -103,5 +133,22 @@ mod tests {
         assert!(dest_dir.exists());
 
         fs::remove_dir_all(dest_dir).unwrap();
+    }
+
+    #[test]
+    fn test_check_exist() {
+        let url1 = "https://github.com/axetroy/gpm.rs.git";
+
+        let r1 = git::check_exist(url1);
+
+        assert!(r1.is_ok());
+        assert!(r1.unwrap());
+
+        let url1 = "https://github.com/axetroy/not_exist.git";
+
+        let r1 = git::check_exist(url1);
+
+        assert!(r1.is_ok());
+        assert!(!r1.unwrap())
     }
 }

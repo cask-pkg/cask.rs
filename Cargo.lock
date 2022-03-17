@@ -126,6 +126,7 @@ dependencies = [
  "tokio",
  "toml",
  "url",
+ "wait-timeout",
  "which",
  "zip",
 ]
@@ -1302,6 +1303,15 @@ name = "version_check"
 version = "0.9.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "49874b5167b65d7193b8aba1567f5c7d93d001cafc34600cee003eda787e483f"
+
+[[package]]
+name = "wait-timeout"
+version = "0.1.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b9f3bf741a801531993db6478b95682117471f76916f5e690dd8d45395b09349"
+dependencies = [
+ "libc",
+]
 
 [[package]]
 name = "want"

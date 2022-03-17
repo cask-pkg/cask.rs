@@ -20,6 +20,7 @@ pub fn check_exist(url: &str) -> Result<bool, Report> {
         .arg("ls-remote")
         .arg("-h")
         .arg(url)
+        .stderr(Stdio::null())
         .stdout(Stdio::null())
         .env("GIT_TERMINAL_PROMPT", "0")
         .spawn()
@@ -30,29 +31,26 @@ pub fn check_exist(url: &str) -> Result<bool, Report> {
 
     let timeout = Duration::from_secs(30);
 
-    match child.wait_timeout(timeout) {
-        Ok(state_op) => {
-            if let Some(state) = state_op {
-                if state.success() {
-                    Ok(true)
-                } else {
-                    let exit_code = state.code().unwrap_or(1);
-
-                    if exit_code == 128 {
-                        return Ok(false);
-                    }
-
-                    Err(eyre::format_err!(
-                        "check repository fail and exit code: {}",
-                        exit_code
-                    ))
-                }
-            } else {
-                return Err(eyre::format_err!("check repository fail"));
-            }
+    let state = match child.wait_timeout(timeout)? {
+        Some(status) => status.code(),
+        None => {
+            // child hasn't exited yet
+            child.kill()?;
+            child.wait()?.code()
         }
-        Err(e) => Err(eyre::format_err!("{}", e)),
+    };
+
+    let exit_code = state.unwrap_or(1);
+
+    if exit_code == 0 {
+        return Ok(true);
     }
+
+    if exit_code == 128 {
+        return Ok(false);
+    }
+
+    Ok(false)
 }
 
 // clone repository into dest dir
@@ -96,29 +94,35 @@ pub fn clone(url: &str, dest: &Path, options: CloneOption) -> Result<(), Report>
         Err(e) => Err(eyre::format_err!("{}", e)),
     }?;
 
-    match child.wait() {
-        Ok(state) => {
-            if state.success() {
-                Ok(())
-            } else {
-                let exit_code = state.code().unwrap_or(1);
+    let timeout = Duration::from_secs(300); // 5min
 
-                if exit_code == 128 {
-                    eprintln!("It looks like the package does not support Cask");
-                    eprintln!(
-                        "If you are the package owner, try to create a new repository '{}' and add a Cask.toml file",
-                        url
-                    )
-                }
-
-                Err(eyre::format_err!(
-                    "check repository fail and exit code: {}",
-                    exit_code,
-                ))
-            }
+    let state = match child.wait_timeout(timeout)? {
+        Some(status) => status.code(),
+        None => {
+            // child hasn't exited yet
+            child.kill()?;
+            child.wait()?.code()
         }
-        Err(e) => Err(eyre::format_err!("{}", e)),
+    };
+
+    let exit_code = state.unwrap_or(1);
+
+    if exit_code == 0 {
+        return Ok(());
     }
+
+    if exit_code == 128 {
+        eprintln!("It looks like the package does not support Cask");
+        eprintln!(
+            "If you are the package owner, try to create a new repository '{}' and add a Cask.toml file",
+            url
+        )
+    }
+
+    Err(eyre::format_err!(
+        "clone repository fail and exit code: {}",
+        exit_code,
+    ))
 }
 
 #[cfg(test)]

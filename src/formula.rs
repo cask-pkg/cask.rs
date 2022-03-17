@@ -283,16 +283,16 @@ impl Formula {
                     let default_ext = ".tar.gz".to_string();
 
                     if let Some(sep) = u.path_segments() {
-                        if let Some(filename) = sep.last() {
-                            if filename.ends_with(".tar.gz") {
-                                ".tar.gz".to_string()
-                            } else if filename.ends_with(".tar") {
-                                ".tar".to_string()
-                            } else if filename.ends_with(".zip") {
-                                ".zip".to_string()
-                            } else {
-                                default_ext
-                            }
+                        let filename = sep.last().unwrap_or(&default_ext);
+
+                        if filename.ends_with(".tar.gz") {
+                            ".tar.gz".to_string()
+                        } else if filename.ends_with(".tgz") {
+                            ".tgz".to_string()
+                        } else if filename.ends_with(".tar") {
+                            ".tar".to_string()
+                        } else if filename.ends_with(".zip") {
+                            ".zip".to_string()
                         } else {
                             default_ext
                         }

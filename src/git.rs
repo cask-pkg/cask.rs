@@ -136,14 +136,17 @@ mod tests {
     }
 
     #[test]
-    fn test_check_exist() {
+    fn test_check_exist_if_exist() {
         let url1 = "https://github.com/axetroy/gpm.rs.git";
 
         let r1 = git::check_exist(url1);
 
         assert!(r1.is_ok());
         assert!(r1.unwrap());
+    }
 
+    #[test]
+    fn test_check_exist_if_not_exist() {
         let url1 = "https://github.com/axetroy/not_exist.git";
 
         let r1 = git::check_exist(url1);

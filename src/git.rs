@@ -19,6 +19,7 @@ pub fn check_exist(url: &str) -> Result<bool, Report> {
         .arg("-h")
         .arg(url)
         .stdout(Stdio::null())
+        .env("GIT_TERMINAL_PROMPT", "0")
         .spawn()
     {
         Ok(child) => Ok(child),

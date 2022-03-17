@@ -33,7 +33,7 @@ pub struct Formula {
 
 #[derive(Deserialize, Serialize)]
 pub struct Cask {
-    pub name: String,       // The package name. eg github.com/axetroy/gpm.rsÏ
+    pub name: String,       // The package name. eg github.com/axetroy/gpm.rs
     pub created_at: String, // The package installed date
     pub version: String,    // The version is using for package
     pub repository: String, // The package installed from the repository url
@@ -105,14 +105,46 @@ pub struct DownloadTarget {
     pub ext: String,
 }
 
-pub fn get_formula_git_url(package_name: &str) -> String {
+pub fn get_formula_git_cask_url(package_name: &str) -> String {
     format!("https://{}-cask.git", package_name)
 }
 
-// fetch remote formula
-pub fn fetch(cask: &cask::Cask, package_name: &str, temp: bool) -> Result<Formula, Report> {
-    let cask_git_url = get_formula_git_url(package_name);
+pub fn get_formula_git_url(package_name: &str) -> String {
+    format!("https://{}.git", package_name)
+}
 
+pub fn fetch(cask: &cask::Cask, package_name: &str, temp: bool) -> Result<Formula, Report> {
+    // try to fetch the URL in {package}-cask format
+    match fetch_with_url(
+        cask,
+        package_name,
+        &get_formula_git_cask_url(package_name),
+        temp,
+    ) {
+        Ok(f) => Ok(f),
+        // getting an error, fallback to the URL in {package} format
+        Err(_) => {
+            match fetch_with_url(cask, package_name, &get_formula_git_url(package_name), temp) {
+                Ok(f) => Ok(f),
+                Err(e) => {
+                    eprintln!("It looks like the package does not support Cask");
+                    eprintln!(
+                        "If you are the package owner, see our documentation for how to publish a package: https://github.com/axetroy/cask.rs/blob/main/DESIGN.md#how-do-i-publish-myothers-package",
+                    );
+                    Err(e)
+                }
+            }
+        }
+    }
+}
+
+// fetch remote formula
+pub fn fetch_with_url(
+    cask: &cask::Cask,
+    package_name: &str,
+    git_url: &str,
+    temp: bool,
+) -> Result<Formula, Report> {
     let unix_time = {
         let start = SystemTime::now();
 
@@ -136,7 +168,7 @@ pub fn fetch(cask: &cask::Cask, package_name: &str, temp: bool) -> Result<Formul
     let cask_file_path = formula_cloned_dir.join("Cask.toml");
 
     match git::clone(
-        &cask_git_url,
+        git_url,
         &formula_cloned_dir,
         git::CloneOption {
             depth: Some(1),

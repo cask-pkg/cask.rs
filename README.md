@@ -64,7 +64,6 @@ cask install https://github.com/axetroy/dvm.git
 
 # cask uninstall <package or the executable file name of the package>
 cask uninstall github.com/axetroy/dvm
-
 # or uninstall with shorter command
 cask rm dvm
 ```

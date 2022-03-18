@@ -5,10 +5,12 @@ on:
     paths:
       - "install.sh"
       - "install.sp1"
+      - ".github/workflows/installation.yml"
   pull_request:
     paths:
       - "install.sh"
       - "install.sp1"
+      - ".github/workflows/installation.yml"
   workflow_dispatch:
 
 jobs:

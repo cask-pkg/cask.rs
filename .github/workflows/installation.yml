@@ -38,6 +38,7 @@ jobs:
         if: startsWith(matrix.os, 'windows')
         run: |
           ./install.ps1
+          cask --version
 
       - name: Run cask command
         run: |

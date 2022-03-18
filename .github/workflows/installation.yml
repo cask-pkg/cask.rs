@@ -59,3 +59,9 @@ jobs:
           cask ls
           # try search package
           cask search github.com/axetroy/gpm.rs
+
+          # install package
+          cask install github.com/axetroy/gpm.rs
+
+          # run installed package
+          gpm --help

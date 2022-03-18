@@ -1,0 +1,36 @@
+name: installation.yml
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    name: ${{ matrix.kind }} ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-11, ubuntu-latest, windows-latest]
+
+    env:
+      CARGO_INCREMENTAL: 0
+      RUST_BACKTRACE: full
+      CARGO_TERM_COLOR: always
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v2
+
+      - name: Install with shell
+        if: startsWith(matrix.os, 'ubuntu') || startsWith(matrix.os, 'macos')
+        run: |
+          sh ./install.sh
+          echo "${HOME}/.cask/bin" >> $GITHUB_PATH
+
+      - name: Install with powershell
+        if: startsWith(matrix.os, 'windows')
+        run: |
+          ./install.ps1
+
+      - name: Run cask command
+        run: |
+          cask --version
+          cask --help

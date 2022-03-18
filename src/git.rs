@@ -43,6 +43,7 @@ fn fetch_tags(git_url: &str) -> Result<Vec<GitTag>, Report> {
         .arg("ls-remote")
         .arg("-t")
         .arg(git_url)
+        .env("GIT_TERMINAL_PROMPT", "0")
         .spawn()
     {
         Ok(child) => Ok(child),
@@ -51,9 +52,26 @@ fn fetch_tags(git_url: &str) -> Result<Vec<GitTag>, Report> {
 
     let output = child.wait_with_output()?;
 
-    let output = String::from_utf8(output.stdout).unwrap();
+    if !output.status.success() {
+        let exit_code = output.status.code().unwrap_or(1);
 
-    for line in output.lines().into_iter().map(|f| f.to_string()) {
+        if exit_code == 128 {
+            return Err(eyre::format_err!(
+                "repository '{}' does not exist",
+                &git_url
+            ));
+        }
+
+        return Err(eyre::format_err!(
+            "fetch repository '{}' tags error and exit with code {}",
+            &git_url,
+            exit_code
+        ));
+    }
+
+    let stdout = String::from_utf8(output.stdout).unwrap();
+
+    for line in stdout.lines().into_iter().map(|f| f.to_string()) {
         let mut inter = line.split_whitespace();
 
         let hash = inter
@@ -312,6 +330,24 @@ mod tests {
         ];
 
         assert_eq!(tags, expect);
+    }
+
+    #[test]
+    fn test_fetch_tags_if_remote_not_exist() {
+        let url1 = "https://github.com/axetroy/prune.not.exist.git";
+
+        let r = git::fetch_tags(url1);
+
+        assert!(r.is_err());
+    }
+
+    #[test]
+    fn test_fetch_tags_if_remote_does_not_exist_tags() {
+        let url1 = "https://github.com/axetroy/axetroy.git";
+
+        let tags = git::fetch_tags(url1).unwrap();
+
+        assert!(tags.is_empty());
     }
 
     #[test]

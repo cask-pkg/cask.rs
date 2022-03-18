@@ -58,11 +58,16 @@ Then welcome to Cask.
 
 ```sh
 # cask install <package>
-cask install github.com/axetroy/gpm.rs
+cask install github.com/axetroy/dvm
 
-# cask uninstall <package>
-cask uninstall github.com/axetroy/gpm.rs
+# cask uninstall <package or the executable file name of the package>
+cask uninstall github.com/axetroy/dvm
+
+# or uninstall with shorter command
+cask rm dvm
 ```
+
+Show more information with `cask --help` command.
 
 ## Command
 

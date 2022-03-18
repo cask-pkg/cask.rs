@@ -47,11 +47,13 @@ jobs:
           cask ls
 
           # However, PowerShell settings will fail in the next step, so add environment variables here.
-          echo "${HOME}/.cask/bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-          echo "${HOME}/bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          echo "${HOME}\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          echo "${HOME}\.cask\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
       - name: Run cask command
         run: |
-          cask --version
           cask --help
+          # make sure $HOME/.cask/bin has been add to $PATH
+          cask ls
+          # try search package
           cask search github.com/axetroy/gpm.rs

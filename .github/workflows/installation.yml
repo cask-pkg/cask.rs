@@ -1,4 +1,4 @@
-name: installation.yml
+name: installation
 
 on:
   push:

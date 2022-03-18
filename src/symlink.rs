@@ -1,3 +1,5 @@
+// #![deny(warnings)]
+
 use eyre::Report;
 use std::fs;
 use std::fs::File;

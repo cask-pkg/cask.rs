@@ -1,3 +1,5 @@
+// #![deny(warnings)]
+
 use eyre::Report;
 
 use std::path::Path;

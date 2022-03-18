@@ -1,3 +1,5 @@
+// #![deny(warnings)]
+
 use core::result::Result;
 use std::fs::File;
 use std::io::Write;

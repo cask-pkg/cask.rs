@@ -51,7 +51,7 @@ async fn main() {
             Command::new("uninstall")
                 .alias("rm")
                 .about("Uninstall package")
-                .arg(arg!(<PACKAGE> "The package name"))
+                .arg(arg!(<PACKAGE> "The package name or the executable file name of the package"))
                 .arg_required_else_help(true),
         )
         .subcommand(

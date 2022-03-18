@@ -3,6 +3,7 @@
 
    <h1>Cask</h1>
 
+[![installation](https://github.com/axetroy/cask.rs/actions/workflows/installation.yml/badge.svg)](https://github.com/axetroy/cask.rs/actions/workflows/installation.yml)
 [![lint](https://github.com/axetroy/cask.rs/actions/workflows/lint.yml/badge.svg)](https://github.com/axetroy/cask.rs/actions/workflows/lint.yml)
 [![test](https://github.com/axetroy/cask.rs/actions/workflows/test.yml/badge.svg)](https://github.com/axetroy/cask.rs/actions/workflows/test.yml)
 [![build](https://github.com/axetroy/cask.rs/actions/workflows/build.yml/badge.svg)](https://github.com/axetroy/cask.rs/actions/workflows/build.yml)

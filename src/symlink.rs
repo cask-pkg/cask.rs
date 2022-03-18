@@ -6,9 +6,16 @@ use std::path::Path;
 
 pub fn symlink(src: &Path, dest: &Path, package_name: &str) -> Result<(), Report> {
     if cfg!(unix) {
+        // if file exists, then remove it
         if dest.exists() {
             fs::remove_file(&dest)?;
         }
+
+        // if symlink exists, then remove it
+        if fs::read_link(&dest).is_ok() {
+            fs::remove_file(&dest)?;
+        }
+
         #[cfg(unix)]
         std::os::unix::fs::symlink(&src, &dest)?;
     } else {

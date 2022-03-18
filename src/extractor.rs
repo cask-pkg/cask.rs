@@ -163,15 +163,35 @@ pub fn extract(
 ) -> Result<PathBuf, Report> {
     let tar_file_name = tarball.file_name().unwrap().to_str().unwrap();
 
+    let ensure_extract_file_exist = |s: &Path| {
+        if s.exists() && s.is_file() {
+            Ok(s.to_owned())
+        } else {
+            Err(eyre::format_err!(
+                "can not found file '{}' in the root of tarball",
+                &extract_file_name
+            ))
+        }
+    };
+
     fs::create_dir_all(dest_dir)
         .map_err(|e| eyre::format_err!("can not create folder '{}': {}", dest_dir.display(), e))?;
 
     if tar_file_name.ends_with(".tar.gz") || tar_file_name.ends_with(".tgz") {
-        extract_tar_gz(tarball, dest_dir, extract_file_name)
+        match extract_tar_gz(tarball, dest_dir, extract_file_name) {
+            Ok(p) => ensure_extract_file_exist(&p),
+            Err(e) => Err(e),
+        }
     } else if tar_file_name.ends_with(".tar") {
-        extract_tar(tarball, dest_dir, extract_file_name)
+        match extract_tar(tarball, dest_dir, extract_file_name) {
+            Ok(p) => ensure_extract_file_exist(&p),
+            Err(e) => Err(e),
+        }
     } else if tar_file_name.ends_with(".zip") {
-        extract_zip(tarball, dest_dir, extract_file_name)
+        match extract_zip(tarball, dest_dir, extract_file_name) {
+            Ok(p) => ensure_extract_file_exist(&p),
+            Err(e) => Err(e),
+        }
     } else {
         Err(eyre::format_err!(
             "not support extract file from '{}'",
@@ -307,5 +327,21 @@ mod tests {
         let meta = fs::metadata(&extracted_file_path).unwrap();
 
         assert_eq!(meta.len(), 657_408);
+    }
+
+    #[test]
+    fn test_extract_tar_gz_without_binary_file() {
+        let extractor_dir = env::current_dir()
+            .unwrap()
+            .join("fixtures")
+            .join("extractor");
+
+        let tar_file_path = extractor_dir.join("test_without_binary.tar.gz");
+
+        let dest_dir = extractor_dir;
+
+        let r = extractor::extract(&tar_file_path, &dest_dir, "without_test");
+
+        assert!(r.is_err())
     }
 }

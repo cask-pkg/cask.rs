@@ -1,6 +1,15 @@
 name: installation.yml
 
-on: [push, pull_request]
+on:
+  push:
+    paths:
+      - "install.sh"
+      - "install.sp1"
+  pull_request:
+    paths:
+      - "install.sh"
+      - "install.sp1"
+  workflow_dispatch:
 
 jobs:
   build:
@@ -34,3 +43,4 @@ jobs:
         run: |
           cask --version
           cask --help
+          cask search github.com/axetroy/gpm.rs

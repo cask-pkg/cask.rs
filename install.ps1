@@ -77,6 +77,8 @@ if (!(";$Path;".ToLower() -like "*;$BinDir;*".ToLower())) {
   $Env:Path += ";$BinDir"
 }
 
+$Path = [Environment]::GetEnvironmentVariable('Path', $User)
+
 # add $HOME\.cask\bin to $PATH
 if (!(";$Path;".ToLower() -like "*;$CaskBinDir;*".ToLower())) {
   [Environment]::SetEnvironmentVariable('Path', "$Path;$CaskBinDir", $User)

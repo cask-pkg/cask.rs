@@ -6,11 +6,10 @@ use std::fs;
 use crate::cask;
 use crate::downloader;
 use crate::extractor;
+use crate::git;
 
 use eyre::Report;
-use reqwest::Client;
 use semver::Version;
-use serde::Deserialize;
 
 fn get_arch() -> String {
     #[cfg(target_arch = "x86_64")]
@@ -80,41 +79,22 @@ fn get_abi() -> Option<String> {
     }
 }
 
-#[derive(Deserialize)]
-struct Release {
-    tag_name: String,
-}
+// get the latest version without 'v' prefix
+fn get_latest_release() -> Result<String, Report> {
+    let versions = git::get_versions(env!("CARGO_PKG_REPOSITORY"))?;
 
-async fn get_latest_release() -> Result<Release, Report> {
-    let url = "https://api.github.com/repos/axetroy/cask.rs/releases/latest";
-
-    let client = &Client::new();
-
-    let res = client.get(url).header("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_2) AppleWebKit/600.6.13 (KHTML, like Gecko) Version/10.4.90 Safari/547.3.15").send().await?;
-
-    if res.status() != 200 {
-        return Err(eyre::format_err!(
-            "request fail with status code {}",
-            res.status()
-        ));
+    if versions.is_empty() {
+        return Err(eyre::format_err!("There is no one release of Cask"));
     }
 
-    let release: Release = res.json().await?;
-
-    Ok(release)
+    Ok(versions[0].clone())
 }
 
 pub async fn update(_cask: &cask::Cask) -> Result<(), Report> {
-    let newest_release = get_latest_release().await?;
+    let latest_release = get_latest_release()?;
 
-    let latest_remote_version = Version::parse(newest_release.tag_name.trim_start_matches('v'))
-        .map_err(|e| {
-            eyre::format_err!(
-                "parse latest version '{}' fail: {}",
-                &newest_release.tag_name,
-                e
-            )
-        })?;
+    let latest_remote_version = Version::parse(&latest_release)
+        .map_err(|e| eyre::format_err!("parse latest version '{}' fail: {}", &latest_release, e))?;
 
     let current_version = Version::parse(env!("CARGO_PKG_VERSION")).map_err(|e| {
         eyre::format_err!(
@@ -143,11 +123,10 @@ pub async fn update(_cask: &cask::Cask) -> Result<(), Report> {
 
     let resource_url = format!(
         "https://github.com/axetroy/cask.rs/releases/download/{}/{}",
-        newest_release.tag_name, filename,
+        &latest_release, filename,
     );
 
-    let resource_file_path =
-        env::temp_dir().join(format!("{}-{}", newest_release.tag_name, filename));
+    let resource_file_path = env::temp_dir().join(format!("{}-{}", &latest_release, filename));
 
     downloader::download(&resource_url, &resource_file_path).await?;
 
@@ -174,7 +153,7 @@ pub async fn update(_cask: &cask::Cask) -> Result<(), Report> {
     eprintln!(
         "Update from '{}' to '{}' success!",
         env!("CARGO_PKG_VERSION"),
-        newest_release.tag_name.trim_start_matches('v')
+        &latest_release
     );
 
     Ok(())

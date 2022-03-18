@@ -22,15 +22,13 @@ A universal, distributed package manager.
 
 </div>
 
-Refuse to write the installation script. Refuse to upload packages to the center server. Refuse to write a cumbersome configuration.
+If you are tired of:
 
-Then choose Cask
+1. Install different package manager in different platform (Homebrew/Chocolatey/Scoop).
+2. Writing installation scripts many times(Bash/PowerShell).
+3. Update remote package information when release a new version
 
-Features:
-
-- [x] cross-platform support
-- [x] none center server
-- [x] easy to use
+Then welcome to Cask.
 
 ## Installation
 

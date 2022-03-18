@@ -38,7 +38,7 @@ async fn main() {
             Command::new("install")
                 .alias("i")
                 .about("Install package")
-                .arg(arg!(<PACKAGE> "The package name"))
+                .arg(arg!(<PACKAGE> "The package name or repository url"))
                 .arg(
                     Arg::new("VERSION")
                         .required(false)

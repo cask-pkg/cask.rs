@@ -129,19 +129,41 @@ https://github.com/axetroy/cask.rs/blob/main/DESIGN.md#how-do-i-publish-package"
 pub fn fetch(cask: &cask::Cask, package_name: &str, temp: bool) -> Result<Formula, Report> {
     eprintln!("Fetching {} formula...", package_name);
 
+    if let Ok(package_addr) = Url::parse(package_name) {
+        let scheme = package_addr.scheme();
+        return match scheme {
+            "http" | "https" => {
+                let is_package_repo_exist = git::check_exist(package_addr.as_str())?;
+
+                if is_package_repo_exist {
+                    fetch_with_git_url(cask, package_name, package_addr.as_str(), temp)
+                } else {
+                    Err(eyre::format_err!(
+                        "The package '{}' does not exist!",
+                        package_name
+                    ))
+                }
+            }
+            _ => Err(eyre::format_err!(
+                "Not support the protocol '{}' of package address.",
+                scheme
+            )),
+        };
+    }
+
     let package_cask_repo_url = get_formula_git_cask_url(package_name);
     let package_repo_url = get_formula_git_url(package_name);
 
     let is_cask_repo_exist = git::check_exist(&package_cask_repo_url)?;
 
     if is_cask_repo_exist {
-        return fetch_with_url(cask, package_name, &package_cask_repo_url, temp);
+        return fetch_with_git_url(cask, package_name, &package_cask_repo_url, temp);
     }
 
     let is_repo_exist = git::check_exist(&package_repo_url)?;
 
     if is_repo_exist {
-        return fetch_with_url(cask, package_name, &package_repo_url, temp);
+        return fetch_with_git_url(cask, package_name, &package_repo_url, temp);
     }
 
     print_publishing_msg();
@@ -153,7 +175,7 @@ pub fn fetch(cask: &cask::Cask, package_name: &str, temp: bool) -> Result<Formul
 }
 
 // fetch remote formula
-pub fn fetch_with_url(
+fn fetch_with_git_url(
     cask: &cask::Cask,
     package_name: &str,
     git_url: &str,
@@ -338,6 +360,7 @@ impl Formula {
 mod tests {
     use std::env;
 
+    use crate::cask;
     use crate::formula;
 
     #[test]
@@ -422,5 +445,15 @@ mod tests {
             linux.mips64el.as_ref().unwrap().url,
             "https://github.com/axetroy/gpm.rs/releases/download/v{version}/gpm_linux_mips64el.tar.gz"
         );
+    }
+
+    #[test]
+    fn test_fetch_from_git_url() {
+        let root_dir = env::current_dir().unwrap().join("fixtures").join(".cask");
+        let c = cask::new(&root_dir);
+
+        let formula = formula::fetch(&c, "https://github.com/axetroy/prune.v", true).unwrap();
+
+        assert_eq!(formula.package.name, "github.com/axetroy/prune.v")
     }
 }

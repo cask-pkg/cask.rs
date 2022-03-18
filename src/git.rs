@@ -104,7 +104,11 @@ pub fn get_versions(git_url: &str) -> Result<Vec<String>, Report> {
         let version = tag.tag.trim_start_matches('v');
 
         if let Ok(v) = Version::parse(version) {
-            versions.push(v);
+            // ignore unstable version
+            // eg. 2.5.2-test
+            if v.pre.is_empty() {
+                versions.push(v);
+            }
         };
     }
 

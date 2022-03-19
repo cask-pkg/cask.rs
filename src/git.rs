@@ -232,7 +232,7 @@ pub fn check_exist(url: &str) -> Result<bool, GitError> {
 
 #[cfg(test)]
 mod tests {
-    use crate::git::{self, GitTag};
+    use crate::git::{self, GitError, GitTag};
     use std::{fs, path::Path};
 
     #[test]
@@ -375,22 +375,39 @@ mod tests {
     }
 
     #[test]
+    fn test_get_versions_from_a_not_exist_repo() {
+        let url1 = "https://github.com/axetroy/not_exist.git";
+
+        let r1 = git::get_versions(url1);
+
+        assert!(r1.is_err());
+
+        if let Err(e) = r1 {
+            assert!(match e {
+                GitError::RemoteRepositoryNotExists { url } => {
+                    assert_eq!(url, url1);
+                    true
+                }
+                _ => false,
+            })
+        }
+    }
+
+    #[test]
     fn test_check_exist_if_exist() {
         let url1 = "https://github.com/axetroy/cask.rs.git";
 
-        let r1 = git::check_exist(url1);
+        let exist = git::check_exist(url1).unwrap();
 
-        assert!(r1.is_ok());
-        assert!(r1.unwrap());
+        assert!(exist);
     }
 
     #[test]
     fn test_check_exist_if_not_exist() {
         let url1 = "https://github.com/axetroy/not_exist.git";
 
-        let r1 = git::check_exist(url1);
+        let exist = git::check_exist(url1).unwrap();
 
-        assert!(r1.is_ok());
-        assert!(!r1.unwrap())
+        assert!(!exist);
     }
 }

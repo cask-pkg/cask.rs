@@ -4,6 +4,7 @@ use crate::cask;
 use crate::git;
 use crate::hooker;
 
+use std::collections::HashMap;
 use std::fs::File;
 use std::io::{ErrorKind, Read};
 use std::path::Path;
@@ -31,8 +32,8 @@ pub struct Formula {
     pub windows: Option<Platform>, // The windows target information
     pub darwin: Option<Platform>, // The macOS target information
     pub linux: Option<Platform>, // The linux target information
-    pub dependencies: Option<Vec<String>>, // TODO: The dependencies will be installed before install package
-    pub hook: Option<hooker::Hook>,        // The hook should run in some moment
+    pub dependencies: Option<HashMap<String, Dependencies>>, // TODO: The dependencies of the package
+    pub hook: Option<hooker::Hook>,                          // The hook should run in some moment
 }
 
 #[derive(Deserialize, Serialize)]
@@ -41,6 +42,17 @@ pub struct Cask {
     pub created_at: String, // The package installed date
     pub version: String,    // The version is using for package
     pub repository: String, // The package installed from the repository url
+}
+
+#[derive(Deserialize, Serialize)]
+pub enum Dependencies {
+    Detail(DependenciesDetail), // More information of package
+    Simple(String),             // The version of package
+}
+
+#[derive(Deserialize, Serialize)]
+pub struct DependenciesDetail {
+    pub version: String, // The version of package
 }
 
 #[derive(Deserialize, Serialize)]

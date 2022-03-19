@@ -42,7 +42,9 @@ wait-timeout = "0.1.5"
 thiserror = "1.0.30"
 
 [profile.release]
+# https://github.com/johnthagen/min-sized-rust
 strip = true  # Automatically strip symbols from the binary.
 opt-level = "z"  # Optimize for size.
 lto = true
 codegen-units = 1
+panic = "abort"

@@ -81,15 +81,16 @@ pub struct Platform {
 #[derive(Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum ResourceTarget {
-    Detailed(Arch),
+    Detailed(ResourceTargetDetail),
     Simple(String),
 }
 
 #[derive(Deserialize, Serialize)]
-pub struct Arch {
+pub struct ResourceTargetDetail {
     pub url: String,               // The url will be download when install the package
     pub checksum: Option<String>,  // The hash256 of download resource
     pub extension: Option<String>, // The extension name of download resource. optional value: ".tar.gz" ".tar" ".zip"
+    pub path: Option<String>,      // The folder that binary file locate in the tarball
 }
 
 pub fn new(formula_file: &Path, repo: &str) -> Result<Formula, Report> {
@@ -126,6 +127,7 @@ pub fn new(formula_file: &Path, repo: &str) -> Result<Formula, Report> {
 
 pub struct DownloadTarget {
     pub url: String,
+    pub path: String,
     pub checksum: Option<String>,
     pub ext: String,
 }
@@ -360,6 +362,12 @@ impl Formula {
                 }
             };
 
+            let path = match resource_target {
+                ResourceTarget::Detailed(arch) => arch.path.clone(),
+                ResourceTarget::Simple(_) => None,
+            }
+            .unwrap_or_else(|| "/".to_string());
+
             let ext_name = match resource_target {
                 ResourceTarget::Detailed(arch) => match &arch.extension {
                     Some(ext) => ext.clone(),
@@ -375,6 +383,7 @@ impl Formula {
 
             Ok(DownloadTarget {
                 url: renderer_url,
+                path,
                 checksum,
                 ext: ext_name,
             })

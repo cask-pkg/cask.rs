@@ -139,7 +139,8 @@ pub async fn self_update(_cask: &cask::Cask) -> Result<(), Report> {
     #[cfg(windows)]
     let exe_name = format!("{}.exe", env!("CARGO_BIN_NAME"));
 
-    let binary_file_path = extractor::extract(&resource_file_path, &env::temp_dir(), &exe_name)?;
+    let binary_file_path =
+        extractor::extract(&resource_file_path, &env::temp_dir(), &exe_name, "/")?;
 
     // remove tarball file
     fs::remove_file(&resource_file_path).ok();

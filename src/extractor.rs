@@ -15,12 +15,26 @@ fn extract_tar_gz(
     src_filepath: &Path,
     dest_dir: &Path,
     extract_file_name: &str,
+    extract_file_in_tarball_file_path: &str,
 ) -> Result<PathBuf, Report> {
     let output_file_path = dest_dir.join(extract_file_name);
 
     // use tar command
     // wait for fix: https://github.com/alexcrichton/tar-rs/issues/286
     if let Ok(tar_command_path) = which("tar") {
+        let unpack_exe_file_path = {
+            let mut unpack = dest_dir.to_path_buf();
+            for p in extract_file_in_tarball_file_path.split('/') {
+                if p.is_empty() {
+                    continue;
+                }
+                unpack = dest_dir.join(p).to_path_buf();
+            }
+
+            unpack = unpack.join(extract_file_name);
+
+            unpack
+        };
         fs::create_dir_all(dest_dir).map_err(|e| {
             eyre::format_err!("can not create folder '{}': {}", dest_dir.display(), e)
         })?;
@@ -35,6 +49,11 @@ fn extract_tar_gz(
             Ok(mut child) => match child.wait() {
                 Ok(state) => {
                     if state.success() {
+                        // Rename it to the target folder if the executable file is not locate in root tarball
+                        if extract_file_in_tarball_file_path != "/" {
+                            println!("{}", unpack_exe_file_path.display());
+                            fs::rename(&unpack_exe_file_path, &output_file_path)?;
+                        }
                         Ok(output_file_path)
                     } else {
                         Err(eyre::format_err!(
@@ -57,7 +76,7 @@ fn extract_tar_gz(
         archive.set_preserve_permissions(true);
         archive.set_preserve_mtime(true);
 
-        let files = archive.entries()?;
+        let files = archive.entries()?.collect::<Vec<_>>();
 
         for entry in files {
             let mut file = entry?;
@@ -83,6 +102,7 @@ fn extract_tar(
     src_filepath: &Path,
     dest_dir: &Path,
     extract_file_name: &str,
+    _extract_file_in_tarball_file_path: &str,
 ) -> Result<PathBuf, Report> {
     let output_file_path = dest_dir.join(extract_file_name);
 
@@ -119,6 +139,7 @@ fn extract_zip(
     src_filepath: &Path,
     dest_dir: &Path,
     extract_file_name: &str,
+    _extract_file_in_tarball_file_path: &str,
 ) -> Result<PathBuf, Report> {
     let output_file_path = dest_dir.join(extract_file_name);
 
@@ -160,6 +181,7 @@ pub fn extract(
     tarball: &Path,
     dest_dir: &Path,
     extract_file_name: &str,
+    extract_file_in_tarball_file_path: &str,
 ) -> Result<PathBuf, Report> {
     let tar_file_name = tarball.file_name().unwrap().to_str().unwrap();
 
@@ -178,17 +200,32 @@ pub fn extract(
         .map_err(|e| eyre::format_err!("can not create folder '{}': {}", dest_dir.display(), e))?;
 
     if tar_file_name.ends_with(".tar.gz") || tar_file_name.ends_with(".tgz") {
-        match extract_tar_gz(tarball, dest_dir, extract_file_name) {
+        match extract_tar_gz(
+            tarball,
+            dest_dir,
+            extract_file_name,
+            extract_file_in_tarball_file_path,
+        ) {
             Ok(p) => ensure_extract_file_exist(&p),
             Err(e) => Err(e),
         }
     } else if tar_file_name.ends_with(".tar") {
-        match extract_tar(tarball, dest_dir, extract_file_name) {
+        match extract_tar(
+            tarball,
+            dest_dir,
+            extract_file_name,
+            extract_file_in_tarball_file_path,
+        ) {
             Ok(p) => ensure_extract_file_exist(&p),
             Err(e) => Err(e),
         }
     } else if tar_file_name.ends_with(".zip") {
-        match extract_zip(tarball, dest_dir, extract_file_name) {
+        match extract_zip(
+            tarball,
+            dest_dir,
+            extract_file_name,
+            extract_file_in_tarball_file_path,
+        ) {
             Ok(p) => ensure_extract_file_exist(&p),
             Err(e) => Err(e),
         }
@@ -217,7 +254,7 @@ mod tests {
         let dest_dir = extractor_dir;
 
         let extracted_file_path =
-            extractor::extract(&tar_file_path, &dest_dir, "test_tar").unwrap();
+            extractor::extract(&tar_file_path, &dest_dir, "test_tar", "/").unwrap();
 
         let meta = fs::metadata(&extracted_file_path).unwrap();
 
@@ -240,7 +277,7 @@ mod tests {
         let dest_dir = extractor_dir;
 
         let extracted_file_path =
-            extractor::extract(&tar_file_path, &dest_dir, "test_zip").unwrap();
+            extractor::extract(&tar_file_path, &dest_dir, "test_zip", "/").unwrap();
 
         let meta = fs::metadata(&extracted_file_path).unwrap();
 
@@ -262,7 +299,7 @@ mod tests {
 
         let dest_dir = extractor_dir;
 
-        let r = extractor::extract(&tar_file_path, &dest_dir, "not_exist");
+        let r = extractor::extract(&tar_file_path, &dest_dir, "not_exist", "/");
 
         assert!(r.is_err());
     }
@@ -278,7 +315,8 @@ mod tests {
 
         let dest_dir = extractor_dir;
 
-        let extracted_file_path = extractor::extract(&tar_file_path, &dest_dir, "test").unwrap();
+        let extracted_file_path =
+            extractor::extract(&tar_file_path, &dest_dir, "test", "/").unwrap();
 
         let meta = fs::metadata(&extracted_file_path).unwrap();
 
@@ -301,7 +339,7 @@ mod tests {
         let dest_dir = extractor_dir;
 
         let extracted_file_path =
-            extractor::extract(&tar_file_path, &dest_dir, "cross-env").unwrap();
+            extractor::extract(&tar_file_path, &dest_dir, "cross-env", "/").unwrap();
 
         let meta = fs::metadata(&extracted_file_path).unwrap();
 
@@ -322,7 +360,7 @@ mod tests {
         let dest_dir = extractor_dir;
 
         let extracted_file_path =
-            extractor::extract(&tar_file_path, &dest_dir, "prune.exe").unwrap();
+            extractor::extract(&tar_file_path, &dest_dir, "prune.exe", "/").unwrap();
 
         let meta = fs::metadata(&extracted_file_path).unwrap();
 
@@ -340,7 +378,7 @@ mod tests {
 
         let dest_dir = extractor_dir;
 
-        let r = extractor::extract(&tar_file_path, &dest_dir, "without_test");
+        let r = extractor::extract(&tar_file_path, &dest_dir, "without_test", "/");
 
         assert!(r.is_err())
     }

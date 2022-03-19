@@ -45,21 +45,23 @@ pub async fn install(
         }
     }
 
-    if let Some(scripts) = &package_formula.preinstall {
-        let script_cwd = cask
-            .package_dir(&package_formula.package.name)
-            .join("repository");
-        for script in scripts.split('\n').map(|s| s.trim_start()) {
-            if script.is_empty() {
-                continue;
-            }
+    if let Some(hook) = &package_formula.hook {
+        if let Some(scripts) = &hook.preinstall {
+            let script_cwd = cask
+                .package_dir(&package_formula.package.name)
+                .join("repository");
+            for script in scripts.split('\n').map(|s| s.trim_start()) {
+                if script.is_empty() {
+                    continue;
+                }
 
-            if script.starts_with('#') {
-                continue;
-            }
+                if script.starts_with('#') {
+                    continue;
+                }
 
-            eprintln!("run preinstall hook: '{}'", script);
-            shell::run(&script_cwd, script)?;
+                eprintln!("run preinstall hook: '{}'", script);
+                shell::run(&script_cwd, script)?;
+            }
         }
     }
 
@@ -174,22 +176,24 @@ repository = "{}"
         formula_file.write_all(package_formula.get_file_content().as_bytes())?;
     }
 
-    if let Some(scripts) = &package_formula.postinstall {
-        let script_cwd = cask
-            .package_dir(&package_formula.package.name)
-            .join("repository");
+    if let Some(hook) = &package_formula.hook {
+        if let Some(scripts) = &hook.postinstall {
+            let script_cwd = cask
+                .package_dir(&package_formula.package.name)
+                .join("repository");
 
-        for script in scripts.split('\n').map(|s| s.trim_start()) {
-            if script.is_empty() {
-                continue;
+            for script in scripts.split('\n').map(|s| s.trim_start()) {
+                if script.is_empty() {
+                    continue;
+                }
+
+                if script.starts_with('#') {
+                    continue;
+                }
+
+                eprintln!("run postinstall hook: '{}'", script);
+                shell::run(&script_cwd, script)?;
             }
-
-            if script.starts_with('#') {
-                continue;
-            }
-
-            eprintln!("run postinstall hook: '{}'", script);
-            shell::run(&script_cwd, script)?;
         }
     }
 

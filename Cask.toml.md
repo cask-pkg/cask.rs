@@ -24,13 +24,13 @@ echo "running postinstall hook"
 """
 
 [darwin]
-x86_64 = { url = "https://github.com/<username>/<repo>/releases/download/v{version}/darwin_amd64.tar.gz" }
+x86_64 = "https://github.com/<username>/<repo>/releases/download/v{version}/darwin_amd64.tar.gz"
 
 [windows]
-x86_64 = { url = "https://github.com/<username>/<repo>/releases/download/v{version}/windows_amd64.tar.gz" }
+x86_64 = "https://github.com/<username>/<repo>/releases/download/v{version}/windows_amd64.tar.gz"
 
 [linux]
-x86_64 = { url = "https://github.com/<username>/<repo>/releases/download/v{version}/linux_amd64.tar.gz" }
+x86_64 = "https://github.com/<username>/<repo>/releases/download/v{version}/linux_amd64.tar.gz"
 ```
 
 As you can see, it only contains a few top-level fields:
@@ -68,6 +68,14 @@ Current Support the arch:
 Every arch got a [Resource Target Object](#Resource-Target)
 
 ### Resource-Target
+
+The target resource can be a string (URL), or the following data structures
+
+1. String
+
+The resource URL should be download
+
+2. URL detail struct
 
 | Field     | Description                                                   | type   | required | example   |
 | --------- | ------------------------------------------------------------- | ------ | -------- | --------- |

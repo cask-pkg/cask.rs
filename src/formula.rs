@@ -57,13 +57,20 @@ pub struct Package {
 
 #[derive(Deserialize, Serialize)]
 pub struct Platform {
-    pub x86: Option<Arch>,
-    pub x86_64: Option<Arch>,
-    pub arm: Option<Arch>,
-    pub aarch64: Option<Arch>,
-    pub mips: Option<Arch>,
-    pub mips64: Option<Arch>,
-    pub mips64el: Option<Arch>,
+    pub x86: Option<ResourceTarget>,
+    pub x86_64: Option<ResourceTarget>,
+    pub arm: Option<ResourceTarget>,
+    pub aarch64: Option<ResourceTarget>,
+    pub mips: Option<ResourceTarget>,
+    pub mips64: Option<ResourceTarget>,
+    pub mips64el: Option<ResourceTarget>,
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum ResourceTarget {
+    Detailed(Arch),
+    Simple(String),
 }
 
 #[derive(Deserialize, Serialize)]
@@ -264,7 +271,7 @@ impl Formula {
             None
         }
     }
-    fn get_current_arch(&self) -> Option<&Arch> {
+    fn get_current_arch(&self) -> Option<&ResourceTarget> {
         if let Some(os) = self.get_current_os() {
             if cfg!(target_arch = "x86") {
                 os.x86.as_ref()
@@ -300,7 +307,7 @@ impl Formula {
             version: String,
         }
 
-        if let Some(arch) = self.get_current_arch() {
+        if let Some(resource_target) = self.get_current_arch() {
             let render_context = URLTemplateContext {
                 name: self.package.name.clone(),
                 bin: self.package.bin.clone(),
@@ -308,40 +315,55 @@ impl Formula {
             };
 
             let mut tt = TinyTemplate::new();
-            tt.add_template("url_template", &arch.url)?;
+
+            let download_url = match resource_target {
+                ResourceTarget::Detailed(detail) => detail.url.clone(),
+                ResourceTarget::Simple(url) => url.to_string(),
+            };
+
+            tt.add_template("url_template", &download_url)?;
 
             let renderer_url = tt.render("url_template", &render_context)?;
 
-            let ext_name = match &arch.extension {
-                Some(s) => s.clone(),
-                None => {
-                    let u = Url::parse(&renderer_url)?;
+            let get_ext_name_from_url = || -> Result<String, Report> {
+                let u = Url::parse(&renderer_url)?;
 
-                    let default_ext = ".tar.gz".to_string();
+                let default_ext = ".tar.gz".to_string();
+                if let Some(sep) = u.path_segments() {
+                    let filename = sep.last().unwrap_or(&default_ext);
 
-                    if let Some(sep) = u.path_segments() {
-                        let filename = sep.last().unwrap_or(&default_ext);
-
-                        if filename.ends_with(".tar.gz") {
-                            ".tar.gz".to_string()
-                        } else if filename.ends_with(".tgz") {
-                            ".tgz".to_string()
-                        } else if filename.ends_with(".tar") {
-                            ".tar".to_string()
-                        } else if filename.ends_with(".zip") {
-                            ".zip".to_string()
-                        } else {
-                            default_ext
-                        }
+                    if filename.ends_with(".tar.gz") {
+                        Ok(".tar.gz".to_string())
+                    } else if filename.ends_with(".tgz") {
+                        Ok(".tgz".to_string())
+                    } else if filename.ends_with(".tar") {
+                        Ok(".tar".to_string())
+                    } else if filename.ends_with(".zip") {
+                        Ok(".zip".to_string())
                     } else {
-                        default_ext
+                        Ok(default_ext)
                     }
+                } else {
+                    Ok(default_ext)
                 }
+            };
+
+            let ext_name = match resource_target {
+                ResourceTarget::Detailed(arch) => match &arch.extension {
+                    Some(ext) => ext.clone(),
+                    None => get_ext_name_from_url()?,
+                },
+                ResourceTarget::Simple(_) => get_ext_name_from_url()?,
+            };
+
+            let checksum = match resource_target {
+                ResourceTarget::Detailed(arch) => arch.checksum.clone(),
+                ResourceTarget::Simple(_) => None,
             };
 
             Ok(DownloadTarget {
                 url: renderer_url,
-                checksum: arch.checksum.clone(),
+                checksum,
                 ext: ext_name,
             })
         } else {
@@ -370,7 +392,7 @@ mod tests {
     use crate::formula;
 
     #[test]
-    fn test_read_config() {
+    fn test_read_default_config() {
         let config_path = env::current_dir()
             .unwrap()
             .join("fixtures")
@@ -403,54 +425,140 @@ mod tests {
         let linux = &rc.linux.unwrap();
 
         // windows
-        assert_eq!(
-            windows.x86.as_ref().unwrap().url,
-            "https://github.com/axetroy/gpm.rs/releases/download/v{version}/gpm_windows_386.tar.gz"
-        );
-        assert_eq!(
-            windows.x86_64.as_ref().unwrap().url,
-            "https://github.com/axetroy/gpm.rs/releases/download/v{version}/gpm_windows_amd64.tar.gz"
-        );
-        assert_eq!(
-            windows.aarch64.as_ref().unwrap().url,
-            "https://github.com/axetroy/gpm.rs/releases/download/v{version}/gpm_windows_arm64.tar.gz"
-        );
+        match windows.x86_64.as_ref().unwrap() {
+            formula::ResourceTarget::Detailed(arch) => {
+                assert_eq!(
+                    arch.url,
+                    "https://github.com/axetroy/gpm.rs/releases/download/v{version}/gpm_windows_amd64.tar.gz"
+                );
+            }
+            formula::ResourceTarget::Simple(_) => todo!(),
+        }
 
         // darwin
-        assert_eq!(
-            darwin.x86_64.as_ref().unwrap().url,
-            "https://github.com/axetroy/gpm.rs/releases/download/v{version}/gpm_darwin_amd64.tar.gz"
-        );
-        assert_eq!(
-            darwin.aarch64.as_ref().unwrap().url,
-            "https://github.com/axetroy/gpm.rs/releases/download/v{version}/gpm_darwin_arm64.tar.gz"
-        );
+        match darwin.x86_64.as_ref().unwrap() {
+            formula::ResourceTarget::Detailed(arch) => {
+                assert_eq!(
+                    arch.url,
+                    "https://github.com/axetroy/gpm.rs/releases/download/v{version}/gpm_darwin_amd64.tar.gz"
+                );
+            }
+            formula::ResourceTarget::Simple(_) => todo!(),
+        }
+        match darwin.aarch64.as_ref().unwrap() {
+            formula::ResourceTarget::Detailed(arch) => {
+                assert_eq!(
+                    arch.url,
+                    "https://github.com/axetroy/gpm.rs/releases/download/v{version}/gpm_darwin_arm64.tar.gz"
+                );
+            }
+            formula::ResourceTarget::Simple(_) => todo!(),
+        }
 
         // linux
+        match linux.x86_64.as_ref().unwrap() {
+            formula::ResourceTarget::Detailed(arch) => {
+                assert_eq!(
+                    arch.url,
+                    "https://github.com/axetroy/gpm.rs/releases/download/v{version}/gpm_linux_amd64.tar.gz"
+                );
+            }
+            formula::ResourceTarget::Simple(_) => todo!(),
+        }
+        match linux.aarch64.as_ref().unwrap() {
+            formula::ResourceTarget::Detailed(arch) => {
+                assert_eq!(
+                    arch.url,
+                    "https://github.com/axetroy/gpm.rs/releases/download/v{version}/gpm_linux_arm64.tar.gz"
+                );
+            }
+            formula::ResourceTarget::Simple(_) => todo!(),
+        }
+    }
+
+    #[test]
+    fn test_read_simple_config() {
+        let config_path = env::current_dir()
+            .unwrap()
+            .join("fixtures")
+            .join("config")
+            .join("simple_Cask.toml");
+
+        let rc = formula::new(&config_path, "https://github.com/example/example.git").unwrap();
+
+        assert_eq!(rc.repository, "https://github.com/example/example.git");
         assert_eq!(
-            linux.x86.as_ref().unwrap().url,
-            "https://github.com/axetroy/gpm.rs/releases/download/v{version}/gpm_linux_386.tar.gz"
+            format!("{}", rc.filepath.display()),
+            format!("{}", config_path.display())
         );
+        assert_eq!(rc.package.name, "github.com/axetroy/gpm.rs");
+        assert_eq!(rc.package.bin, "gpm");
+        assert_eq!(rc.package.versions.unwrap(), vec!["0.1.12", "0.1.11"]);
+        assert_eq!(rc.package.authors, vec!["Axetroy <axetroy.dev@gmail.com>"]);
         assert_eq!(
-            linux.x86_64.as_ref().unwrap().url,
-            "https://github.com/axetroy/gpm.rs/releases/download/v{version}/gpm_linux_amd64.tar.gz"
+            rc.package.keywords.unwrap(),
+            vec!["gpm", "git", "project", "manager"]
         );
+        assert_eq!(rc.package.repository, "https://github.com/axetroy/gpm.rs");
         assert_eq!(
-            linux.aarch64.as_ref().unwrap().url,
-            "https://github.com/axetroy/gpm.rs/releases/download/v{version}/gpm_linux_arm64.tar.gz"
+            rc.package.description,
+            "A command line tool, manage your hundreds of repository, written with Rust.\n"
         );
-        assert_eq!(
-            linux.mips.as_ref().unwrap().url,
-            "https://github.com/axetroy/gpm.rs/releases/download/v{version}/gpm_linux_mips.tar.gz"
-        );
-        assert_eq!(
-            linux.mips64.as_ref().unwrap().url,
-            "https://github.com/axetroy/gpm.rs/releases/download/v{version}/gpm_linux_mips64.tar.gz"
-        );
-        assert_eq!(
-            linux.mips64el.as_ref().unwrap().url,
-            "https://github.com/axetroy/gpm.rs/releases/download/v{version}/gpm_linux_mips64el.tar.gz"
-        );
+
+        let windows = &rc.windows.unwrap();
+        let darwin = &rc.darwin.unwrap();
+        let linux = &rc.linux.unwrap();
+
+        // windows
+        match windows.x86_64.as_ref().unwrap() {
+            formula::ResourceTarget::Detailed(_) => todo!(),
+            formula::ResourceTarget::Simple(url) => {
+                assert_eq!(
+                    url,
+                    "https://github.com/axetroy/gpm.rs/releases/download/v{version}/gpm_windows_amd64.tar.gz"
+                )
+            }
+        }
+
+        // darwin
+        match darwin.x86_64.as_ref().unwrap() {
+            formula::ResourceTarget::Detailed(_) => todo!(),
+            formula::ResourceTarget::Simple(url) => {
+                assert_eq!(
+                    url,
+                    "https://github.com/axetroy/gpm.rs/releases/download/v{version}/gpm_darwin_amd64.tar.gz"
+                )
+            }
+        }
+        match darwin.aarch64.as_ref().unwrap() {
+            formula::ResourceTarget::Detailed(_) => todo!(),
+            formula::ResourceTarget::Simple(url) => {
+                assert_eq!(
+                    url,
+                    "https://github.com/axetroy/gpm.rs/releases/download/v{version}/gpm_darwin_arm64.tar.gz"
+                )
+            }
+        }
+
+        // linux
+        match linux.x86_64.as_ref().unwrap() {
+            formula::ResourceTarget::Detailed(_) => todo!(),
+            formula::ResourceTarget::Simple(url) => {
+                assert_eq!(
+                    url,
+                    "https://github.com/axetroy/gpm.rs/releases/download/v{version}/gpm_linux_amd64.tar.gz"
+                )
+            }
+        }
+        match linux.aarch64.as_ref().unwrap() {
+            formula::ResourceTarget::Detailed(_) => todo!(),
+            formula::ResourceTarget::Simple(url) => {
+                assert_eq!(
+                    url,
+                    "https://github.com/axetroy/gpm.rs/releases/download/v{version}/gpm_linux_arm64.tar.gz"
+                )
+            }
+        }
     }
 
     #[test]

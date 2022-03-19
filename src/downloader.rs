@@ -69,7 +69,7 @@ mod tests {
 
     #[tokio::test]
 
-    async fn test_symlink() {
+    async fn test_download() {
         let url =
             "https://github.com/axetroy/prune.v/releases/download/v0.2.14/prune_darwin_amd64.tar.gz";
 
@@ -87,5 +87,19 @@ mod tests {
         assert_eq!(meta.len(), 62_310);
 
         fs::remove_file(&dest).unwrap();
+    }
+
+    #[tokio::test]
+
+    async fn test_download_invalid_url() {
+        let url = "https://github.com/axetroy/prune.v/releases/download/v0.2.14/not_exist.tar.gz";
+
+        let cwd = env::current_dir().unwrap();
+
+        let dest = cwd.join("cask_darwin_amd64.tar.gz");
+
+        let r = downloader::download(url, &dest).await;
+
+        assert!(r.is_err())
     }
 }

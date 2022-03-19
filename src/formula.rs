@@ -2,7 +2,7 @@
 
 use crate::cask;
 use crate::git;
-use crate::shell;
+use crate::hooker;
 
 use std::fs::File;
 use std::io::{ErrorKind, Read};
@@ -32,7 +32,7 @@ pub struct Formula {
     pub darwin: Option<Platform>, // The macOS target information
     pub linux: Option<Platform>, // The linux target information
     pub dependencies: Option<Vec<String>>, // TODO: The dependencies will be installed before install package
-    pub hook: Option<Hook>,                // The hook should run in some moment
+    pub hook: Option<hooker::Hook>,        // The hook should run in some moment
 }
 
 #[derive(Deserialize, Serialize)]
@@ -71,43 +71,6 @@ pub struct Arch {
     pub url: String,               // The url will be download when install the package
     pub checksum: Option<String>,  // The hash256 of download resource
     pub extension: Option<String>, // The extension name of download resource. optional value: ".tar.gz" ".tar" ".zip"
-}
-
-#[derive(Deserialize, Serialize)]
-pub struct Hook {
-    pub preinstall: Option<String>, // The script will run before install package
-    pub postinstall: Option<String>, // The script will run after install package
-}
-
-impl Hook {
-    pub fn run(&self, hook_name: &str, cwd: &Path) -> Result<(), Report> {
-        let script_op = match hook_name {
-            "preinstall" => Ok(&self.preinstall),
-            "postinstall" => Ok(&self.postinstall),
-            _ => Err(eyre::format_err!(
-                "trying to run a unknown hook, names {}",
-                hook_name
-            )),
-        }?;
-
-        if let Some(scripts) = script_op {
-            eprintln!("Running '{}' hook", hook_name);
-
-            for script in scripts.split('\n').map(|s| s.trim_start()) {
-                if script.is_empty() {
-                    continue;
-                }
-
-                if script.starts_with('#') {
-                    continue;
-                }
-
-                shell::run(cwd, script)?;
-            }
-        }
-
-        Ok(())
-    }
 }
 
 pub fn new(formula_file: &Path, repo: &str) -> Result<Formula, Report> {

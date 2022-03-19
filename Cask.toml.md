@@ -69,11 +69,16 @@ Every arch got a [Resource Target Object](#Resource-Target)
 
 ### Resource-Target
 
-The target resource can be a string (URL), or the following data structures
+The target resource can be one of following types:
 
 1. String
 
-The resource URL should be download
+The resource URL should be download.
+
+```toml
+[darwin]
+x86_64 = "https://github.com/<username>/<repo>/releases/download/v{version}/darwin_amd64.tar.gz"
+```
 
 2. URL detail struct
 
@@ -83,9 +88,22 @@ The resource URL should be download
 | checksum  | The checksum(SHA256) of resource. Check checksum if provided. | string |          |           |
 | extension | The resource extension. Specify the extension of resource     | string |          | ".tar.gz" |
 
+```toml
+[darwin]
+x86_64 = { url = "https://github.com/<username>/<repo>/releases/download/v{version}/darwin_amd64.tar.gz", checksum = "15f841b9b8f60033528dfdce5883e622145911ede1f59d1f302042ded4c565a4", extension = ".tar.gz" }
+```
+
 ### Hook
 
 | Hook        | Description                                | type   | required | example |
 | ----------- | ------------------------------------------ | ------ | -------- | ------- |
 | preinstall  | The script will run before install package | string |          |         |
 | postinstall | The script will run after install package  | string |          |         |
+
+[hook]
+preinstall = """
+echo "running preinstall hook"
+"""
+postinstall = """
+echo "running postinstall hook"
+"""

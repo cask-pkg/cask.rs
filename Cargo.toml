@@ -39,6 +39,7 @@ which = "4.2.4"
 semver = "1.0.6"
 wait-timeout = "0.1.5"
 thiserror = "1.0.30"
+tabled = "0.5.0"
 
 [profile.release]
 # https://github.com/johnthagen/min-sized-rust

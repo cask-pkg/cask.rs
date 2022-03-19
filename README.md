@@ -59,6 +59,8 @@ Then welcome to Cask.
 ```sh
 # cask install <package>
 cask install github.com/axetroy/dvm
+# cask install <package> <version>
+cask install github.com/axetroy/dvm 1.x
 # cask install <repository URL>
 cask install https://github.com/axetroy/dvm.git
 

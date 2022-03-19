@@ -66,6 +66,7 @@ async fn main() {
         )
         .subcommand(
             Command::new("upgrade")
+                .alias("up")
                 .about("Upgrade package to latest")
                 .arg(arg!(<PACKAGE> "The package name"))
                 .arg(

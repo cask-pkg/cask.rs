@@ -12,9 +12,17 @@ pub async fn upgrade(
     package_name: &str,
     is_check_only: bool,
 ) -> Result<(), Report> {
-    let package_formula = cask.package_formula(package_name)?;
+    let packages = cask.list_formula()?;
 
-    let cask_info = package_formula.cask.ok_or_else(|| {
+    let package_formula = packages
+        .iter()
+        .find(|p| p.package.name == package_name)
+        .or_else(|| packages.iter().find(|p| p.package.bin == package_name))
+        .ok_or_else(|| {
+            eyre::format_err!("can not found the installed package '{}'", package_name)
+        })?;
+
+    let cask_info = package_formula.cask.as_ref().ok_or_else(|| {
         eyre::format_err!("can not parse cask property of file '{}'", package_name)
     })?;
 

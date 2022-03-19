@@ -128,15 +128,6 @@ then create a new session in terminal
         Ok(())
     }
 
-    pub fn package_formula(&self, package_name: &str) -> Result<formula::Formula, Report> {
-        let package_dir = self.package_dir(package_name);
-        let formula_file_path = package_dir.join("Cask.toml");
-
-        let package_formula = formula::new(&formula_file_path, "")?;
-
-        Ok(package_formula)
-    }
-
     pub fn list_formula(&self) -> Result<Vec<formula::Formula>, Report> {
         let formula_dir = self.formula_dir();
         let mut list: Vec<formula::Formula> = vec![];

@@ -120,11 +120,16 @@ pub fn get_formula_git_url(package_name: &str) -> String {
 }
 
 fn print_publishing_msg() {
-    eprintln!(
-        r#"It looks like the package does not support Cask
-If you are the package owner, see our documentation for how to publish a package:
-https://github.com/axetroy/cask.rs/blob/main/DESIGN.md#how-do-i-publish-package"#
-    );
+    let msg = r#"It looks like the package does not support Cask
+                        If you are the package owner, see our documentation for how to publish a package:
+                        https://github.com/axetroy/cask.rs/blob/main/DESIGN.md#how-do-i-publish-package"
+                    "#
+    .lines()
+    .map(|s| s.trim_start().to_owned())
+    .collect::<Vec<String>>()
+    .join("\n");
+
+    eprintln!("{}", msg);
 }
 
 pub fn fetch(cask: &cask::Cask, package_name: &str, temp: bool) -> Result<Formula, Report> {

@@ -20,12 +20,12 @@ pub async fn info(cask: &cask::Cask, package_name: &str) -> Result<(), Report> {
 
         let msg = format!(
             r#"{}
-Package: {}
-Version: {}
-Repository: {}
-Location: {}
-Installed: true
-"#,
+            Package: {}
+            Version: {}
+            Repository: {}
+            Location: {}
+            Installed: true
+            "#,
             package_formula.package.description,
             cask_info.name,
             cask_info.version,
@@ -38,7 +38,11 @@ Installed: true
                     package_formula.filepath.display()
                 ))?
                 .display()
-        );
+        )
+        .lines()
+        .map(|s| s.trim_start().to_owned())
+        .collect::<Vec<String>>()
+        .join("\n");
 
         print!("{}", msg);
 
@@ -56,14 +60,18 @@ Installed: true
 
         let msg = format!(
             r#"{}
-Package: {}
-Repository: {}
-Installed: false
-"#,
+            Package: {}
+            Repository: {}
+            Installed: false
+            "#,
             package_formula.package.description,
             package_formula.package.name,
             package_formula.package.repository
-        );
+        )
+        .lines()
+        .map(|s| s.trim_start().to_owned())
+        .collect::<Vec<String>>()
+        .join("\n");
 
         print!("{}", msg);
 

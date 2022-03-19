@@ -52,7 +52,7 @@ pub async fn upgrade(
 
     if latest <= current {
         eprintln!(
-            "You have used the latest version of '{}'",
+            "You are using the latest version of '{}'",
             &package_formula.package.name
         );
         return Ok(());

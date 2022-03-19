@@ -54,7 +54,7 @@ fn fetch_tags(git_url: &str) -> Result<Vec<GitTag>, GitError> {
     let mut tags: Vec<GitTag> = vec![];
 
     let child = ChildProcess::new("git")
-        .stdout(Stdio::piped()) // Can do the same for stderr
+        .stdout(Stdio::piped())
         .arg("ls-remote")
         .arg("-t")
         .arg(git_url)
@@ -188,6 +188,12 @@ pub fn clone(url: &str, dest: &Path, options: CloneOption) -> Result<(), GitErro
         return Ok(());
     }
 
+    if exit_code == 128 {
+        return Err(GitError::RemoteRepositoryNotExists {
+            url: url.to_string(),
+        });
+    }
+
     Err(GitError::CommandExitError { code: exit_code })
 }
 
@@ -233,7 +239,7 @@ pub fn check_exist(url: &str) -> Result<bool, GitError> {
 #[cfg(test)]
 mod tests {
     use crate::git::{self, GitError, GitTag};
-    use std::{fs, path::Path};
+    use std::{env, fs, path::Path};
 
     #[test]
     fn test_clone() {
@@ -257,6 +263,39 @@ mod tests {
         assert!(dest_dir.exists());
 
         fs::remove_dir_all(dest_dir).unwrap();
+    }
+
+    #[test]
+    fn test_clone_if_remote_not_exist() {
+        let url1 = "https://github.com/axetroy/not_exist.git";
+
+        let dest_dir = env::temp_dir().join("cask_test_1");
+
+        let r1 = git::clone(
+            url1,
+            &dest_dir,
+            git::CloneOption {
+                depth: Some(1),
+                quiet: Some(true),
+                single_branch: Some(true),
+                dissociate: Some(true),
+                filter: Some("tree:0".to_string()),
+            },
+        );
+
+        fs::remove_dir_all(dest_dir).ok();
+
+        assert!(r1.is_err());
+
+        if let Err(e) = r1 {
+            assert!(match e {
+                GitError::RemoteRepositoryNotExists { url } => {
+                    assert_eq!(url, url1);
+                    true
+                }
+                _ => false,
+            })
+        }
     }
 
     #[test]

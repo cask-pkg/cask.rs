@@ -120,6 +120,7 @@ dependencies = [
  "serde",
  "sha2",
  "tar",
+ "thiserror",
  "tinytemplate",
  "tokio",
  "toml",

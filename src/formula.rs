@@ -242,7 +242,7 @@ fn fetch_with_git_url(
                 }
             }
         }
-        Err(e) => Err(e),
+        Err(e) => Err(eyre::format_err!("{}", e)),
     }
 }
 
@@ -351,7 +351,7 @@ impl Formula {
         if let Some(versions) = &self.package.versions {
             Ok(versions.to_vec())
         } else {
-            git::get_versions(&self.package.repository)
+            git::get_versions(&self.package.repository).map_err(|e| eyre::format_err!("{}", e))
         }
     }
 }

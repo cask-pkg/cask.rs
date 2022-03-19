@@ -39,6 +39,7 @@ zip = "0.5.13"
 which = "4.2.4"
 semver = "1.0.6"
 wait-timeout = "0.1.5"
+thiserror = "1.0.30"
 
 [profile.release]
 strip = true  # Automatically strip symbols from the binary.

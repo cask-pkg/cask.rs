@@ -1,13 +1,28 @@
 #![deny(warnings)]
 
 use core::result::Result;
+use std::io;
 use std::path::Path;
 use std::process::{Command as ChildProcess, Stdio};
 use std::time::Duration;
 
-use eyre::Report;
 use semver::Version;
+use thiserror::Error;
 use wait_timeout::ChildExt;
+
+#[derive(Error, Debug)]
+pub enum GitError {
+    #[error("io error {source:?}")]
+    IO { source: io::Error },
+    #[error("Running git command error: {source:?}")]
+    CommandError { source: io::Error },
+    #[error("Running git command exit {code:?}")]
+    CommandExitError { code: i32 },
+    #[error("Can not found remote repository {url:?})")]
+    RemoteRepositoryNotExists { url: String },
+    #[error("Can not get tag from output: {row:?})")]
+    ParseTagError { row: String },
+}
 
 pub struct CloneOption {
     pub depth: Option<i32>,
@@ -35,38 +50,32 @@ impl PartialEq for GitTag {
     }
 }
 
-fn fetch_tags(git_url: &str) -> Result<Vec<GitTag>, Report> {
+fn fetch_tags(git_url: &str) -> Result<Vec<GitTag>, GitError> {
     let mut tags: Vec<GitTag> = vec![];
 
-    let child = match ChildProcess::new("git")
+    let child = ChildProcess::new("git")
         .stdout(Stdio::piped()) // Can do the same for stderr
         .arg("ls-remote")
         .arg("-t")
         .arg(git_url)
         .env("GIT_TERMINAL_PROMPT", "0")
         .spawn()
-    {
-        Ok(child) => Ok(child),
-        Err(e) => Err(eyre::format_err!("{}", e)),
-    }?;
+        .map_err(|e| GitError::CommandError { source: e })?;
 
-    let output = child.wait_with_output()?;
+    let output = child
+        .wait_with_output()
+        .map_err(|e| GitError::CommandError { source: e })?;
 
     if !output.status.success() {
         let exit_code = output.status.code().unwrap_or(1);
 
         if exit_code == 128 {
-            return Err(eyre::format_err!(
-                "repository '{}' does not exist",
-                &git_url
-            ));
+            return Err(GitError::RemoteRepositoryNotExists {
+                url: git_url.to_string(),
+            });
         }
 
-        return Err(eyre::format_err!(
-            "fetch repository '{}' tags error and exit with code {}",
-            &git_url,
-            exit_code
-        ));
+        return Err(GitError::CommandExitError { code: exit_code });
     }
 
     let stdout = String::from_utf8(output.stdout).unwrap();
@@ -76,11 +85,11 @@ fn fetch_tags(git_url: &str) -> Result<Vec<GitTag>, Report> {
 
         let hash = inter
             .next()
-            .ok_or_else(|| eyre::format_err!("can not get hash of tag"))?;
+            .ok_or_else(|| GitError::ParseTagError { row: line.clone() })?;
 
         let refs = inter
             .next()
-            .ok_or_else(|| eyre::format_err!("can not get refs of tag"))?;
+            .ok_or_else(|| GitError::ParseTagError { row: line.clone() })?;
 
         let tag = refs.trim_start_matches("refs/tags/");
 
@@ -95,7 +104,7 @@ fn fetch_tags(git_url: &str) -> Result<Vec<GitTag>, Report> {
 
 // get versions of remote repository
 // the newest version at the head of vector
-pub fn get_versions(git_url: &str) -> Result<Vec<String>, Report> {
+pub fn get_versions(git_url: &str) -> Result<Vec<String>, GitError> {
     let mut versions: Vec<semver::Version> = vec![];
     let tags = fetch_tags(git_url)?;
 
@@ -120,7 +129,7 @@ pub fn get_versions(git_url: &str) -> Result<Vec<String>, Report> {
 }
 
 // clone repository into dest dir
-pub fn clone(url: &str, dest: &Path, options: CloneOption) -> Result<(), Report> {
+pub fn clone(url: &str, dest: &Path, options: CloneOption) -> Result<(), GitError> {
     let mut args: Vec<String> = vec![];
 
     if let Some(depth) = options.depth {
@@ -149,7 +158,7 @@ pub fn clone(url: &str, dest: &Path, options: CloneOption) -> Result<(), Report>
         args.push(format!("--filter={}", filter))
     }
 
-    let mut child = match ChildProcess::new("git")
+    let mut child = ChildProcess::new("git")
         .stderr(Stdio::null())
         .arg("clone")
         .arg(url)
@@ -157,19 +166,19 @@ pub fn clone(url: &str, dest: &Path, options: CloneOption) -> Result<(), Report>
         .arg(dest.to_str().unwrap())
         .env("GIT_TERMINAL_PROMPT", "0")
         .spawn()
-    {
-        Ok(child) => Ok(child),
-        Err(e) => Err(eyre::format_err!("{}", e)),
-    }?;
+        .map_err(|e| GitError::CommandError { source: e })?;
 
     let timeout = Duration::from_secs(300); // 5min
 
-    let state = match child.wait_timeout(timeout)? {
+    let state = match child
+        .wait_timeout(timeout)
+        .map_err(|e| GitError::IO { source: e })?
+    {
         Some(status) => status.code(),
         None => {
             // child hasn't exited yet
-            child.kill()?;
-            child.wait()?.code()
+            child.kill().map_err(|e| GitError::IO { source: e })?;
+            child.wait().map_err(|e| GitError::IO { source: e })?.code()
         }
     };
 
@@ -179,15 +188,12 @@ pub fn clone(url: &str, dest: &Path, options: CloneOption) -> Result<(), Report>
         return Ok(());
     }
 
-    Err(eyre::format_err!(
-        "clone repository fail and exit code: {}",
-        exit_code,
-    ))
+    Err(GitError::CommandExitError { code: exit_code })
 }
 
 // check remote repository exist or not
-pub fn check_exist(url: &str) -> Result<bool, Report> {
-    let mut child = match ChildProcess::new("git")
+pub fn check_exist(url: &str) -> Result<bool, GitError> {
+    let mut child = ChildProcess::new("git")
         .arg("ls-remote")
         .arg("-h")
         .arg(url)
@@ -195,19 +201,19 @@ pub fn check_exist(url: &str) -> Result<bool, Report> {
         .stdout(Stdio::null())
         .env("GIT_TERMINAL_PROMPT", "0")
         .spawn()
-    {
-        Ok(child) => Ok(child),
-        Err(e) => Err(eyre::format_err!("{}", e)),
-    }?;
+        .map_err(|e| GitError::CommandError { source: e })?;
 
     let timeout = Duration::from_secs(30);
 
-    let state = match child.wait_timeout(timeout)? {
+    let state = match child
+        .wait_timeout(timeout)
+        .map_err(|e| GitError::IO { source: e })?
+    {
         Some(status) => status.code(),
         None => {
             // child hasn't exited yet
-            child.kill()?;
-            child.wait()?.code()
+            child.kill().map_err(|e| GitError::IO { source: e })?;
+            child.wait().map_err(|e| GitError::IO { source: e })?.code()
         }
     };
 
@@ -221,10 +227,7 @@ pub fn check_exist(url: &str) -> Result<bool, Report> {
         return Ok(false);
     }
 
-    Err(eyre::format_err!(
-        "check repository fail and exit code: {}",
-        exit_code,
-    ))
+    Err(GitError::CommandExitError { code: exit_code })
 }
 
 #[cfg(test)]

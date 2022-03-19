@@ -122,7 +122,7 @@ pub async fn update(_cask: &cask::Cask) -> Result<(), Report> {
     filename += ".tar.gz";
 
     let resource_url = format!(
-        "https://github.com/axetroy/cask.rs/releases/download/{}/{}",
+        "https://github.com/axetroy/cask.rs/releases/download/v{}/{}",
         &latest_release, filename,
     );
 

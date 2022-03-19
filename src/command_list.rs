@@ -47,7 +47,7 @@ pub async fn list(cask: &cask::Cask, is_print_as_json: bool) -> Result<(), Repor
         let serialized = serde_json::to_string(&packages).unwrap();
         println!("{}", serialized);
     } else {
-        println!("{}", table);
+        print!("{}", table);
     }
 
     Ok(())

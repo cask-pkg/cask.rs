@@ -36,14 +36,16 @@ pub async fn upgrade(
 
     let remote_versions = remote_formula.get_versions()?;
 
+    let err_not_found_release = eyre::format_err!(
+        "can not found any version on '{}' remote",
+        &package_formula.package.name
+    );
+
     if remote_versions.is_empty() {
-        return Err(eyre::format_err!(
-            "can not found any version on '{}' remote",
-            &package_formula.package.name
-        ));
+        return Err(err_not_found_release);
     }
 
-    let latest_str = &remote_versions[0];
+    let latest_str = &remote_versions.first().ok_or(err_not_found_release)?;
 
     let latest = Version::parse(latest_str)
         .map_err(|e| eyre::format_err!("invalid semver version '{}': {}", latest_str, e))?;

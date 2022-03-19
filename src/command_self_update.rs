@@ -83,11 +83,15 @@ fn get_abi() -> Option<String> {
 fn get_latest_release() -> Result<String, Report> {
     let versions = git::get_versions(env!("CARGO_PKG_REPOSITORY"))?;
 
+    let err_can_not_found_release = eyre::format_err!("There is no one release of Cask");
+
     if versions.is_empty() {
-        return Err(eyre::format_err!("There is no one release of Cask"));
+        return Err(err_can_not_found_release);
     }
 
-    Ok(versions[0].clone())
+    let latest_version = versions.first().ok_or(err_can_not_found_release)?;
+
+    Ok(latest_version.to_string())
 }
 
 pub async fn self_update(_cask: &cask::Cask) -> Result<(), Report> {

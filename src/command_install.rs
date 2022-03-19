@@ -63,7 +63,9 @@ pub async fn install(
     }
 
     let download_version = {
-        let v = version.unwrap_or(&remote_versions[0]);
+        let v = version
+            .or_else(|| remote_versions.first().map(|v| v.as_str()))
+            .expect("can not found remote version");
 
         let version_req = VersionReq::parse(v)
             .map_err(|e| eyre::format_err!("invalid semver version {}: {}", v, e))?;

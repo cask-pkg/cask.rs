@@ -1,6 +1,7 @@
 #![deny(warnings)]
 
 use crate::cask;
+use crate::formula;
 
 use eyre::Report;
 
@@ -51,9 +52,29 @@ Installed: true
 
         Ok(())
     } else {
-        return Err(eyre::format_err!(
-            "can not found the installed package '{}'",
-            package_name
-        ));
+        let package_formula = formula::fetch(cask, package_name, true)?;
+
+        let msg = format!(
+            r#"{}
+Package: {}
+Repository: {}
+Installed: false
+"#,
+            package_formula.package.description,
+            package_formula.package.name,
+            package_formula.package.repository
+        );
+
+        print!("{}", msg);
+
+        let remote_versions = &package_formula.get_versions()?;
+
+        println!("Remote Versions:");
+
+        for v in remote_versions {
+            println!("{}", v);
+        }
+
+        Ok(())
     }
 }

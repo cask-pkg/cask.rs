@@ -5,7 +5,6 @@ mod command_clean;
 mod command_info;
 mod command_install;
 mod command_list;
-mod command_search;
 mod command_uninstall;
 mod command_update;
 mod command_upgrade;
@@ -60,14 +59,8 @@ async fn main() {
                 .about("List installed package"),
         )
         .subcommand(
-            Command::new("search")
-                .about("Show information of remote package")
-                .arg(arg!(<PACKAGE> "The package name"))
-                .arg_required_else_help(true),
-        )
-        .subcommand(
             Command::new("info")
-                .about("Show information of installed package")
+                .about("Show information of package")
                 .arg(arg!(<PACKAGE> "The package name"))
                 .arg_required_else_help(true),
         )
@@ -117,13 +110,6 @@ async fn main() {
             let f = command_list::list(&cask);
 
             executor::block_on(f).expect("list packages fail!");
-        }
-        Some(("search", sub_matches)) => {
-            let package_name = sub_matches.value_of("PACKAGE").expect("required");
-
-            let f = command_search::search(&cask, package_name);
-
-            executor::block_on(f).expect("search remote package fail!");
         }
         Some(("info", sub_matches)) => {
             let package_name = sub_matches.value_of("PACKAGE").expect("required");

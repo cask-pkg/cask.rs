@@ -72,16 +72,15 @@ Show more information with `cask --help` command.
 
 ## Command
 
-| Command                            | Description                           |
-| ---------------------------------- | ------------------------------------- |
-| cask install \<PACKAGE\> [VERSION] | Install package                       |
-| cask uninstall \<PACKAGE\>         | Uninstall package                     |
-| cask info \<PACKAGE\>              | Show information of installed package |
-| cask search \<PACKAGE\>            | Show information of remote package    |
-| cask upgrade \<PACKAGE\>           | Upgrade package to latest             |
-| cask list                          | List installed package                |
-| cask clean                         | Clear residual data                   |
-| cask update                        | Update Cask to the newest version     |
+| Command                            | Description                       |
+| ---------------------------------- | --------------------------------- |
+| cask install \<PACKAGE\> [VERSION] | Install package                   |
+| cask uninstall \<PACKAGE\>         | Uninstall package                 |
+| cask info \<PACKAGE\>              | Show information of package       |
+| cask upgrade \<PACKAGE\>           | Upgrade package to latest         |
+| cask list                          | List installed package            |
+| cask clean                         | Clear residual data               |
+| cask update                        | Update Cask to the newest version |
 
 ## Requirement
 

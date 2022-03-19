@@ -60,7 +60,7 @@ pub async fn upgrade(
 
     if is_check_only {
         eprintln!(
-            "Found latest version {} of {}, but current using {}",
+            "Found latest version {} of {}, but using {} currently",
             latest, &package_formula.package.name, cask_info.version
         );
     } else {

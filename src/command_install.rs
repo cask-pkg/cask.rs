@@ -4,7 +4,6 @@ use crate::cask;
 use crate::downloader;
 use crate::extractor;
 use crate::formula;
-use crate::shell;
 use crate::symlink;
 use crate::util::iso8601;
 
@@ -46,23 +45,12 @@ pub async fn install(
     }
 
     if let Some(hook) = &package_formula.hook {
-        if let Some(scripts) = &hook.preinstall {
-            let script_cwd = cask
+        hook.run(
+            "preinstall",
+            &cask
                 .package_dir(&package_formula.package.name)
-                .join("repository");
-            for script in scripts.split('\n').map(|s| s.trim_start()) {
-                if script.is_empty() {
-                    continue;
-                }
-
-                if script.starts_with('#') {
-                    continue;
-                }
-
-                eprintln!("run preinstall hook: '{}'", script);
-                shell::run(&script_cwd, script)?;
-            }
-        }
+                .join("repository"),
+        )?;
     }
 
     let remote_versions = package_formula.get_versions()?;
@@ -177,24 +165,12 @@ repository = "{}"
     }
 
     if let Some(hook) = &package_formula.hook {
-        if let Some(scripts) = &hook.postinstall {
-            let script_cwd = cask
+        hook.run(
+            "postinstall",
+            &cask
                 .package_dir(&package_formula.package.name)
-                .join("repository");
-
-            for script in scripts.split('\n').map(|s| s.trim_start()) {
-                if script.is_empty() {
-                    continue;
-                }
-
-                if script.starts_with('#') {
-                    continue;
-                }
-
-                eprintln!("run postinstall hook: '{}'", script);
-                shell::run(&script_cwd, script)?;
-            }
-        }
+                .join("repository"),
+        )?;
     }
 
     eprintln!(

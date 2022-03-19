@@ -1,6 +1,8 @@
 // #![deny(warnings)]
 
-use crate::{cask, git};
+use crate::cask;
+use crate::git;
+use crate::shell;
 
 use std::fs::File;
 use std::io::{ErrorKind, Read};
@@ -75,6 +77,37 @@ pub struct Arch {
 pub struct Hook {
     pub preinstall: Option<String>, // The script will run before install package
     pub postinstall: Option<String>, // The script will run after install package
+}
+
+impl Hook {
+    pub fn run(&self, hook_name: &str, cwd: &Path) -> Result<(), Report> {
+        let script_op = match hook_name {
+            "preinstall" => Ok(&self.preinstall),
+            "postinstall" => Ok(&self.postinstall),
+            _ => Err(eyre::format_err!(
+                "trying to run a unknown hook, names {}",
+                hook_name
+            )),
+        }?;
+
+        if let Some(scripts) = script_op {
+            eprintln!("Running '{}' hook", hook_name);
+
+            for script in scripts.split('\n').map(|s| s.trim_start()) {
+                if script.is_empty() {
+                    continue;
+                }
+
+                if script.starts_with('#') {
+                    continue;
+                }
+
+                shell::run(cwd, script)?;
+            }
+        }
+
+        Ok(())
+    }
 }
 
 pub fn new(formula_file: &Path, repo: &str) -> Result<Formula, Report> {

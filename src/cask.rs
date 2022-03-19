@@ -64,14 +64,18 @@ impl Cask {
         let msg = format!(
             r#"REQUIREMENT:
 
-make sure '{}' has been add to your $PATH environment variable.
+            make sure '{}' has been add to your $PATH environment variable.
 
-manually add the directory to your $HOME/.bash_profile (or similar)
+            manually add the directory to your $HOME/.bash_profile (or similar)
 
-then create a new session in terminal
-"#,
+            then create a new session in terminal
+            "#,
             self.bin_dir().display()
-        );
+        )
+        .lines()
+        .map(|s| s.trim_start().to_owned())
+        .collect::<Vec<String>>()
+        .join("\n");
 
         Err(eyre::format_err!(msg))
     }

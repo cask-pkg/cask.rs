@@ -81,8 +81,3 @@ Every arch got a [Resource Target Object](#Resource-Target)
 | ----------- | ------------------------------------------ | ------ | -------- | ------- |
 | preinstall  | The script will run before install package | string |          |         |
 | postinstall | The script will run after install package  | string |          |         |
-
-## Example
-
-- [github.com/axetroy/gpm.rs-cask](https://github.com/axetroy/gpm.rs-cask)
-- [github.com/axetroy/dvm-cask](https://github.com/axetroy/dvm-cask)

@@ -57,7 +57,14 @@ async fn main() {
         .subcommand(
             Command::new("list")
                 .alias("ls")
-                .about("List installed package"),
+                .about("List installed package")
+                .arg(
+                    Arg::new("json")
+                        .short('j')
+                        .long("json")
+                        .help("Print json format instead of pretty format")
+                        .takes_value(false),
+                ),
         )
         .subcommand(
             Command::new("info")
@@ -115,8 +122,9 @@ async fn main() {
 
             executor::block_on(f).expect("uninstall package fail!");
         }
-        Some(("list", _sub_matches)) => {
-            let f = command_list::list(&cask);
+        Some(("list", sub_matches)) => {
+            let is_print_as_json = sub_matches.is_present("json");
+            let f = command_list::list(&cask, is_print_as_json);
 
             executor::block_on(f).expect("list packages fail!");
         }

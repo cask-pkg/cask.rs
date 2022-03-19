@@ -4,9 +4,10 @@ use crate::cask;
 
 use chrono::prelude::*;
 use eyre::Report;
+use serde::{Deserialize, Serialize};
 use tabled::{Style, Table, Tabled};
 
-#[derive(Tabled)]
+#[derive(Serialize, Deserialize, Debug, Tabled)]
 struct PackageInfo {
     name: String,
     bin: String,
@@ -14,7 +15,7 @@ struct PackageInfo {
     install_at: String,
 }
 
-pub async fn list(cask: &cask::Cask) -> Result<(), Report> {
+pub async fn list(cask: &cask::Cask, is_print_as_json: bool) -> Result<(), Report> {
     cask.init()?;
 
     let mut packages: Vec<PackageInfo> = vec![];
@@ -40,9 +41,14 @@ pub async fn list(cask: &cask::Cask) -> Result<(), Report> {
         });
     }
 
-    let table = Table::new(packages).with(Style::psql()).to_string();
+    let table = Table::new(&packages).with(Style::psql()).to_string();
 
-    println!("{}", table);
+    if is_print_as_json {
+        let serialized = serde_json::to_string(&packages).unwrap();
+        println!("{}", serialized);
+    } else {
+        println!("{}", table);
+    }
 
     Ok(())
 }

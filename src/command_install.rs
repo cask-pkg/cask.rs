@@ -15,6 +15,7 @@ use std::io::Write;
 use std::time::SystemTime;
 
 use eyre::Report;
+use semver::{Version, VersionReq};
 use sha2::{Digest, Sha256};
 
 pub async fn install(
@@ -64,20 +65,37 @@ pub async fn install(
 
     let remote_versions = package_formula.get_versions()?;
 
+    if remote_versions.is_empty() {
+        return Err(eyre::format_err!(
+            "can not found any version of '{}'",
+            package_name
+        ));
+    }
+
     let download_version = {
-        if let Some(v) = version {
-            if !remote_versions.contains(&v.to_string()) {
-                Err(eyre::format_err!(
-                    "can not found version '{}' of formula",
-                    v
-                ))
-            } else {
-                Ok(v.to_owned())
+        let v = version.unwrap_or(&remote_versions[0]);
+
+        let version_req = VersionReq::parse(v)
+            .map_err(|e| eyre::format_err!("invalid semver version {}: {}", v, e))?;
+
+        let mut target_version: String = "".to_string();
+
+        for remote_v_str in &remote_versions {
+            if let Ok(remote_v) = Version::parse(remote_v_str) {
+                if version_req.matches(&remote_v) {
+                    target_version = remote_v_str.to_string();
+                    break;
+                }
             }
-        } else if remote_versions.is_empty() {
-            return Err(eyre::format_err!("can not found any version of formula"));
+        }
+
+        if target_version.is_empty() {
+            Err(eyre::format_err!(
+                "can not found version '{}' of formula",
+                v
+            ))
         } else {
-            Ok(remote_versions[0].clone())
+            Ok(target_version)
         }
     }?;
 

@@ -5,8 +5,8 @@ mod command_clean;
 mod command_info;
 mod command_install;
 mod command_list;
+mod command_self_update;
 mod command_uninstall;
-mod command_update;
 mod command_upgrade;
 mod downloader;
 mod extractor;
@@ -79,7 +79,7 @@ async fn main() {
                 )
                 .arg_required_else_help(true),
         )
-        .subcommand(Command::new("update").about("Update Cask to the newest version"))
+        .subcommand(Command::new("self-update").about("Update Cask to the newest version"))
         .subcommand(Command::new("clean").about("Clear residual data"));
 
     let matches = app.clone().get_matches();
@@ -140,8 +140,8 @@ async fn main() {
 
             executor::block_on(f).expect("info installed package fail!");
         }
-        Some(("update", _sub_matches)) => {
-            let f = command_update::update(&cask);
+        Some(("self-update", _sub_matches)) => {
+            let f = command_self_update::self_update(&cask);
 
             executor::block_on(f).expect("self-update fail!");
         }

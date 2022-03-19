@@ -90,7 +90,7 @@ fn get_latest_release() -> Result<String, Report> {
     Ok(versions[0].clone())
 }
 
-pub async fn update(_cask: &cask::Cask) -> Result<(), Report> {
+pub async fn self_update(_cask: &cask::Cask) -> Result<(), Report> {
     let latest_release = get_latest_release()?;
 
     let latest_remote_version = Version::parse(&latest_release)

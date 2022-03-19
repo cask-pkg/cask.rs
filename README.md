@@ -51,7 +51,7 @@ Then welcome to Cask.
 4. Upgrade from existing version
 
    ```bash
-   cask update
+   cask self-update
    ```
 
 ## Usage
@@ -82,7 +82,7 @@ Show more information with `cask --help` command.
 | cask upgrade \<PACKAGE\>           | Upgrade package to latest         |
 | cask list                          | List installed package            |
 | cask clean                         | Clear residual data               |
-| cask update                        | Update Cask to the newest version |
+| cask self-update                   | Update Cask to the newest version |
 
 ## Requirement
 

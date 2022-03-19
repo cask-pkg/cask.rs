@@ -17,15 +17,13 @@ pub async fn info(cask: &cask::Cask, package_name: &str) -> Result<(), Report> {
             eyre::format_err!("can not parse cask property of file '{}'", package_name)
         })?;
 
-        let remote_versions = &package_formula.get_versions()?;
-
-        let mut msg = format!(
+        let msg = format!(
             r#"{}
 Package: {}
 Version: {}
 Repository: {}
 Location: {}
-Remote Versions:
+Installed: true
 "#,
             package_formula.package.description,
             cask_info.name,
@@ -41,12 +39,15 @@ Remote Versions:
                 .display()
         );
 
-        for v in remote_versions {
-            msg.push_str(v);
-            msg.push('\n');
-        }
-
         print!("{}", msg);
+
+        let remote_versions = &package_formula.get_versions()?;
+
+        println!("Remote Versions:");
+
+        for v in remote_versions {
+            println!("{}", v);
+        }
 
         Ok(())
     } else {

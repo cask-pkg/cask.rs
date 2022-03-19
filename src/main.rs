@@ -68,6 +68,13 @@ async fn main() {
             Command::new("upgrade")
                 .about("Upgrade package to latest")
                 .arg(arg!(<PACKAGE> "The package name"))
+                .arg(
+                    Arg::new("check-only")
+                        .short('c')
+                        .long("check-only")
+                        .help("Check update only")
+                        .takes_value(false),
+                )
                 .arg_required_else_help(true),
         )
         .subcommand(Command::new("update").about("Update Cask to the newest version"))
@@ -120,8 +127,9 @@ async fn main() {
         }
         Some(("upgrade", sub_matches)) => {
             let package_name = sub_matches.value_of("PACKAGE").expect("required");
+            let is_check_only = sub_matches.is_present("check-only");
 
-            let f = command_upgrade::upgrade(&cask, package_name);
+            let f = command_upgrade::upgrade(&cask, package_name, is_check_only);
 
             executor::block_on(f).expect("info installed package fail!");
         }

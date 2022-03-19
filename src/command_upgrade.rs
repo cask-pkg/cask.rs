@@ -23,20 +23,23 @@ pub async fn upgrade(
         })?;
 
     let cask_info = package_formula.cask.as_ref().ok_or_else(|| {
-        eyre::format_err!("can not parse cask property of file '{}'", package_name)
+        eyre::format_err!(
+            "can not parse cask property of file '{}'",
+            &package_formula.package.name
+        )
     })?;
 
     let current = Version::parse(&cask_info.version)
         .map_err(|e| eyre::format_err!("invalid semver version '{}': {}", &cask_info.version, e))?;
 
-    let remote_formula = formula::fetch(cask, package_name, true)?;
+    let remote_formula = formula::fetch(cask, &package_formula.package.name, true)?;
 
     let remote_versions = remote_formula.get_versions()?;
 
     if remote_versions.is_empty() {
         return Err(eyre::format_err!(
             "can not found any version on '{}' remote",
-            package_name
+            &package_formula.package.name
         ));
     }
 
@@ -46,21 +49,24 @@ pub async fn upgrade(
         .map_err(|e| eyre::format_err!("invalid semver version '{}': {}", latest_str, e))?;
 
     if latest <= current {
-        eprintln!("You have used the latest version of '{}'", package_name);
+        eprintln!(
+            "You have used the latest version of '{}'",
+            &package_formula.package.name
+        );
         return Ok(());
     }
 
     if is_check_only {
         eprintln!(
             "Found latest version {} of {}, but current using {}",
-            latest, package_name, cask_info.version
+            latest, &package_formula.package.name, cask_info.version
         );
     } else {
-        command_install::install(cask, package_name, Some(latest_str)).await?;
+        command_install::install(cask, &package_formula.package.name, Some(latest_str)).await?;
 
         eprintln!(
             "Upgrade {}@{} from  to '{}' finish!",
-            package_name, cask_info.version, latest
+            &package_formula.package.name, cask_info.version, latest
         );
     }
 

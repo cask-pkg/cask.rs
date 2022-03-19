@@ -57,8 +57,8 @@ jobs:
           cask --help
           # make sure $HOME/.cask/bin has been add to $PATH
           cask ls
-          # try search package
-          cask search github.com/axetroy/gpm.rs
+          # try print information of package
+          cask info github.com/axetroy/gpm.rs
 
           # install package
           cask install github.com/axetroy/gpm.rs

@@ -159,7 +159,7 @@ pub fn fetch(cask: &cask::Cask, package_name: &str, temp: bool) -> Result<Formul
         let scheme = package_addr.scheme();
         return match scheme {
             "http" | "https" => {
-                let repo = git::repository::new(package_addr.as_str())?;
+                let repo = git::new(package_addr.as_str())?;
                 let is_package_repo_exist = repo.is_exist()?;
 
                 if is_package_repo_exist {
@@ -181,13 +181,13 @@ pub fn fetch(cask: &cask::Cask, package_name: &str, temp: bool) -> Result<Formul
     let package_cask_repo_url = get_formula_git_cask_url(package_name);
     let package_repo_url = get_formula_git_url(package_name);
 
-    let is_cask_repo_exist = git::repository::new(&package_cask_repo_url)?.is_exist()?;
+    let is_cask_repo_exist = git::new(&package_cask_repo_url)?.is_exist()?;
 
     if is_cask_repo_exist {
         return fetch_with_git_url(cask, package_name, &package_cask_repo_url, temp);
     }
 
-    let is_repo_exist = git::repository::new(&package_repo_url)?.is_exist()?;
+    let is_repo_exist = git::new(&package_repo_url)?.is_exist()?;
 
     if is_repo_exist {
         return fetch_with_git_url(cask, package_name, &package_repo_url, temp);
@@ -230,9 +230,9 @@ fn fetch_with_git_url(
 
     let cask_file_path = formula_cloned_dir.join("Cask.toml");
 
-    match git::repository::new(git_url)?.clone(
+    match git::new(git_url)?.clone(
         &formula_cloned_dir,
-        git::repository::CloneOption {
+        git::CloneOption {
             depth: Some(1),
             quiet: Some(true),
             single_branch: Some(true),
@@ -407,7 +407,7 @@ impl Formula {
         if let Some(versions) = &self.package.versions {
             Ok(versions.to_vec())
         } else {
-            git::repository::new(&self.package.repository)?
+            git::new(&self.package.repository)?
                 .versions()
                 .map_err(|e| eyre::format_err!("{}", e))
         }

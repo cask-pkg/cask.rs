@@ -90,6 +90,8 @@ Cask depends on [Git](https://git-scm.com)
 
 ## Contributors
 
+This project exists thanks to all the people who contribute. [How to contribute](CONTRIBUTING.md).
+
 <a href="https://github.com/axetroy/cask.rs/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=axetroy/cask.rs" />
 </a>

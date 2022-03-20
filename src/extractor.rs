@@ -75,18 +75,29 @@ fn extract_tar_gz(
         archive.set_preserve_permissions(true);
         archive.set_preserve_mtime(true);
 
-        let files = archive.entries()?.collect::<Vec<_>>();
+        let files = archive.entries()?.flatten();
 
-        for entry in files {
-            let mut file = entry?;
+        let target_file_path = format!(
+            "{}/{}",
+            extract_file_in_tarball_file_path, extract_file_name
+        )
+        .replace("//", "/");
 
-            let file_path = file.path()?;
+        for mut entry in files {
+            let file_path = entry.path()?;
 
-            if let Some(file_name) = file_path.file_name() {
-                if file_name.to_str().unwrap() == extract_file_name {
-                    file.unpack(&output_file_path)?;
-                    return Ok(output_file_path);
-                }
+            let relative_path = format!("{}", file_path.display());
+
+            let absolute_path = format!(
+                "/{}",
+                relative_path
+                    .trim_start_matches("./")
+                    .trim_start_matches('/')
+            );
+
+            if target_file_path == absolute_path {
+                entry.unpack(&output_file_path)?;
+                return Ok(output_file_path);
             }
         }
 
@@ -101,7 +112,7 @@ fn extract_tar(
     src_filepath: &Path,
     dest_dir: &Path,
     extract_file_name: &str,
-    _extract_file_in_tarball_file_path: &str,
+    extract_file_in_tarball_file_path: &str,
 ) -> Result<PathBuf, Report> {
     let output_file_path = dest_dir.join(extract_file_name);
 
@@ -113,18 +124,29 @@ fn extract_tar(
     archive.set_preserve_permissions(true);
     archive.set_preserve_mtime(true);
 
-    let files = archive.entries()?;
+    let files = archive.entries()?.flatten();
 
-    for entry in files {
-        let mut file = entry?;
+    let target_file_path = format!(
+        "{}/{}",
+        extract_file_in_tarball_file_path, extract_file_name
+    )
+    .replace("//", "/");
 
-        let file_path = file.path()?;
+    for mut entry in files {
+        let file_path = entry.path()?;
 
-        if let Some(file_name) = file_path.file_name() {
-            if file_name.to_str().unwrap() == extract_file_name {
-                file.unpack(&output_file_path)?;
-                return Ok(output_file_path);
-            }
+        let relative_path = format!("{}", file_path.display());
+
+        let absolute_path = format!(
+            "/{}",
+            relative_path
+                .trim_start_matches("./")
+                .trim_start_matches('/')
+        );
+
+        if target_file_path == absolute_path {
+            entry.unpack(&output_file_path)?;
+            return Ok(output_file_path);
         }
     }
 
@@ -260,6 +282,8 @@ mod tests {
         assert_eq!(meta.len(), 12);
 
         let content = fs::read_to_string(&extracted_file_path).unwrap();
+
+        println!("{}", extracted_file_path.display());
 
         assert_eq!(content, "hello world\n");
     }
@@ -412,5 +436,34 @@ mod tests {
             format!("{}", dest_file.display()),
             format!("{}", r.unwrap().display())
         );
+    }
+
+    #[test]
+    fn test_extract_tar_file_in_sub_folder() {
+        let extractor_dir = env::current_dir()
+            .unwrap()
+            .join("fixtures")
+            .join("extractor");
+
+        let tar_file_path = &extractor_dir.join("sub-folder.tar");
+
+        let dest_dir = extractor_dir.clone();
+
+        let dest_file = &extractor_dir.join("sub-folder");
+
+        fs::remove_file(&dest_file).ok();
+
+        let r = extractor::extract(tar_file_path, &dest_dir, "sub-folder", "/sub-folder");
+
+        assert!(r.is_ok());
+
+        assert!(dest_file.exists());
+        assert!(dest_file.is_file());
+        assert_eq!(
+            format!("{}", dest_file.display()),
+            format!("{}", r.unwrap().display())
+        );
+
+        fs::remove_file(&dest_file).ok();
     }
 }

@@ -362,11 +362,15 @@ impl Formula {
                 }
             };
 
-            let path = match resource_target {
+            let mut path = match resource_target {
                 ResourceTarget::Detailed(arch) => arch.path.clone(),
                 ResourceTarget::Simple(_) => None,
             }
             .unwrap_or_else(|| "/".to_string());
+
+            if path.trim().is_empty() {
+                path = "/".to_string();
+            }
 
             let ext_name = match resource_target {
                 ResourceTarget::Detailed(arch) => match &arch.extension {
@@ -383,7 +387,7 @@ impl Formula {
 
             Ok(DownloadTarget {
                 url: renderer_url,
-                path,
+                path: path.trim().to_string(),
                 checksum,
                 ext: ext_name,
             })

@@ -13,15 +13,15 @@ use tar::Archive;
 fn extract_tar_gz(
     src_filepath: &Path,
     dest_dir: &Path,
-    extract_file_name: &str,
-    extract_file_in_tarball_file_path: &str,
+    filename: &str,
+    folder: &str,
 ) -> Result<PathBuf, Report> {
-    let output_file_path = dest_dir.join(extract_file_name);
+    let output_file_path = dest_dir.join(filename);
 
     extract_archive(
         GzDecoder::new(File::open(&src_filepath)?)?,
-        extract_file_name,
-        extract_file_in_tarball_file_path,
+        filename,
+        folder,
         &output_file_path,
     )?;
 
@@ -31,15 +31,15 @@ fn extract_tar_gz(
 fn extract_tar(
     src_filepath: &Path,
     dest_dir: &Path,
-    extract_file_name: &str,
-    extract_file_in_tarball_file_path: &str,
+    filename: &str,
+    folder: &str,
 ) -> Result<PathBuf, Report> {
-    let output_file_path = dest_dir.join(extract_file_name);
+    let output_file_path = dest_dir.join(filename);
 
     extract_archive(
         File::open(&src_filepath)?,
-        extract_file_name,
-        extract_file_in_tarball_file_path,
+        filename,
+        folder,
         &output_file_path,
     )?;
 
@@ -89,19 +89,15 @@ fn extract_archive<R: Read>(
 fn extract_zip(
     src_filepath: &Path,
     dest_dir: &Path,
-    extract_file_name: &str,
-    extract_file_in_tarball_file_path: &str,
+    filename: &str,
+    folder: &str,
 ) -> Result<PathBuf, Report> {
-    let output_file_path = dest_dir.join(extract_file_name);
+    let output_file_path = dest_dir.join(filename);
 
     let tar_file = File::open(&src_filepath)?;
     let mut archive = zip::ZipArchive::new(tar_file)?;
 
-    let target_file_path = format!(
-        "{}/{}",
-        extract_file_in_tarball_file_path, extract_file_name
-    )
-    .replace("//", "/");
+    let target_file_path = format!("{}/{}", folder, filename).replace("//", "/");
 
     for i in 0..archive.len() {
         let mut file = archive.by_index(i)?;
@@ -132,15 +128,15 @@ fn extract_zip(
 
     Err(eyre::format_err!(
         "can not found the file '{}' in tar",
-        extract_file_name
+        filename
     ))
 }
 
 pub fn extract(
     tarball: &Path,
     dest_dir: &Path,
-    extract_file_name: &str,
-    extract_file_in_tarball_file_path: &str,
+    filename: &str,
+    folder: &str,
 ) -> Result<PathBuf, Report> {
     let tar_file_name = tarball.file_name().unwrap().to_str().unwrap();
 
@@ -149,8 +145,9 @@ pub fn extract(
             Ok(s.to_owned())
         } else {
             Err(eyre::format_err!(
-                "can not found file '{}' in the root of tarball",
-                &extract_file_name
+                "can not found file '{}' in the '{}' of tarball",
+                &filename,
+                folder
             ))
         }
     };
@@ -159,32 +156,17 @@ pub fn extract(
         .map_err(|e| eyre::format_err!("can not create folder '{}': {}", dest_dir.display(), e))?;
 
     if tar_file_name.ends_with(".tar.gz") || tar_file_name.ends_with(".tgz") {
-        match extract_tar_gz(
-            tarball,
-            dest_dir,
-            extract_file_name,
-            extract_file_in_tarball_file_path,
-        ) {
+        match extract_tar_gz(tarball, dest_dir, filename, folder) {
             Ok(p) => ensure_extract_file_exist(&p),
             Err(e) => Err(e),
         }
     } else if tar_file_name.ends_with(".tar") {
-        match extract_tar(
-            tarball,
-            dest_dir,
-            extract_file_name,
-            extract_file_in_tarball_file_path,
-        ) {
+        match extract_tar(tarball, dest_dir, filename, folder) {
             Ok(p) => ensure_extract_file_exist(&p),
             Err(e) => Err(e),
         }
     } else if tar_file_name.ends_with(".zip") {
-        match extract_zip(
-            tarball,
-            dest_dir,
-            extract_file_name,
-            extract_file_in_tarball_file_path,
-        ) {
+        match extract_zip(tarball, dest_dir, filename, folder) {
             Ok(p) => ensure_extract_file_exist(&p),
             Err(e) => Err(e),
         }

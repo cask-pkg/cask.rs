@@ -4,6 +4,7 @@ use crate::cask;
 use crate::command_install;
 use crate::formula;
 
+use colored::Colorize;
 use eyre::Report;
 use semver::Version;
 
@@ -38,7 +39,7 @@ pub async fn upgrade(
 
     let err_not_found_release = eyre::format_err!(
         "can not found any version on '{}' remote",
-        &package_formula.package.name
+        &package_formula.package.name.underline()
     );
 
     if remote_versions.is_empty() {
@@ -52,8 +53,8 @@ pub async fn upgrade(
 
     if latest <= current {
         eprintln!(
-            "You are using the latest version of '{}'",
-            &package_formula.package.name
+            "You are using the latest version of {}",
+            &package_formula.package.name.green()
         );
         return Ok(());
     }
@@ -61,14 +62,18 @@ pub async fn upgrade(
     if is_check_only {
         eprintln!(
             "Found latest version {} of {}, but using {} currently",
-            latest, &package_formula.package.name, cask_info.version
+            latest.to_string().green(),
+            &package_formula.package.name.underline(),
+            cask_info.version.green()
         );
     } else {
         command_install::install(cask, &package_formula.package.name, Some(latest_str)).await?;
 
         eprintln!(
             "Upgrade {}@{} from  to '{}' finish!",
-            &package_formula.package.name, cask_info.version, latest
+            &package_formula.package.name.underline(),
+            cask_info.version.red(),
+            latest.to_string().green()
         );
     }
 

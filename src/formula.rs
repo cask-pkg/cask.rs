@@ -11,6 +11,7 @@ use std::path::PathBuf;
 use std::time::{SystemTime, UNIX_EPOCH};
 use std::{env, fs};
 
+use colored::Colorize;
 use eyre::Report;
 use serde::{Deserialize, Serialize};
 use tinytemplate::TinyTemplate;
@@ -153,7 +154,10 @@ fn print_publishing_msg() {
 }
 
 pub fn fetch(cask: &cask::Cask, package_name: &str, temp: bool) -> Result<Formula, Report> {
-    eprintln!("Fetching {} formula...", package_name);
+    eprintln!(
+        "{}",
+        format!("Fetching {} formula...", package_name.underline()).blue()
+    );
 
     if let Ok(package_addr) = Url::parse(package_name) {
         let scheme = package_addr.scheme();

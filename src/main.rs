@@ -16,6 +16,7 @@ mod util;
 use std::{fs, process};
 
 use clap::{arg, Arg, Command};
+use colored::Colorize;
 use futures::executor;
 
 #[tokio::main]
@@ -154,7 +155,10 @@ async fn main() {
                 .values_of_os("")
                 .unwrap_or_default()
                 .collect::<Vec<_>>();
-            eprintln!("Unknown the command {:?} with argument {:?}", ext, args);
+            eprintln!(
+                "{}",
+                format!("Unknown the command {:?} with argument {:?}", ext, args).red()
+            );
             app.print_help().unwrap();
             process::exit(0x1);
         }

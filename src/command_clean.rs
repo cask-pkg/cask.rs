@@ -6,6 +6,7 @@ use crate::formula;
 use std::fs;
 use std::io::ErrorKind;
 
+use colored::Colorize;
 use eyre::Report;
 
 pub async fn clean(cask: &cask::Cask) -> Result<(), Report> {
@@ -169,7 +170,7 @@ pub async fn clean(cask: &cask::Cask) -> Result<(), Report> {
         }
     }
 
-    eprintln!("clear!");
+    eprintln!("{}", "clear!".green());
 
     Ok(())
 }

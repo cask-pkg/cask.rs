@@ -3,6 +3,7 @@
 use crate::cask;
 use crate::formula;
 
+use colored::Colorize;
 use eyre::Report;
 
 pub async fn info(cask: &cask::Cask, package_name: &str) -> Result<(), Report> {
@@ -24,20 +25,25 @@ pub async fn info(cask: &cask::Cask, package_name: &str) -> Result<(), Report> {
             Version: {}
             Repository: {}
             Location: {}
-            Installed: true
+            Installed: {}
             "#,
             package_formula.package.description,
-            cask_info.name,
-            cask_info.version,
-            package_formula.package.repository,
-            package_formula
-                .filepath
-                .parent()
-                .ok_or_else(|| eyre::format_err!(
-                    "can not get parent folder of '{}'",
-                    package_formula.filepath.display()
-                ))?
-                .display()
+            cask_info.name.green(),
+            cask_info.version.green(),
+            package_formula.package.repository.green(),
+            format!(
+                "{}",
+                package_formula
+                    .filepath
+                    .parent()
+                    .ok_or_else(|| eyre::format_err!(
+                        "can not get parent folder of '{}'",
+                        package_formula.filepath.display()
+                    ))?
+                    .display()
+            )
+            .green(),
+            "true".green()
         )
         .lines()
         .map(|s| s.trim_start().to_owned())
@@ -62,11 +68,12 @@ pub async fn info(cask: &cask::Cask, package_name: &str) -> Result<(), Report> {
             r#"{}
             Package: {}
             Repository: {}
-            Installed: false
+            Installed: {}
             "#,
             package_formula.package.description,
-            package_formula.package.name,
-            package_formula.package.repository
+            package_formula.package.name.green(),
+            package_formula.package.repository.green(),
+            "false".red()
         )
         .lines()
         .map(|s| s.trim_start().to_owned())

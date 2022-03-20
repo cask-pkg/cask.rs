@@ -1,0 +1,13 @@
+[package]
+name = "extractor"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+path = "lib.rs"
+
+[dependencies]
+eyre = "0.6.7"
+libflate = "1"
+tar = "0.4.38"
+zip = "0.5.13"

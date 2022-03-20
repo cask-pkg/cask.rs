@@ -5,7 +5,6 @@ use std::fs;
 
 use crate::cask;
 use crate::downloader;
-use crate::extractor;
 use crate::git;
 
 use eyre::Report;

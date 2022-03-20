@@ -98,25 +98,23 @@ dependencies = [
  "chrono",
  "clap",
  "dirs",
+ "extractor",
  "eyre",
  "futures",
  "futures-util",
  "indicatif",
- "libflate",
  "reqwest",
  "semver",
  "serde",
  "serde_json",
  "sha2",
  "tabled",
- "tar",
  "thiserror",
  "tinytemplate",
  "tokio",
  "toml",
  "url",
  "wait-timeout",
- "zip",
 ]
 
 [[package]]
@@ -243,6 +241,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7896dc8abb250ffdda33912550faa54c88ec8b998dec0b2c55ab224921ce11df"
 dependencies = [
  "cfg-if",
+]
+
+[[package]]
+name = "extractor"
+version = "0.1.0"
+dependencies = [
+ "eyre",
+ "libflate",
+ "tar",
+ "zip",
 ]
 
 [[package]]

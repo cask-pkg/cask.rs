@@ -2,7 +2,6 @@
 
 use crate::cask;
 use crate::downloader;
-use crate::extractor;
 use crate::formula;
 use crate::symlink;
 use crate::util::iso8601;

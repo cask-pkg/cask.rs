@@ -15,6 +15,12 @@ edition = "2021"
 name = "cask"
 path = "src/main.rs"
 
+[workspace]
+resolver = "2"
+members = [
+  "lib/extractor"
+]
+
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
@@ -29,17 +35,15 @@ indicatif = "0.16.2"
 futures-util = "0.3.21"
 tokio = { version = "1", features = ["full"] }
 chrono = "0.4.19"
-tar = "0.4.38"
 tinytemplate = "1.1"
 dirs = "4.0.0"
 sha2 = "0.10.2"
-libflate = "1"
 url = "2.2.2"
-zip = "0.5.13"
 semver = "1.0.6"
 wait-timeout = "0.1.5"
 thiserror = "1.0.30"
 tabled = "0.5.0"
+extractor = { path = "./lib/extractor" }
 
 [profile.release]
 # https://github.com/johnthagen/min-sized-rust

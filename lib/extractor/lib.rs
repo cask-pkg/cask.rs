@@ -1,10 +1,12 @@
 #![deny(warnings)]
 
 use core::result::Result;
-use std::fs::{self, File};
+use std::fs;
+use std::fs::File;
 use std::io;
 use std::io::Read;
-use std::path::{Path, PathBuf};
+use std::path::Path;
+use std::path::PathBuf;
 
 use eyre::Report;
 use libflate::gzip::Decoder as GzDecoder;
@@ -182,22 +184,19 @@ pub fn extract(
 
 #[cfg(test)]
 mod tests {
-    use crate::extractor;
     use std::{env, fs};
+
+    use crate::extract;
 
     #[test]
     fn test_extract_tar_test() {
-        let extractor_dir = env::current_dir()
-            .unwrap()
-            .join("fixtures")
-            .join("extractor");
+        let extractor_dir = env::current_dir().unwrap().join("fixtures");
 
         let tar_file_path = extractor_dir.join("test_tar.tar");
 
         let dest_dir = extractor_dir;
 
-        let extracted_file_path =
-            extractor::extract(&tar_file_path, &dest_dir, "test_tar", "/").unwrap();
+        let extracted_file_path = extract(&tar_file_path, &dest_dir, "test_tar", "/").unwrap();
 
         let meta = fs::metadata(&extracted_file_path).unwrap();
 
@@ -212,17 +211,13 @@ mod tests {
 
     #[test]
     fn test_extract_zip() {
-        let extractor_dir = env::current_dir()
-            .unwrap()
-            .join("fixtures")
-            .join("extractor");
+        let extractor_dir = env::current_dir().unwrap().join("fixtures");
 
         let tar_file_path = extractor_dir.join("test_zip.zip");
 
         let dest_dir = extractor_dir;
 
-        let extracted_file_path =
-            extractor::extract(&tar_file_path, &dest_dir, "test_zip", "/").unwrap();
+        let extracted_file_path = extract(&tar_file_path, &dest_dir, "test_zip", "/").unwrap();
 
         let meta = fs::metadata(&extracted_file_path).unwrap();
 
@@ -235,33 +230,26 @@ mod tests {
 
     #[test]
     fn test_extract_tar_if_bin_not_exist() {
-        let extractor_dir = env::current_dir()
-            .unwrap()
-            .join("fixtures")
-            .join("extractor");
+        let extractor_dir = env::current_dir().unwrap().join("fixtures");
 
         let tar_file_path = extractor_dir.join("test.tar");
 
         let dest_dir = extractor_dir;
 
-        let r = extractor::extract(&tar_file_path, &dest_dir, "not_exist", "/");
+        let r = extract(&tar_file_path, &dest_dir, "not_exist", "/");
 
         assert!(r.is_err());
     }
 
     #[test]
     fn test_extract_tar_gz() {
-        let extractor_dir = env::current_dir()
-            .unwrap()
-            .join("fixtures")
-            .join("extractor");
+        let extractor_dir = env::current_dir().unwrap().join("fixtures");
 
         let tar_file_path = extractor_dir.join("test.tar.gz");
 
         let dest_dir = extractor_dir;
 
-        let extracted_file_path =
-            extractor::extract(&tar_file_path, &dest_dir, "test", "/").unwrap();
+        let extracted_file_path = extract(&tar_file_path, &dest_dir, "test", "/").unwrap();
 
         let meta = fs::metadata(&extracted_file_path).unwrap();
 
@@ -274,17 +262,13 @@ mod tests {
 
     #[test]
     fn test_extract_tgz() {
-        let extractor_dir = env::current_dir()
-            .unwrap()
-            .join("fixtures")
-            .join("extractor");
+        let extractor_dir = env::current_dir().unwrap().join("fixtures");
 
         let tar_file_path = extractor_dir.join("cross-env_darwin_amd64.tgz");
 
         let dest_dir = extractor_dir;
 
-        let extracted_file_path =
-            extractor::extract(&tar_file_path, &dest_dir, "cross-env", "/").unwrap();
+        let extracted_file_path = extract(&tar_file_path, &dest_dir, "cross-env", "/").unwrap();
 
         let meta = fs::metadata(&extracted_file_path).unwrap();
 
@@ -295,17 +279,13 @@ mod tests {
 
     #[test]
     fn test_extract_tar_gz_with_prune_win() {
-        let extractor_dir = env::current_dir()
-            .unwrap()
-            .join("fixtures")
-            .join("extractor");
+        let extractor_dir = env::current_dir().unwrap().join("fixtures");
 
         let tar_file_path = extractor_dir.join("prune_window_386.tar.gz");
 
         let dest_dir = extractor_dir;
 
-        let extracted_file_path =
-            extractor::extract(&tar_file_path, &dest_dir, "prune.exe", "/").unwrap();
+        let extracted_file_path = extract(&tar_file_path, &dest_dir, "prune.exe", "/").unwrap();
 
         let meta = fs::metadata(&extracted_file_path).unwrap();
 
@@ -314,26 +294,20 @@ mod tests {
 
     #[test]
     fn test_extract_tar_gz_without_binary_file() {
-        let extractor_dir = env::current_dir()
-            .unwrap()
-            .join("fixtures")
-            .join("extractor");
+        let extractor_dir = env::current_dir().unwrap().join("fixtures");
 
         let tar_file_path = extractor_dir.join("test_without_binary.tar.gz");
 
         let dest_dir = extractor_dir;
 
-        let r = extractor::extract(&tar_file_path, &dest_dir, "without_test", "/");
+        let r = extract(&tar_file_path, &dest_dir, "without_test", "/");
 
         assert!(r.is_err())
     }
 
     #[test]
     fn test_extract_tar_gz_file_in_sub_folder() {
-        let extractor_dir = env::current_dir()
-            .unwrap()
-            .join("fixtures")
-            .join("extractor");
+        let extractor_dir = env::current_dir().unwrap().join("fixtures");
 
         let tar_file_path = &extractor_dir.join("golangci-lint-in-sub-folder.tar.gz");
 
@@ -343,7 +317,7 @@ mod tests {
 
         fs::remove_file(&dest_file).ok();
 
-        let r = extractor::extract(
+        let r = extract(
             tar_file_path,
             &dest_dir,
             "golangci-lint",
@@ -362,10 +336,7 @@ mod tests {
 
     #[test]
     fn test_extract_tar_file_in_sub_folder() {
-        let extractor_dir = env::current_dir()
-            .unwrap()
-            .join("fixtures")
-            .join("extractor");
+        let extractor_dir = env::current_dir().unwrap().join("fixtures");
 
         let tar_file_path = &extractor_dir.join("sub-folder.tar");
 
@@ -375,7 +346,7 @@ mod tests {
 
         fs::remove_file(&dest_file).ok();
 
-        let r = extractor::extract(tar_file_path, &dest_dir, "sub-folder", "/sub-folder");
+        let r = extract(tar_file_path, &dest_dir, "sub-folder", "/sub-folder");
 
         assert!(r.is_ok());
 
@@ -391,10 +362,7 @@ mod tests {
 
     #[test]
     fn test_extract_zip_file_in_sub_folder() {
-        let extractor_dir = env::current_dir()
-            .unwrap()
-            .join("fixtures")
-            .join("extractor");
+        let extractor_dir = env::current_dir().unwrap().join("fixtures");
 
         let tar_file_path = &extractor_dir.join("sub-folder-zip.zip");
 
@@ -404,7 +372,7 @@ mod tests {
 
         fs::remove_file(&dest_file).ok();
 
-        let r = extractor::extract(
+        let r = extract(
             tar_file_path,
             &dest_dir,
             "sub-folder-zip",

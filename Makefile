@@ -18,4 +18,4 @@ format:
 	cargo fmt --all
 
 test:
-	cargo test --locked
+	cargo test --locked --workspace

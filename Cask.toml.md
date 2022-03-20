@@ -82,11 +82,12 @@ x86_64 = "https://github.com/<username>/<repo>/releases/download/v{version}/darw
 
 2. URL detail struct
 
-| Field     | Description                                                   | type   | required | example   |
-| --------- | ------------------------------------------------------------- | ------ | -------- | --------- |
-| **url**   | The url of resource that will be download                     | string | true     |           |
-| checksum  | The checksum(SHA256) of resource. Check checksum if provided. | string |          |           |
-| extension | The resource extension. Specify the extension of resource     | string |          | ".tar.gz" |
+| Field     | Description                                                   | type   | required | example       |
+| --------- | ------------------------------------------------------------- | ------ | -------- | ------------- |
+| **url**   | The url of resource that will be download                     | string | true     |               |
+| checksum  | The checksum(SHA256) of resource. Check checksum if provided. | string |          |               |
+| extension | The resource extension. Specify the extension of resource     | string |          | ".tar.gz"     |
+| path      | The folder that binary file locate in the tarball             | string |          | "/sub-folder" |
 
 ```toml
 [darwin]

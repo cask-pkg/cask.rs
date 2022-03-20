@@ -7,7 +7,7 @@ use std::path::Path;
 use eyre::Report;
 use tar::Archive;
 
-pub(crate) fn extract_archive<R: Read>(
+pub(crate) fn extract<R: Read>(
     reader: R,
     filename: &str,
     folder: &str,

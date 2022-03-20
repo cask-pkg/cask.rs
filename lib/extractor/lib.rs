@@ -2,6 +2,7 @@
 
 mod archive;
 mod tar;
+mod tbz2;
 mod tgz;
 mod zip;
 
@@ -37,6 +38,11 @@ pub fn extract(
 
     if tar_file_name.ends_with(".tar.gz") || tar_file_name.ends_with(".tgz") {
         match tgz::extract(tarball, dest_dir, filename, folder) {
+            Ok(p) => ensure_extract_file_exist(&p),
+            Err(e) => Err(e),
+        }
+    } else if tar_file_name.ends_with(".tar.bz2") {
+        match tbz2::extract(tarball, dest_dir, filename, folder) {
             Ok(p) => ensure_extract_file_exist(&p),
             Err(e) => Err(e),
         }

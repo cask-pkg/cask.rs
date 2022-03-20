@@ -5,8 +5,8 @@ use std::fs::File;
 use std::path::Path;
 use std::path::PathBuf;
 
+use bzip2_rs::DecoderReader;
 use eyre::Report;
-use libflate::gzip::Decoder as GzDecoder;
 
 use crate::archive;
 
@@ -19,7 +19,7 @@ pub(crate) fn extract(
     let output_file_path = dest_dir.join(filename);
 
     archive::extract(
-        GzDecoder::new(File::open(&src_filepath)?)?,
+        DecoderReader::new(File::open(&src_filepath)?),
         filename,
         folder,
         &output_file_path,
@@ -35,10 +35,10 @@ mod tests {
     use crate::extract;
 
     #[test]
-    fn test_extract_tgz_00() {
-        let extractor_dir = env::current_dir().unwrap().join("fixtures").join("tgz");
+    fn test_extract_tbz2_00() {
+        let extractor_dir = env::current_dir().unwrap().join("fixtures").join("tbz2");
 
-        let tar_file_path = extractor_dir.join("00.tgz");
+        let tar_file_path = extractor_dir.join("00.tar.bz2");
 
         let dest_dir = extractor_dir;
 
@@ -56,10 +56,10 @@ mod tests {
     }
 
     #[test]
-    fn test_extract_tgz_01() {
-        let extractor_dir = env::current_dir().unwrap().join("fixtures").join("tgz");
+    fn test_extract_tbz2_01() {
+        let extractor_dir = env::current_dir().unwrap().join("fixtures").join("tbz2");
 
-        let tar_file_path = extractor_dir.join("01.tgz");
+        let tar_file_path = extractor_dir.join("01.tar.bz2");
 
         let dest_dir = extractor_dir;
 
@@ -78,10 +78,10 @@ mod tests {
     }
 
     #[test]
-    fn test_extract_tgz_02() {
-        let extractor_dir = env::current_dir().unwrap().join("fixtures").join("tgz");
+    fn test_extract_tbz2_02() {
+        let extractor_dir = env::current_dir().unwrap().join("fixtures").join("tbz2");
 
-        let tar_file_path = extractor_dir.join("02.tgz");
+        let tar_file_path = extractor_dir.join("02.tar.bz2");
 
         let dest_dir = extractor_dir;
 

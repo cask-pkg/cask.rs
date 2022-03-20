@@ -17,7 +17,7 @@ pub(crate) fn extract(
 ) -> Result<PathBuf, Report> {
     let output_file_path = dest_dir.join(filename);
 
-    archive::extract_archive(
+    archive::extract(
         File::open(&src_filepath)?,
         filename,
         folder,

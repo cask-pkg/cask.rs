@@ -330,6 +330,7 @@ dependencies = [
  "eyre",
  "libflate",
  "tar",
+ "thiserror",
  "zip",
 ]
 

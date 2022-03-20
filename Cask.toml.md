@@ -101,6 +101,7 @@ x86_64 = { url = "https://github.com/<username>/<repo>/releases/download/v{versi
 | preinstall  | The script will run before install package | string |          |         |
 | postinstall | The script will run after install package  | string |          |         |
 
+```toml
 [hook]
 preinstall = """
 echo "running preinstall hook"
@@ -108,3 +109,4 @@ echo "running preinstall hook"
 postinstall = """
 echo "running postinstall hook"
 """
+```

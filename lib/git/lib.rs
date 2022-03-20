@@ -238,8 +238,15 @@ pub fn check_exist(url: &str) -> Result<bool, GitError> {
 
 #[cfg(test)]
 mod tests {
-    use crate::git::{self, GitError, GitTag};
     use std::{env, fs, path::Path};
+
+    use crate::check_exist;
+    use crate::clone;
+    use crate::fetch_tags;
+    use crate::get_versions;
+    use crate::CloneOption;
+    use crate::GitError;
+    use crate::GitTag;
 
     #[test]
     fn test_clone() {
@@ -247,10 +254,10 @@ mod tests {
 
         let dest_dir = Path::new("./dist");
 
-        let r1 = git::clone(
+        let r1 = clone(
             url1,
             dest_dir,
-            git::CloneOption {
+            CloneOption {
                 depth: Some(1),
                 quiet: Some(true),
                 single_branch: Some(true),
@@ -271,10 +278,10 @@ mod tests {
 
         let dest_dir = env::temp_dir().join("cask_test_1");
 
-        let r1 = git::clone(
+        let r1 = clone(
             url1,
             &dest_dir,
-            git::CloneOption {
+            CloneOption {
                 depth: Some(1),
                 quiet: Some(true),
                 single_branch: Some(true),
@@ -302,7 +309,7 @@ mod tests {
     fn test_fetch_tags() {
         let url1 = "https://github.com/axetroy/prune.v.git";
 
-        let tags = git::fetch_tags(url1).unwrap();
+        let tags = fetch_tags(url1).unwrap();
 
         let expect: Vec<GitTag> = vec![
             GitTag {
@@ -382,7 +389,7 @@ mod tests {
     fn test_fetch_tags_if_remote_not_exist() {
         let url1 = "https://github.com/axetroy/prune.not.exist.git";
 
-        let r = git::fetch_tags(url1);
+        let r = fetch_tags(url1);
 
         assert!(r.is_err());
     }
@@ -391,7 +398,7 @@ mod tests {
     fn test_fetch_tags_if_remote_does_not_exist_tags() {
         let url1 = "https://github.com/axetroy/axetroy.git";
 
-        let tags = git::fetch_tags(url1).unwrap();
+        let tags = fetch_tags(url1).unwrap();
 
         assert!(tags.is_empty());
     }
@@ -400,7 +407,7 @@ mod tests {
     fn test_get_versions() {
         let url1 = "https://github.com/axetroy/prune.v.git";
 
-        let tags = git::get_versions(url1).unwrap();
+        let tags = get_versions(url1).unwrap();
 
         let expect: Vec<String> = vec![
             "0.2.14", "0.2.13", "0.2.12", "0.2.11", "0.2.10", "0.2.9", "0.2.8", "0.2.7", "0.2.6",
@@ -417,7 +424,7 @@ mod tests {
     fn test_get_versions_from_a_not_exist_repo() {
         let url1 = "https://github.com/axetroy/not_exist.git";
 
-        let r1 = git::get_versions(url1);
+        let r1 = get_versions(url1);
 
         assert!(r1.is_err());
 
@@ -436,7 +443,7 @@ mod tests {
     fn test_check_exist_if_exist() {
         let url1 = "https://github.com/axetroy/cask.rs.git";
 
-        let exist = git::check_exist(url1).unwrap();
+        let exist = check_exist(url1).unwrap();
 
         assert!(exist);
     }
@@ -445,7 +452,7 @@ mod tests {
     fn test_check_exist_if_not_exist() {
         let url1 = "https://github.com/axetroy/not_exist.git";
 
-        let exist = git::check_exist(url1).unwrap();
+        let exist = check_exist(url1).unwrap();
 
         assert!(!exist);
     }

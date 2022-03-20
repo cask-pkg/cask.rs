@@ -9,7 +9,6 @@ mod command_self_update;
 mod command_uninstall;
 mod command_upgrade;
 mod formula;
-mod git;
 mod hooker;
 mod symlink;
 mod util;

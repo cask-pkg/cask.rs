@@ -112,6 +112,7 @@ dependencies = [
  "extractor",
  "eyre",
  "futures",
+ "git",
  "reqwest",
  "semver",
  "serde",
@@ -433,6 +434,16 @@ dependencies = [
  "cfg-if",
  "libc",
  "wasi 0.10.0+wasi-snapshot-preview1",
+]
+
+[[package]]
+name = "git"
+version = "0.1.0"
+dependencies = [
+ "eyre",
+ "semver",
+ "thiserror",
+ "wait-timeout",
 ]
 
 [[package]]

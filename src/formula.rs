@@ -1,7 +1,6 @@
 // #![deny(warnings)]
 
 use crate::cask;
-use crate::git;
 use crate::hooker;
 
 use std::collections::HashMap;

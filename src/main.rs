@@ -11,7 +11,6 @@ mod command_upgrade;
 mod formula;
 mod git;
 mod hooker;
-mod shell;
 mod symlink;
 mod util;
 

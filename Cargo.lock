@@ -107,6 +107,7 @@ dependencies = [
  "serde",
  "serde_json",
  "sha2",
+ "shell",
  "tabled",
  "thiserror",
  "tinytemplate",
@@ -1017,6 +1018,13 @@ dependencies = [
  "cfg-if",
  "cpufeatures",
  "digest",
+]
+
+[[package]]
+name = "shell"
+version = "0.1.0"
+dependencies = [
+ "eyre",
 ]
 
 [[package]]

@@ -1,7 +1,5 @@
 // #![deny(warnings)]
 
-use crate::shell;
-
 use std::path::Path;
 
 use eyre::Report;

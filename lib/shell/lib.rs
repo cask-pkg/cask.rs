@@ -45,13 +45,14 @@ pub fn run(cwd: &Path, command: &str) -> Result<(), Report> {
 
 #[cfg(test)]
 mod tests {
-    use crate::shell;
     use std::env;
+
+    use crate::run;
 
     #[test]
     fn test_shell_echo() {
         let cwd = env::current_dir().unwrap();
 
-        shell::run(&cwd, r#"echo "hello world""#).unwrap();
+        run(&cwd, r#"echo "hello world""#).unwrap();
     }
 }

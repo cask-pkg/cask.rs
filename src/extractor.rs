@@ -3,6 +3,7 @@
 use core::result::Result;
 use std::fs::{self, File};
 use std::io;
+use std::io::Read;
 use std::path::{Path, PathBuf};
 use std::process::Command as ChildProcess;
 
@@ -66,45 +67,14 @@ fn extract_tar_gz(
             Err(e) => Err(eyre::format_err!("{}", e)),
         }
     } else {
-        let tar_file = File::open(&src_filepath)?;
-        let input = GzDecoder::new(&tar_file)?;
-        let mut archive = Archive::new(input);
+        extract_archive(
+            GzDecoder::new(File::open(&src_filepath)?)?,
+            extract_file_name,
+            extract_file_in_tarball_file_path,
+            &output_file_path,
+        )?;
 
-        archive.set_unpack_xattrs(true);
-        archive.set_overwrite(true);
-        archive.set_preserve_permissions(true);
-        archive.set_preserve_mtime(true);
-
-        let files = archive.entries()?.flatten();
-
-        let target_file_path = format!(
-            "{}/{}",
-            extract_file_in_tarball_file_path, extract_file_name
-        )
-        .replace("//", "/");
-
-        for mut entry in files {
-            let file_path = entry.path()?;
-
-            let relative_path = format!("{}", file_path.display());
-
-            let absolute_path = format!(
-                "/{}",
-                relative_path
-                    .trim_start_matches("./")
-                    .trim_start_matches('/')
-            );
-
-            if target_file_path == absolute_path {
-                entry.unpack(&output_file_path)?;
-                return Ok(output_file_path);
-            }
-        }
-
-        Err(eyre::format_err!(
-            "can not found the file '{}' in tar",
-            extract_file_name
-        ))
+        Ok(output_file_path)
     }
 }
 
@@ -116,9 +86,23 @@ fn extract_tar(
 ) -> Result<PathBuf, Report> {
     let output_file_path = dest_dir.join(extract_file_name);
 
-    let tar_file = File::open(&src_filepath)?;
-    let mut archive = Archive::new(tar_file);
+    extract_archive(
+        File::open(&src_filepath)?,
+        extract_file_name,
+        extract_file_in_tarball_file_path,
+        &output_file_path,
+    )?;
 
+    Ok(output_file_path)
+}
+
+fn extract_archive<R: Read>(
+    reader: R,
+    filename: &str,
+    folder: &str,
+    dest: &Path,
+) -> Result<(), Report> {
+    let mut archive = Archive::new(reader);
     archive.set_unpack_xattrs(true);
     archive.set_overwrite(true);
     archive.set_preserve_permissions(true);
@@ -126,11 +110,7 @@ fn extract_tar(
 
     let files = archive.entries()?.flatten();
 
-    let target_file_path = format!(
-        "{}/{}",
-        extract_file_in_tarball_file_path, extract_file_name
-    )
-    .replace("//", "/");
+    let target_file_path = format!("{}/{}", folder, filename).replace("//", "/");
 
     for mut entry in files {
         let file_path = entry.path()?;
@@ -145,14 +125,14 @@ fn extract_tar(
         );
 
         if target_file_path == absolute_path {
-            entry.unpack(&output_file_path)?;
-            return Ok(output_file_path);
+            entry.unpack(&dest)?;
+            return Ok(());
         }
     }
 
     Err(eyre::format_err!(
         "can not found the file '{}' in tar",
-        extract_file_name
+        filename
     ))
 }
 

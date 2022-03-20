@@ -62,8 +62,6 @@ Current Support the arch:
 
 - x86_64
 - aarch64
-- mips64
-- mips64el
 
 Every arch got a [Resource Target Object](#Resource-Target)
 

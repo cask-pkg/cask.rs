@@ -90,21 +90,29 @@ fn extract_zip(
     src_filepath: &Path,
     dest_dir: &Path,
     extract_file_name: &str,
-    _extract_file_in_tarball_file_path: &str,
+    extract_file_in_tarball_file_path: &str,
 ) -> Result<PathBuf, Report> {
     let output_file_path = dest_dir.join(extract_file_name);
 
     let tar_file = File::open(&src_filepath)?;
-    let mut archive = zip::ZipArchive::new(tar_file).unwrap();
+    let mut archive = zip::ZipArchive::new(tar_file)?;
+
+    let target_file_path = format!(
+        "{}/{}",
+        extract_file_in_tarball_file_path, extract_file_name
+    )
+    .replace("//", "/");
 
     for i in 0..archive.len() {
-        let mut file = archive.by_index(i).unwrap();
+        let mut file = archive.by_index(i)?;
 
         if file.is_dir() {
             continue;
         }
 
-        if file.name() == extract_file_name {
+        let absolute_path = format!("/{}", file.name());
+
+        if target_file_path == absolute_path {
             let mut output_file = fs::File::create(&output_file_path)?;
             io::copy(&mut file, &mut output_file)?;
 
@@ -392,6 +400,39 @@ mod tests {
         assert_eq!(
             format!("{}", dest_file.display()),
             format!("{}", r.unwrap().display())
+        );
+
+        fs::remove_file(&dest_file).ok();
+    }
+
+    #[test]
+    fn test_extract_zip_file_in_sub_folder() {
+        let extractor_dir = env::current_dir()
+            .unwrap()
+            .join("fixtures")
+            .join("extractor");
+
+        let tar_file_path = &extractor_dir.join("sub-folder-zip.zip");
+
+        let dest_dir = extractor_dir.clone();
+
+        let dest_file = &extractor_dir.join("sub-folder-zip");
+
+        fs::remove_file(&dest_file).ok();
+
+        let r = extractor::extract(
+            tar_file_path,
+            &dest_dir,
+            "sub-folder-zip",
+            "/sub-folder-zip",
+        )
+        .unwrap();
+
+        assert!(dest_file.exists());
+        assert!(dest_file.is_file());
+        assert_eq!(
+            format!("{}", dest_file.display()),
+            format!("{}", r.display())
         );
 
         fs::remove_file(&dest_file).ok();

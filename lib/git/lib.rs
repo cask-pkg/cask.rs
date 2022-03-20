@@ -19,13 +19,13 @@ pub enum GitError {
     GitUrlInvalid { url: String },
     #[error("repository already exist in {path:?}")]
     RepositoryExist { path: String },
-    #[error("Running git command error: {source:?}")]
+    #[error("running git command error: {source:?}")]
     CommandError { source: io::Error },
-    #[error("Running git command exit {code:?}")]
+    #[error("running git command exit {code:?}")]
     CommandExitError { code: i32 },
-    #[error("Can not found remote repository {url:?})")]
+    #[error("can not found remote repository {url:?})")]
     RemoteRepositoryNotExists { url: String },
-    #[error("Can not get tag from output: {row:?})")]
+    #[error("can not get tag from output: {row:?})")]
     ParseTagError { row: String },
 }
 

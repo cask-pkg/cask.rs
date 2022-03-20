@@ -73,7 +73,7 @@ The target resource can be one of following types:
 
 1. String
 
-The resource URL should be download.
+The resource URL should be download. The resource tarball format support `.tar`/`.tar.gz`/`.tar.bz2`/`.zip`
 
 ```toml
 [darwin]
@@ -88,6 +88,8 @@ x86_64 = "https://github.com/<username>/<repo>/releases/download/v{version}/darw
 | checksum  | The checksum(SHA256) of resource. Check checksum if provided. | string |          |               |
 | extension | The resource extension. Specify the extension of resource     | string |          | ".tar.gz"     |
 | path      | The folder that binary file locate in the tarball             | string |          | "/sub-folder" |
+
+The resource tarball format support `.tar`/`.tar.gz`/`.tar.bz2`/`.zip`
 
 ```toml
 [darwin]

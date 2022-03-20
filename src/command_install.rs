@@ -121,14 +121,14 @@ pub async fn install(
     }
 
     #[cfg(target_family = "unix")]
-    let executable_name = &package_formula.package.bin;
+    let executable_name = package_formula.package.bin.clone();
     #[cfg(target_family = "windows")]
     let executable_name = format!("{}.exe", &package_formula.package.bin);
 
     let output_file_path = extractor::extract(
         &tar_file_path,
         &package_dir.join("bin"),
-        executable_name,
+        &executable_name,
         download_target.path.as_str(),
     )?;
 

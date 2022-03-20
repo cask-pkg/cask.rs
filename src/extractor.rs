@@ -5,12 +5,10 @@ use std::fs::{self, File};
 use std::io;
 use std::io::Read;
 use std::path::{Path, PathBuf};
-use std::process::Command as ChildProcess;
 
 use eyre::Report;
 use libflate::gzip::Decoder as GzDecoder;
 use tar::Archive;
-use which::which;
 
 fn extract_tar_gz(
     src_filepath: &Path,
@@ -20,62 +18,14 @@ fn extract_tar_gz(
 ) -> Result<PathBuf, Report> {
     let output_file_path = dest_dir.join(extract_file_name);
 
-    // use tar command
-    // wait for fix: https://github.com/alexcrichton/tar-rs/issues/286
-    if let Ok(tar_command_path) = which("tar") {
-        let unpack_exe_file_path = {
-            let mut unpack = dest_dir.to_path_buf();
-            for p in extract_file_in_tarball_file_path.split('/') {
-                if p.is_empty() {
-                    continue;
-                }
-                unpack = dest_dir.join(p).to_path_buf();
-            }
+    extract_archive(
+        GzDecoder::new(File::open(&src_filepath)?)?,
+        extract_file_name,
+        extract_file_in_tarball_file_path,
+        &output_file_path,
+    )?;
 
-            unpack = unpack.join(extract_file_name);
-
-            unpack
-        };
-        fs::create_dir_all(dest_dir).map_err(|e| {
-            eyre::format_err!("can not create folder '{}': {}", dest_dir.display(), e)
-        })?;
-
-        match ChildProcess::new(tar_command_path)
-            .current_dir(dest_dir)
-            .arg("-f")
-            .arg(format!("{}", src_filepath.display()))
-            .arg("-zx")
-            .spawn()
-        {
-            Ok(mut child) => match child.wait() {
-                Ok(state) => {
-                    if state.success() {
-                        // Rename it to the target folder if the executable file is not locate in root tarball
-                        if extract_file_in_tarball_file_path != "/" {
-                            fs::rename(&unpack_exe_file_path, &output_file_path)?;
-                        }
-                        Ok(output_file_path)
-                    } else {
-                        Err(eyre::format_err!(
-                            "unpack file and exit code: {}",
-                            state.code().unwrap_or(1),
-                        ))
-                    }
-                }
-                Err(e) => Err(eyre::format_err!("{}", e)),
-            },
-            Err(e) => Err(eyre::format_err!("{}", e)),
-        }
-    } else {
-        extract_archive(
-            GzDecoder::new(File::open(&src_filepath)?)?,
-            extract_file_name,
-            extract_file_in_tarball_file_path,
-            &output_file_path,
-        )?;
-
-        Ok(output_file_path)
-    }
+    Ok(output_file_path)
 }
 
 fn extract_tar(

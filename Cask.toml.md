@@ -71,14 +71,14 @@ The target resource can be one of following types:
 
 1. String
 
-The resource URL should be download. The resource tarball format support `.tar`/`.tar.gz`/`.tar.bz2`/`.zip`
+The resource URL that will be download and extract. The tarball format support `.tar`/`.tgz`/`.tar.gz`/`.tar.bz2`/`.zip`
 
 ```toml
 [darwin]
 x86_64 = "https://github.com/<username>/<repo>/releases/download/v{version}/darwin_amd64.tar.gz"
 ```
 
-2. URL detail struct
+1. URL detail struct
 
 | Field     | Description                                                   | type   | required | example       |
 | --------- | ------------------------------------------------------------- | ------ | -------- | ------------- |
@@ -87,7 +87,7 @@ x86_64 = "https://github.com/<username>/<repo>/releases/download/v{version}/darw
 | extension | The resource extension. Specify the extension of resource     | string |          | ".tar.gz"     |
 | path      | The folder that binary file locate in the tarball             | string |          | "/sub-folder" |
 
-The resource tarball format support `.tar`/`.tar.gz`/`.tar.bz2`/`.zip`
+The extension support `.tar`/`.tgz`/`.tar.gz`/`.tar.bz2`/`.zip`
 
 ```toml
 [darwin]

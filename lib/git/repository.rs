@@ -102,6 +102,7 @@ impl Repository {
 
         let mut child = ChildProcess::new("git")
             .env("GIT_TERMINAL_PROMPT", "0")
+            .env("GIT_SSH_COMMAND", "ssh -oBatchMode=yes")
             .stdin(Stdio::null())
             .stderr(Stdio::null())
             .stdout(Stdio::null())
@@ -144,6 +145,7 @@ impl Repository {
     pub fn is_exist(&self) -> Result<bool, GitError> {
         let mut child = ChildProcess::new("git")
             .env("GIT_TERMINAL_PROMPT", "0")
+            .env("GIT_SSH_COMMAND", "ssh -oBatchMode=yes")
             .stdin(Stdio::null())
             .stderr(Stdio::null())
             .stdout(Stdio::null())
@@ -185,6 +187,7 @@ impl Repository {
 
         let child = ChildProcess::new("git")
             .env("GIT_TERMINAL_PROMPT", "0")
+            .env("GIT_SSH_COMMAND", "ssh -oBatchMode=yes")
             .stdin(Stdio::null())
             .stderr(Stdio::null())
             .stdout(Stdio::piped())

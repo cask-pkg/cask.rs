@@ -59,11 +59,11 @@ pub struct DependenciesDetail {
 pub struct Package {
     pub name: String,                  // The package name
     pub bin: String,                   // The binary name of package
-    pub versions: Option<Vec<String>>, // The version of package. If versions are not provide, cask will automatically get the versions from the repository tags.
-    pub authors: Vec<String>,          // The author of package
-    pub keywords: Option<Vec<String>>, // The keywords of package
     pub repository: String,            // The repository url
-    pub description: String,           // The description of package
+    pub description: String,           // The description of packa
+    pub versions: Option<Vec<String>>, // The version of package. If versions are not provide, cask will automatically get the versions from the repository tags.
+    pub authors: Option<Vec<String>>,  // The author of package
+    pub keywords: Option<Vec<String>>, // The keywords of packagege
     pub license: Option<String>,       // The license of package
 }
 
@@ -430,7 +430,10 @@ mod tests {
         assert_eq!(rc.package.name, "github.com/axetroy/gpm.rs");
         assert_eq!(rc.package.bin, "gpm");
         assert_eq!(rc.package.versions.unwrap(), vec!["0.1.12", "0.1.11"]);
-        assert_eq!(rc.package.authors, vec!["Axetroy <axetroy.dev@gmail.com>"]);
+        assert_eq!(
+            rc.package.authors.unwrap(),
+            vec!["Axetroy <axetroy.dev@gmail.com>"]
+        );
         assert_eq!(
             rc.package.keywords.unwrap(),
             vec!["gpm", "git", "project", "manager"]
@@ -515,7 +518,10 @@ mod tests {
         assert_eq!(rc.package.name, "github.com/axetroy/gpm.rs");
         assert_eq!(rc.package.bin, "gpm");
         assert_eq!(rc.package.versions.unwrap(), vec!["0.1.12", "0.1.11"]);
-        assert_eq!(rc.package.authors, vec!["Axetroy <axetroy.dev@gmail.com>"]);
+        assert_eq!(
+            rc.package.authors.unwrap(),
+            vec!["Axetroy <axetroy.dev@gmail.com>"]
+        );
         assert_eq!(
             rc.package.keywords.unwrap(),
             vec!["gpm", "git", "project", "manager"]

@@ -6,3 +6,4 @@ prune
 prune.exe
 cross-env
 golangci-lint
+*.txt

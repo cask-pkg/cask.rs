@@ -189,50 +189,53 @@ mod tests {
     use crate::extract;
 
     #[test]
-    fn test_extract_tar_test() {
-        let extractor_dir = env::current_dir().unwrap().join("fixtures");
+    fn test_extract_tar_00() {
+        let extractor_dir = env::current_dir().unwrap().join("fixtures").join("tar");
 
-        let tar_file_path = extractor_dir.join("test_tar.tar");
-
-        let dest_dir = extractor_dir;
-
-        let extracted_file_path = extract(&tar_file_path, &dest_dir, "test_tar", "/").unwrap();
-
-        let meta = fs::metadata(&extracted_file_path).unwrap();
-
-        assert_eq!(meta.len(), 12);
-
-        let content = fs::read_to_string(&extracted_file_path).unwrap();
-
-        println!("{}", extracted_file_path.display());
-
-        assert_eq!(content, "hello world\n");
-    }
-
-    #[test]
-    fn test_extract_zip() {
-        let extractor_dir = env::current_dir().unwrap().join("fixtures");
-
-        let tar_file_path = extractor_dir.join("test_zip.zip");
+        let tar_file_path = extractor_dir.join("00.tar");
 
         let dest_dir = extractor_dir;
 
-        let extracted_file_path = extract(&tar_file_path, &dest_dir, "test_zip", "/").unwrap();
+        let extracted_file_path = extract(&tar_file_path, &dest_dir, "00.txt", "/").unwrap();
 
         let meta = fs::metadata(&extracted_file_path).unwrap();
 
-        assert_eq!(meta.len(), 12);
+        assert_eq!(meta.len(), 2);
 
         let content = fs::read_to_string(&extracted_file_path).unwrap();
 
-        assert_eq!(content, "hello world\n");
+        assert_eq!(content, "00");
+
+        fs::remove_file(extracted_file_path).ok();
     }
 
     #[test]
-    fn test_extract_tar_if_bin_not_exist() {
-        let extractor_dir = env::current_dir().unwrap().join("fixtures");
+    fn test_extract_tar_01() {
+        let extractor_dir = env::current_dir().unwrap().join("fixtures").join("tar");
 
-        let tar_file_path = extractor_dir.join("test.tar");
+        let tar_file_path = extractor_dir.join("01.tar");
+
+        let dest_dir = extractor_dir;
+
+        let extracted_file_path =
+            extract(&tar_file_path, &dest_dir, "01.txt", "/sub-folder").unwrap();
+
+        let meta = fs::metadata(&extracted_file_path).unwrap();
+
+        assert_eq!(meta.len(), 2);
+
+        let content = fs::read_to_string(&extracted_file_path).unwrap();
+
+        assert_eq!(content, "01");
+
+        fs::remove_file(extracted_file_path).ok();
+    }
+
+    #[test]
+    fn test_extract_tar_02() {
+        let extractor_dir = env::current_dir().unwrap().join("fixtures").join("tar");
+
+        let tar_file_path = extractor_dir.join("02.tar");
 
         let dest_dir = extractor_dir;
 
@@ -242,151 +245,114 @@ mod tests {
     }
 
     #[test]
-    fn test_extract_tar_gz() {
-        let extractor_dir = env::current_dir().unwrap().join("fixtures");
+    fn test_extract_zip_00() {
+        let extractor_dir = env::current_dir().unwrap().join("fixtures").join("zip");
 
-        let tar_file_path = extractor_dir.join("test.tar.gz");
+        let tar_file_path = extractor_dir.join("00.zip");
 
         let dest_dir = extractor_dir;
 
-        let extracted_file_path = extract(&tar_file_path, &dest_dir, "test", "/").unwrap();
+        let extracted_file_path = extract(&tar_file_path, &dest_dir, "00.txt", "/").unwrap();
 
         let meta = fs::metadata(&extracted_file_path).unwrap();
 
-        assert_eq!(meta.len(), 12);
+        assert_eq!(meta.len(), 2);
 
         let content = fs::read_to_string(&extracted_file_path).unwrap();
 
-        assert_eq!(content, "hello world\n");
-    }
-
-    #[test]
-    fn test_extract_tgz() {
-        let extractor_dir = env::current_dir().unwrap().join("fixtures");
-
-        let tar_file_path = extractor_dir.join("cross-env_darwin_amd64.tgz");
-
-        let dest_dir = extractor_dir;
-
-        let extracted_file_path = extract(&tar_file_path, &dest_dir, "cross-env", "/").unwrap();
-
-        let meta = fs::metadata(&extracted_file_path).unwrap();
-
-        assert_eq!(meta.len(), 153_464);
+        assert_eq!(content, "00");
 
         fs::remove_file(extracted_file_path).ok();
     }
 
     #[test]
-    fn test_extract_tar_gz_with_prune_win() {
-        let extractor_dir = env::current_dir().unwrap().join("fixtures");
+    fn test_extract_zip_01() {
+        let extractor_dir = env::current_dir().unwrap().join("fixtures").join("zip");
 
-        let tar_file_path = extractor_dir.join("prune_window_386.tar.gz");
+        let tar_file_path = extractor_dir.join("01.zip");
 
         let dest_dir = extractor_dir;
 
-        let extracted_file_path = extract(&tar_file_path, &dest_dir, "prune.exe", "/").unwrap();
+        let extracted_file_path =
+            extract(&tar_file_path, &dest_dir, "01.txt", "/sub-folder").unwrap();
 
         let meta = fs::metadata(&extracted_file_path).unwrap();
 
-        assert_eq!(meta.len(), 657_408);
+        assert_eq!(meta.len(), 2);
+
+        let content = fs::read_to_string(&extracted_file_path).unwrap();
+
+        assert_eq!(content, "01");
+
+        fs::remove_file(extracted_file_path).ok();
     }
 
     #[test]
-    fn test_extract_tar_gz_without_binary_file() {
-        let extractor_dir = env::current_dir().unwrap().join("fixtures");
+    fn test_extract_zip_02() {
+        let extractor_dir = env::current_dir().unwrap().join("fixtures").join("zip");
 
-        let tar_file_path = extractor_dir.join("test_without_binary.tar.gz");
+        let tar_file_path = extractor_dir.join("02.zip");
 
         let dest_dir = extractor_dir;
 
-        let r = extract(&tar_file_path, &dest_dir, "without_test", "/");
+        let r = extract(&tar_file_path, &dest_dir, "not_exist", "/");
 
-        assert!(r.is_err())
+        assert!(r.is_err());
     }
 
     #[test]
-    fn test_extract_tar_gz_file_in_sub_folder() {
-        let extractor_dir = env::current_dir().unwrap().join("fixtures");
+    fn test_extract_tgz_00() {
+        let extractor_dir = env::current_dir().unwrap().join("fixtures").join("tgz");
 
-        let tar_file_path = &extractor_dir.join("golangci-lint-in-sub-folder.tar.gz");
+        let tar_file_path = extractor_dir.join("00.tgz");
 
-        let dest_dir = extractor_dir.clone();
+        let dest_dir = extractor_dir;
 
-        let dest_file = &extractor_dir.join("golangci-lint");
+        let extracted_file_path = extract(&tar_file_path, &dest_dir, "00.txt", "/").unwrap();
 
-        fs::remove_file(&dest_file).ok();
+        let meta = fs::metadata(&extracted_file_path).unwrap();
 
-        let r = extract(
-            tar_file_path,
-            &dest_dir,
-            "golangci-lint",
-            "/golangci-lint-1.45.0-darwin-amd64",
-        );
+        assert_eq!(meta.len(), 2);
 
-        assert!(r.is_ok());
+        let content = fs::read_to_string(&extracted_file_path).unwrap();
 
-        assert!(dest_file.exists());
-        assert!(dest_file.is_file());
-        assert_eq!(
-            format!("{}", dest_file.display()),
-            format!("{}", r.unwrap().display())
-        );
+        assert_eq!(content, "00");
+
+        fs::remove_file(extracted_file_path).ok();
     }
 
     #[test]
-    fn test_extract_tar_file_in_sub_folder() {
-        let extractor_dir = env::current_dir().unwrap().join("fixtures");
+    fn test_extract_tgz_01() {
+        let extractor_dir = env::current_dir().unwrap().join("fixtures").join("tgz");
 
-        let tar_file_path = &extractor_dir.join("sub-folder.tar");
+        let tar_file_path = extractor_dir.join("01.tgz");
 
-        let dest_dir = extractor_dir.clone();
+        let dest_dir = extractor_dir;
 
-        let dest_file = &extractor_dir.join("sub-folder");
+        let extracted_file_path =
+            extract(&tar_file_path, &dest_dir, "01.txt", "/sub-folder").unwrap();
 
-        fs::remove_file(&dest_file).ok();
+        let meta = fs::metadata(&extracted_file_path).unwrap();
 
-        let r = extract(tar_file_path, &dest_dir, "sub-folder", "/sub-folder");
+        assert_eq!(meta.len(), 2);
 
-        assert!(r.is_ok());
+        let content = fs::read_to_string(&extracted_file_path).unwrap();
 
-        assert!(dest_file.exists());
-        assert!(dest_file.is_file());
-        assert_eq!(
-            format!("{}", dest_file.display()),
-            format!("{}", r.unwrap().display())
-        );
+        assert_eq!(content, "01");
 
-        fs::remove_file(&dest_file).ok();
+        fs::remove_file(extracted_file_path).ok();
     }
 
     #[test]
-    fn test_extract_zip_file_in_sub_folder() {
-        let extractor_dir = env::current_dir().unwrap().join("fixtures");
+    fn test_extract_tgz_02() {
+        let extractor_dir = env::current_dir().unwrap().join("fixtures").join("tgz");
 
-        let tar_file_path = &extractor_dir.join("sub-folder-zip.zip");
+        let tar_file_path = extractor_dir.join("02.tgz");
 
-        let dest_dir = extractor_dir.clone();
+        let dest_dir = extractor_dir;
 
-        let dest_file = &extractor_dir.join("sub-folder-zip");
+        let r = extract(&tar_file_path, &dest_dir, "not_exist", "/");
 
-        fs::remove_file(&dest_file).ok();
-
-        let r = extract(
-            tar_file_path,
-            &dest_dir,
-            "sub-folder-zip",
-            "/sub-folder-zip",
-        )
-        .unwrap();
-
-        assert!(dest_file.exists());
-        assert!(dest_file.is_file());
-        assert_eq!(
-            format!("{}", dest_file.display()),
-            format!("{}", r.display())
-        );
-
-        fs::remove_file(&dest_file).ok();
+        assert!(r.is_err());
     }
 }

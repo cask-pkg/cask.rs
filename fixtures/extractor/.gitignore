@@ -5,3 +5,4 @@ test_zip
 prune
 prune.exe
 cross-env
+golangci-lint

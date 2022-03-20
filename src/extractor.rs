@@ -51,7 +51,6 @@ fn extract_tar_gz(
                     if state.success() {
                         // Rename it to the target folder if the executable file is not locate in root tarball
                         if extract_file_in_tarball_file_path != "/" {
-                            println!("{}", unpack_exe_file_path.display());
                             fs::rename(&unpack_exe_file_path, &output_file_path)?;
                         }
                         Ok(output_file_path)
@@ -381,5 +380,37 @@ mod tests {
         let r = extractor::extract(&tar_file_path, &dest_dir, "without_test", "/");
 
         assert!(r.is_err())
+    }
+
+    #[test]
+    fn test_extract_tar_gz_file_in_sub_folder() {
+        let extractor_dir = env::current_dir()
+            .unwrap()
+            .join("fixtures")
+            .join("extractor");
+
+        let tar_file_path = &extractor_dir.join("golangci-lint-in-sub-folder.tar.gz");
+
+        let dest_dir = extractor_dir.clone();
+
+        let dest_file = &extractor_dir.join("golangci-lint");
+
+        fs::remove_file(&dest_file).ok();
+
+        let r = extractor::extract(
+            tar_file_path,
+            &dest_dir,
+            "golangci-lint",
+            "/golangci-lint-1.45.0-darwin-amd64",
+        );
+
+        assert!(r.is_ok());
+
+        assert!(dest_file.exists());
+        assert!(dest_file.is_file());
+        assert_eq!(
+            format!("{}", dest_file.display()),
+            format!("{}", r.unwrap().display())
+        );
     }
 }

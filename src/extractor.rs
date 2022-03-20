@@ -81,8 +81,9 @@ fn extract_archive<R: Read>(
     }
 
     Err(eyre::format_err!(
-        "can not found the file '{}' in tar",
-        filename
+        "can not found file '{}' in the '{}' of tarball",
+        &filename,
+        folder
     ))
 }
 
@@ -127,8 +128,9 @@ fn extract_zip(
     }
 
     Err(eyre::format_err!(
-        "can not found the file '{}' in tar",
-        filename
+        "can not found file '{}' in the '{}' of tarball",
+        &filename,
+        folder
     ))
 }
 

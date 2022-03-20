@@ -113,19 +113,16 @@ dependencies = [
  "eyre",
  "futures",
  "git",
- "reqwest",
  "semver",
  "serde",
  "serde_json",
  "sha2",
  "shell",
  "tabled",
- "thiserror",
  "tinytemplate",
  "tokio",
  "toml",
  "url",
- "wait-timeout",
 ]
 
 [[package]]

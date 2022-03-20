@@ -78,7 +78,7 @@ fn get_abi() -> Option<String> {
 
 // get the latest version without 'v' prefix
 fn get_latest_release() -> Result<String, Report> {
-    let versions = git::get_versions(env!("CARGO_PKG_REPOSITORY"))?;
+    let versions = git::repository::new(env!("CARGO_PKG_REPOSITORY"))?.versions()?;
 
     let err_can_not_found_release = eyre::format_err!("There is no one release of Cask");
 

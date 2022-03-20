@@ -159,7 +159,8 @@ pub fn fetch(cask: &cask::Cask, package_name: &str, temp: bool) -> Result<Formul
         let scheme = package_addr.scheme();
         return match scheme {
             "http" | "https" => {
-                let is_package_repo_exist = git::check_exist(package_addr.as_str())?;
+                let repo = git::repository::new(package_addr.as_str())?;
+                let is_package_repo_exist = repo.is_exist()?;
 
                 if is_package_repo_exist {
                     fetch_with_git_url(cask, package_name, package_addr.as_str(), temp)
@@ -180,13 +181,13 @@ pub fn fetch(cask: &cask::Cask, package_name: &str, temp: bool) -> Result<Formul
     let package_cask_repo_url = get_formula_git_cask_url(package_name);
     let package_repo_url = get_formula_git_url(package_name);
 
-    let is_cask_repo_exist = git::check_exist(&package_cask_repo_url)?;
+    let is_cask_repo_exist = git::repository::new(&package_cask_repo_url)?.is_exist()?;
 
     if is_cask_repo_exist {
         return fetch_with_git_url(cask, package_name, &package_cask_repo_url, temp);
     }
 
-    let is_repo_exist = git::check_exist(&package_repo_url)?;
+    let is_repo_exist = git::repository::new(&package_repo_url)?.is_exist()?;
 
     if is_repo_exist {
         return fetch_with_git_url(cask, package_name, &package_repo_url, temp);
@@ -229,10 +230,9 @@ fn fetch_with_git_url(
 
     let cask_file_path = formula_cloned_dir.join("Cask.toml");
 
-    match git::clone(
-        git_url,
+    match git::repository::new(git_url)?.clone(
         &formula_cloned_dir,
-        git::CloneOption {
+        git::repository::CloneOption {
             depth: Some(1),
             quiet: Some(true),
             single_branch: Some(true),
@@ -407,7 +407,9 @@ impl Formula {
         if let Some(versions) = &self.package.versions {
             Ok(versions.to_vec())
         } else {
-            git::get_versions(&self.package.repository).map_err(|e| eyre::format_err!("{}", e))
+            git::repository::new(&self.package.repository)?
+                .versions()
+                .map_err(|e| eyre::format_err!("{}", e))
         }
     }
 }

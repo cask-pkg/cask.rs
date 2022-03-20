@@ -372,6 +372,10 @@ impl Formula {
                 path = "/".to_string();
             }
 
+            tt.add_template("path_template", &path)?;
+
+            path = tt.render("path_template", &render_context)?;
+
             let ext_name = match resource_target {
                 ResourceTarget::Detailed(arch) => match &arch.extension {
                     Some(ext) => ext.clone(),

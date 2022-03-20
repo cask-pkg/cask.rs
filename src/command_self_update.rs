@@ -4,7 +4,6 @@ use std::env;
 use std::fs;
 
 use crate::cask;
-use crate::downloader;
 use crate::git;
 
 use eyre::Report;

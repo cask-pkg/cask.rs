@@ -64,8 +64,9 @@ pub async fn download(url: &str, filepath: &Path) -> Result<(), Report> {
 
 #[cfg(test)]
 mod tests {
-    use crate::downloader;
     use std::{env, fs};
+
+    use crate::download;
 
     #[tokio::test]
 
@@ -77,7 +78,7 @@ mod tests {
 
         let dest = cwd.join("cask_darwin_amd64.tar.gz");
 
-        downloader::download(url, &dest).await.unwrap();
+        download(url, &dest).await.unwrap();
 
         assert!(dest.exists());
 
@@ -98,7 +99,7 @@ mod tests {
 
         let dest = cwd.join("cask_darwin_amd64.tar.gz");
 
-        let r = downloader::download(url, &dest).await;
+        let r = download(url, &dest).await;
 
         assert!(r.is_err())
     }

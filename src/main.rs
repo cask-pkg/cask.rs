@@ -8,7 +8,6 @@ mod command_list;
 mod command_self_update;
 mod command_uninstall;
 mod command_upgrade;
-mod downloader;
 mod formula;
 mod git;
 mod hooker;

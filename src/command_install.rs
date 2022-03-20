@@ -1,7 +1,6 @@
 #![deny(warnings)]
 
 use crate::cask;
-use crate::downloader;
 use crate::formula;
 use crate::symlink;
 use crate::util::iso8601;

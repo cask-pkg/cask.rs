@@ -98,11 +98,10 @@ dependencies = [
  "chrono",
  "clap",
  "dirs",
+ "downloader",
  "extractor",
  "eyre",
  "futures",
- "futures-util",
- "indicatif",
  "reqwest",
  "semver",
  "serde",
@@ -226,6 +225,17 @@ dependencies = [
  "libc",
  "redox_users",
  "winapi",
+]
+
+[[package]]
+name = "downloader"
+version = "0.1.0"
+dependencies = [
+ "eyre",
+ "futures-util",
+ "indicatif",
+ "reqwest",
+ "tokio",
 ]
 
 [[package]]

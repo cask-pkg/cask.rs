@@ -4,30 +4,31 @@ This document describes the design pattern of Cask and how it works.
 
 ## Motivation
 
-For the developers of the tool, publishing is a distressed thing.
+For the developers who writing the cli tool, publishing is a distressed thing.
 
 Mainly have a few more troublesome things:
 
 1. Not cross-platform
 
-   Every platform has its own version, eg `Brew` in MacOS, `scoop` in Windows
+   Every platform has its oackage, eg `Brew` in MacOS, `scoop` in Windows
 
-2. Package manager usually has a center
+2. Package manager usually has a center server
 
-   eg. `homebrew` need to add package information to [homebrew-core](https://github.com/Homebrew/homebrew-core) then it can install directly. Of course, this is not necessary.
+   eg. `homebrew` need to add package information to [homebrew-core](https://github.com/Homebrew/homebrew-core) then it can install directly. Of course, this is not necessary. User can create a custom Formula.
 
 3. Write too much installation script
 
-   If you don't like these package managers, then you will see your own writing scripts for installation.
+   If you don't like these package managers, then you can write scripts for installation.
 
    eg `install.ps1` in Windows or `install.sh` in Unix.
 
 Based on the above reasons, I need a package manager.
 
-It needs to meet the following characteristics
+It needs the following feature:
 
-- cross-platform support
-- distributed publishing
+- Cross-platform support
+- Distributed publishing
+- Reduce use cost
 
 ## How it works?
 

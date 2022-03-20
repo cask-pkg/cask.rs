@@ -6,7 +6,6 @@ use std::path::Path;
 use std::process::{Command as ChildProcess, Stdio};
 use std::time::Duration;
 
-use git_url_parse::GitUrl;
 use semver::Version;
 use thiserror::Error;
 use wait_timeout::ChildExt;
@@ -52,13 +51,6 @@ pub struct Repository {
 }
 
 pub fn new(url: &str) -> Result<Repository, GitError> {
-    match GitUrl::parse(url) {
-        Ok(_) => Ok(()),
-        Err(_) => Err(GitError::GitUrlInvalid {
-            url: url.to_string(),
-        }),
-    }?;
-
     let r = Repository {
         remote: url.to_string(),
     };
@@ -269,16 +261,6 @@ impl Repository {
         let versions_str: Vec<String> = versions.into_iter().map(|v| v.to_string()).collect();
 
         Ok(versions_str)
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_invalid_url() {
-        assert!(new("invalid_url").is_err());
     }
 }
 

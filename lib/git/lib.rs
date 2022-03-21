@@ -107,7 +107,9 @@ impl Repository {
             .env("GIT_SSH_COMMAND", "ssh -oBatchMode=yes")
             // https://github.com/microsoft/Git-Credential-Manager-for-Windows/issues/504
             .env("EnvironInteractiveKey", "NEVER")
-            .env("GCM_INTERACTIVE", "NEVER")
+            .env("GCM_INTERACTIVE", "never")
+            .env("GIT_ASKPASS", "echo")
+            .env("SSH_ASKPASS", "echo")
             .stdin(Stdio::null())
             .stderr(Stdio::null())
             .stdout(Stdio::null())
@@ -153,7 +155,9 @@ impl Repository {
             .env("GIT_SSH_COMMAND", "ssh -oBatchMode=yes")
             // https://github.com/microsoft/Git-Credential-Manager-for-Windows/issues/504
             .env("EnvironInteractiveKey", "NEVER")
-            .env("GCM_INTERACTIVE", "NEVER")
+            .env("GCM_INTERACTIVE", "never")
+            .env("GIT_ASKPASS", "echo")
+            .env("SSH_ASKPASS", "echo")
             .stdin(Stdio::null())
             .stderr(Stdio::null())
             .stdout(Stdio::null())
@@ -198,7 +202,9 @@ impl Repository {
             .env("GIT_SSH_COMMAND", "ssh -oBatchMode=yes")
             // https://github.com/microsoft/Git-Credential-Manager-for-Windows/issues/504
             .env("EnvironInteractiveKey", "NEVER")
-            .env("GCM_INTERACTIVE", "NEVER")
+            .env("GCM_INTERACTIVE", "never")
+            .env("GIT_ASKPASS", "echo")
+            .env("SSH_ASKPASS", "echo")
             .stdin(Stdio::null())
             .stderr(Stdio::null())
             .stdout(Stdio::piped())

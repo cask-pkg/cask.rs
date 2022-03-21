@@ -37,7 +37,7 @@ url = "2.2.2"
 semver = "1.0.6"
 tabled = "0.5.0"
 extractor = { path = "./lib/extractor" }
-downloader = { path = "./lib/downloader" }
+downloader = { path = "./lib/downloader", default-features = false }
 shell = { path = "./lib/shell" }
 git = { path = "./lib/git" }
 

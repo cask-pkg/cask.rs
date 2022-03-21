@@ -131,7 +131,7 @@ pub struct DownloadTarget {
     pub ext: String,
 }
 
-pub fn get_formula_git_url(package_name: &str) -> String {
+fn get_formula_git_url(package_name: &str) -> String {
     format!("https://{}.git", package_name)
 }
 

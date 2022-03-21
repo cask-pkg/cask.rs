@@ -17,10 +17,10 @@ indicatif = "0.16.2"
 tokio = { version = "1", features = ["full"] }
 
 [features]
-default = ["reqwest"]
+default = ["lib"]
 # This feature allows us to use rustls only on architectures supported by ring.
 # See also https://github.com/briansmith/ring/issues/1182
 # and https://github.com/briansmith/ring/issues/562
 # and https://github.com/briansmith/ring/issues/1367
-reqwest = ["reqwest"]
+lib = ["reqwest"]
 cmd = []

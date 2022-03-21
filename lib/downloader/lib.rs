@@ -6,6 +6,7 @@ use std::{cmp::min, fs, fs::File, io::Write, path::Path};
 use eyre::Report;
 use futures_util::StreamExt;
 use indicatif::{ProgressBar, ProgressStyle};
+#[cfg(feature = "reqwest")]
 use reqwest::Client;
 
 #[cfg(feature = "reqwest")]

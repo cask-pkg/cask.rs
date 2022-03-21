@@ -17,10 +17,6 @@ pub async fn uninstall(cask: &cask::Cask, package_name: &str) -> Result<(), Repo
             eyre::format_err!("can not found the installed package '{}'", package_name)
         })?;
 
-    let package_dir = package_formula.filepath.parent().unwrap();
-
-    fs::remove_dir_all(package_dir)?;
-
     // remove symlink file
     if cfg!(unix) {
         let symlink_file = cask.bin_dir().join(&package_formula.package.bin);
@@ -36,6 +32,8 @@ pub async fn uninstall(cask: &cask::Cask, package_name: &str) -> Result<(), Repo
         fs::remove_file(bat_file_path).ok();
         fs::remove_file(bash_file_path).ok();
     }
+
+    fs::remove_dir_all(cask.package_dir(&package_formula.package.name))?;
 
     eprintln!(
         "The package '{}' has been uninstalled!",

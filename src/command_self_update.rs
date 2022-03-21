@@ -5,7 +5,6 @@ use std::fs;
 
 use crate::cask;
 
-use colored::Colorize;
 use eyre::Report;
 use semver::Version;
 
@@ -154,9 +153,9 @@ pub async fn self_update(_cask: &cask::Cask) -> Result<(), Report> {
     fs::remove_file(temp_file).ok();
 
     eprintln!(
-        "Update from {} to '{}' success!",
-        env!("CARGO_PKG_VERSION").red(),
-        &latest_release.green()
+        "Update from '{}' to '{}' success!",
+        env!("CARGO_PKG_VERSION"),
+        &latest_release
     );
 
     Ok(())

@@ -4,7 +4,6 @@ use crate::cask;
 
 use std::fs;
 
-use colored::Colorize;
 use eyre::Report;
 
 pub async fn uninstall(cask: &cask::Cask, package_name: &str) -> Result<(), Report> {
@@ -39,13 +38,8 @@ pub async fn uninstall(cask: &cask::Cask, package_name: &str) -> Result<(), Repo
     }
 
     eprintln!(
-        "{}",
-        format!(
-            "The package {} has been uninstalled and remove command {}!",
-            package_formula.package.name.underline().red(),
-            package_formula.package.bin.red()
-        )
-        .green()
+        "The package '{}' has been uninstalled!",
+        package_formula.package.name
     );
 
     Ok(())

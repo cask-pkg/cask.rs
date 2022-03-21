@@ -11,7 +11,6 @@ use std::io;
 use std::io::Write;
 use std::time::SystemTime;
 
-use colored::Colorize;
 use eyre::Report;
 use semver::{Version, VersionReq};
 use sha2::{Digest, Sha256};
@@ -183,18 +182,13 @@ pub async fn install(
     }
 
     eprintln!(
-        "{}",
-        format!(
-            "The package '{} {}' has been installed!",
-            &package_formula.package.name.underline(),
-            download_version
-        )
-        .green()
+        "The package '{} {}' has been installed!",
+        &package_formula.package.name, download_version
     );
 
     eprintln!(
-        "Try run the command '{}' to make sure it works!",
-        format!("{} --help", &package_formula.package.bin).red(),
+        "Try run the command '{} --help' to make sure it works!",
+        &package_formula.package.bin,
     );
 
     Ok(())

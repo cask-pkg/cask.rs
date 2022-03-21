@@ -38,7 +38,6 @@ sha2 = "0.10.2"
 url = "2.2.2"
 semver = "1.0.6"
 tabled = "0.5.0"
-colored = "2.0.0"
 extractor = { path = "./lib/extractor" }
 downloader = { path = "./lib/downloader" }
 shell = { path = "./lib/shell" }

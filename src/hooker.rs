@@ -2,7 +2,6 @@
 
 use std::path::Path;
 
-use colored::Colorize;
 use eyre::Report;
 use serde::{Deserialize, Serialize};
 
@@ -24,7 +23,7 @@ impl Hook {
         }?;
 
         if let Some(scripts) = script_op {
-            eprintln!("{}", format!("Running {} hook", hook_name.red()).green());
+            eprintln!("Running '{}' hook", hook_name);
 
             for script in scripts.split('\n').map(|s| s.trim_start()) {
                 if script.is_empty() {

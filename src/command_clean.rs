@@ -24,19 +24,28 @@ pub async fn clean(cask: &cask::Cask) -> Result<(), Report> {
 
         // clear version
         {
-            for download_resource in fs::read_dir(version_dir)? {
-                let resource_file_path = download_resource?;
-                fs::remove_file(&resource_file_path.path()).map_err(|err| {
-                    eyre::format_err!(
-                        "can not remove file '{}': {}",
-                        resource_file_path.path().display(),
-                        err
-                    )
-                })?;
+            if version_dir.exists() {
+                for download_resource in fs::read_dir(version_dir)? {
+                    let resource_file_path = download_resource?;
+                    fs::remove_file(&resource_file_path.path()).map_err(|err| {
+                        eyre::format_err!(
+                            "can not remove file '{}': {}",
+                            resource_file_path.path().display(),
+                            err
+                        )
+                    })?;
+                }
             }
         }
 
-        let f = formula::new(&path.join("Cask.toml"), "")?;
+        let cask_file_path = path.join("Cask.toml");
+
+        if !cask_file_path.exists() {
+            fs::remove_dir_all(path)?;
+            break;
+        }
+
+        let f = formula::new(&cask_file_path, "")?;
 
         #[cfg(unix)]
         let bin_name = f.package.bin.clone();

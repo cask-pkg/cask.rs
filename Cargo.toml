@@ -17,9 +17,7 @@ path = "src/main.rs"
 
 [workspace]
 resolver = "2"
-members = [
-  "lib/extractor"
-]
+members = ["lib/extractor", "lib/downloader", "lib/git", "lib/shell"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -45,8 +43,8 @@ git = { path = "./lib/git" }
 
 [profile.release]
 # https://github.com/johnthagen/min-sized-rust
-strip = true  # Automatically strip symbols from the binary.
-opt-level = "z"  # Optimize for size.
+strip = true      # Automatically strip symbols from the binary.
+opt-level = "z"   # Optimize for size.
 lto = true
 codegen-units = 1
 panic = "abort"

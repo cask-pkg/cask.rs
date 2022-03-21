@@ -1,4 +1,8 @@
-obs:
+name: build
+
+on: [push, pull_request]
+
+jobs:
   binaries:
     name: ${{ matrix.os }} for ${{ matrix.target }}
     runs-on: ${{ matrix.os }}

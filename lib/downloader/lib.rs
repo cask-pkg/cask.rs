@@ -6,11 +6,13 @@ use std::{cmp::min, fs, fs::File, io::Write, path::Path};
 use eyre::Report;
 #[cfg(feature = "lib")]
 use futures_util::StreamExt;
+#[cfg(feature = "lib")]
+use reqwest::Client;
 use indicatif::{ProgressBar, ProgressStyle};
 
 pub async fn download(url: &str, filepath: &Path) -> Result<(), Report> {
     if cfg!(feature = "lib") {
-        let client = &reqwest::Client::new();
+        let client = &Client::new();
 
         let res = client.get(url).send().await?;
 

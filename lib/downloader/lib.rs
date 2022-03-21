@@ -1,10 +1,7 @@
 // #![deny(warnings)]
 
 use core::result::Result;
-use std::fs::File;
-use std::io::Write;
-use std::path::Path;
-use std::{cmp::min, fs};
+use std::{cmp::min, fs, fs::File, io::Write, path::Path};
 
 use eyre::Report;
 use futures_util::StreamExt;

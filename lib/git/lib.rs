@@ -1,10 +1,12 @@
 // #![deny(warnings)]
 
 use core::result::Result;
-use std::io;
-use std::path::Path;
-use std::process::{Command as ChildProcess, Stdio};
-use std::time::Duration;
+use std::{
+    io,
+    path::Path,
+    process::{Command as ChildProcess, Stdio},
+    time::Duration,
+};
 
 use semver::Version;
 use thiserror::Error;

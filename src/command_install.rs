@@ -1,15 +1,8 @@
 #![deny(warnings)]
 
-use crate::cask;
-use crate::formula;
-use crate::symlink;
-use crate::util::iso8601;
+use crate::{cask, formula, symlink, util::iso8601};
 
-use std::fs;
-use std::fs::File;
-use std::io;
-use std::io::Write;
-use std::time::SystemTime;
+use std::{fs, fs::File, io, io::Write, time::SystemTime};
 
 use eyre::Report;
 use semver::{Version, VersionReq};

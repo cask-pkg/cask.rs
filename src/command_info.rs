@@ -1,7 +1,6 @@
 #![deny(warnings)]
 
-use crate::cask;
-use crate::formula;
+use crate::{cask, formula};
 
 use eyre::Report;
 

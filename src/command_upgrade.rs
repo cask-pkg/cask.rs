@@ -1,8 +1,6 @@
 #![deny(warnings)]
 
-use crate::cask;
-use crate::command_install;
-use crate::formula;
+use crate::{cask, command_install, formula};
 
 use eyre::Report;
 use semver::Version;

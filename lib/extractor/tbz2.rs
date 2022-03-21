@@ -1,9 +1,11 @@
 #![deny(warnings)]
 
 use core::result::Result;
-use std::fs::File;
-use std::path::Path;
-use std::path::PathBuf;
+
+use std::{
+    fs::File,
+    path::{Path, PathBuf},
+};
 
 use bzip2_rs::DecoderReader;
 use eyre::Report;

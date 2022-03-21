@@ -2,8 +2,7 @@
 
 use eyre::Report;
 
-use std::path::Path;
-use std::process::Command as ChildProcess;
+use std::{path::Path, process::Command as ChildProcess};
 
 pub fn run(cwd: &Path, command: &str) -> Result<(), Report> {
     let cmd: &str;

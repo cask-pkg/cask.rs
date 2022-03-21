@@ -1,15 +1,15 @@
 // #![deny(warnings)]
 
-use crate::cask;
-use crate::hooker;
+use crate::{cask, hooker};
 
-use std::collections::HashMap;
-use std::fs::File;
-use std::io::{ErrorKind, Read};
-use std::path::Path;
-use std::path::PathBuf;
-use std::time::{SystemTime, UNIX_EPOCH};
-use std::{env, fs};
+use std::{
+    collections::HashMap,
+    env, fs,
+    fs::File,
+    io::{ErrorKind, Read},
+    path::{Path, PathBuf},
+    time::{SystemTime, UNIX_EPOCH},
+};
 
 use eyre::Report;
 use serde::{Deserialize, Serialize};
@@ -45,25 +45,25 @@ pub struct Cask {
 
 #[derive(Deserialize, Serialize)]
 pub enum Dependencies {
-    Detail(DependenciesDetail), // More information of package
-    Simple(String),             // The version of package
+    Detail(DependenciesDetail), // More information of the package
+    Simple(String),             // The version of the package
 }
 
 #[derive(Deserialize, Serialize)]
 pub struct DependenciesDetail {
-    pub version: String, // The version of package
+    pub version: String, // The version of the package
 }
 
 #[derive(Deserialize, Serialize)]
 pub struct Package {
     pub name: String,                  // The package name
-    pub bin: String,                   // The binary name of package
+    pub bin: String,                   // The binary name of the package
     pub repository: String,            // The repository url
-    pub description: String,           // The description of packa
+    pub description: String,           // The description of the package
     pub versions: Option<Vec<String>>, // The version of package. If versions are not provide, cask will automatically get the versions from the repository tags.
     pub authors: Option<Vec<String>>,  // The author of package
-    pub keywords: Option<Vec<String>>, // The keywords of packagege
-    pub license: Option<String>,       // The license of package
+    pub keywords: Option<Vec<String>>, // The keywords of the package
+    pub license: Option<String>,       // The license of the package
 }
 
 #[derive(Deserialize, Serialize)]

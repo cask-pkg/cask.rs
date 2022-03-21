@@ -1,11 +1,10 @@
 #![deny(warnings)]
 
 use core::result::Result;
-use std::fs;
-use std::fs::File;
-use std::io;
-use std::path::Path;
-use std::path::PathBuf;
+use std::{
+    fs, io,
+    path::{Path, PathBuf},
+};
 
 use eyre::Report;
 
@@ -17,7 +16,7 @@ pub(crate) fn extract(
 ) -> Result<PathBuf, Report> {
     let output_file_path = dest_dir.join(filename);
 
-    let tar_file = File::open(&src_filepath)?;
+    let tar_file = fs::File::open(&src_filepath)?;
     let mut archive = zip::ZipArchive::new(tar_file)?;
 
     let target_file_path = format!("{}/{}", folder, filename).replace("//", "/");

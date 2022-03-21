@@ -1,10 +1,8 @@
 #![deny(warnings)]
 
-use crate::cask;
-use crate::formula;
+use crate::{cask, formula};
 
-use std::fs;
-use std::io::ErrorKind;
+use std::{fs, io::ErrorKind};
 
 use eyre::Report;
 

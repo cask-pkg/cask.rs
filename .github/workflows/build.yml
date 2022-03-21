@@ -1,156 +1,177 @@
-name: build
-
-on:
-  push:
-    paths:
-      - "**/*.rs"
-      - "**/Cargo.toml"
-      - "**/Cargo.lock"
-      - ".github/workflows/build.yml"
-  pull_request:
-    paths:
-      - "**/*.rs"
-      - "**/Cargo.toml"
-      - "**/Cargo.lock"
-      - ".github/workflows/build.yml"
-  workflow_dispatch:
-
-jobs:
-  build:
-    name: ${{ matrix.target }}
+obs:
+  binaries:
+    name: ${{ matrix.os }} for ${{ matrix.target }}
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
     strategy:
       matrix:
+        target:
+          - x86_64-unknown-linux-musl
+          - aarch64-unknown-linux-musl
+          - armv7-unknown-linux-musleabihf
+          - arm-unknown-linux-musleabihf
+          - mips-unknown-linux-musl
+          - mipsel-unknown-linux-musl
+          - mips64-unknown-linux-gnuabi64
+          - mips64el-unknown-linux-gnuabi64
+          - riscv64gc-unknown-linux-gnu
+          - x86_64-pc-windows-msvc
+          - x86_64-apple-darwin
+          - x86_64-unknown-freebsd
         include:
-          - os: windows-latest
-            target: x86_64-pc-windows-msvc
-
-          # - os: windows-latest
-          #   target: aarch64-pc-windows-msvc
-
           - os: ubuntu-latest
             target: x86_64-unknown-linux-musl
-
+            artifact_name: target/x86_64-unknown-linux-musl/release/cask
+            release_name: x86_64-unknown-linux-musl
+            cross: true
+            strip: true
+            compress: true
+            cargo_flags: ""
           - os: ubuntu-latest
             target: aarch64-unknown-linux-musl
-
-          - os: macos-11
+            artifact_name: target/aarch64-unknown-linux-musl/release/cask
+            release_name: aarch64-unknown-linux-musl
+            cross: true
+            strip: false
+            compress: true
+            cargo_flags: ""
+          - os: ubuntu-latest
+            target: armv7-unknown-linux-musleabihf
+            artifact_name: target/armv7-unknown-linux-musleabihf/release/cask
+            release_name: armv7-unknown-linux-musleabihf
+            cross: true
+            strip: false
+            compress: true
+            cargo_flags: ""
+          - os: ubuntu-latest
+            target: arm-unknown-linux-musleabihf
+            artifact_name: target/arm-unknown-linux-musleabihf/release/cask
+            release_name: arm-unknown-linux-musleabihf
+            cross: true
+            strip: false
+            compress: true
+            cargo_flags: ""
+          - os: ubuntu-latest
+            target: mips-unknown-linux-musl
+            artifact_name: target/mips-unknown-linux-musl/release/cask
+            release_name: mips-unknown-linux-musl
+            cross: true
+            strip: false
+            compress: true
+            cargo_flags: "--no-default-features"
+          - os: ubuntu-latest
+            target: mipsel-unknown-linux-musl
+            artifact_name: target/mipsel-unknown-linux-musl/release/cask
+            release_name: mipsel-unknown-linux-musl
+            cross: true
+            strip: false
+            compress: true
+            cargo_flags: "--no-default-features"
+          - os: ubuntu-latest
+            target: mips64-unknown-linux-gnuabi64
+            artifact_name: target/mips64-unknown-linux-gnuabi64/release/cask
+            release_name: mips64-unknown-linux-gnuabi64
+            cross: true
+            strip: false
+            compress: false
+            cargo_flags: "--no-default-features"
+          - os: ubuntu-latest
+            target: mips64el-unknown-linux-gnuabi64
+            artifact_name: target/mips64el-unknown-linux-gnuabi64/release/cask
+            release_name: mips64el-unknown-linux-gnuabi64
+            cross: true
+            strip: false
+            compress: false
+            cargo_flags: "--no-default-features"
+          - os: ubuntu-latest
+            target: riscv64gc-unknown-linux-gnu
+            artifact_name: target/riscv64gc-unknown-linux-gnu/release/cask
+            release_name: riscv64gc-unknown-linux-gnu
+            cross: true
+            strip: false
+            compress: false
+            cargo_flags: "--no-default-features"
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+            artifact_name: target/x86_64-pc-windows-msvc/release/cask.exe
+            release_name: x86_64-pc-windows-msvc.exe
+            cross: false
+            strip: true
+            compress: true
+            cargo_flags: ""
+          - os: macos-latest
             target: x86_64-apple-darwin
-
-          - os: macos-11
-            target: aarch64-apple-darwin
-
-    env:
-      CARGO_INCREMENTAL: 0
-      RUST_BACKTRACE: full
-      CARGO_TERM_COLOR: always
+            artifact_name: target/x86_64-apple-darwin/release/cask
+            release_name: x86_64-apple-darwin
+            cross: false
+            strip: true
+            compress: true
+            cargo_flags: ""
+          - os: ubuntu-latest
+            target: x86_64-unknown-freebsd
+            artifact_name: target/x86_64-unknown-freebsd/release/cask
+            release_name: x86_64-unknown-freebsd
+            cross: true
+            strip: false
+            compress: false
+            cargo_flags: ""
 
     steps:
-      - name: Clone repository
+      - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Install stable toolchain
+      - name: Setup Rust toolchain
         uses: actions-rs/toolchain@v1
         with:
-          profile: minimal
           toolchain: stable
-          override: true
+          target: ${{ matrix.target }}
 
-      - name: Install rust
-        uses: hecrj/setup-rust-action@v1
+      - name: cargo build
+        uses: actions-rs/cargo@v1
         with:
-          rust-version: "1.59.0"
+          command: build
+          args: --release --locked --target=${{ matrix.target }} ${{ matrix.cargo_flags }}
+          use-cross: ${{ matrix.cross }}
 
-      - name: Log versions
-        run: |
-          rustc --version
-          cargo --version
-      - name: Configure cargo data directory
-        run: |
-          echo "CARGO_HOME=$(pwd)/.cargo_home" >> $GITHUB_ENV
-      - name: Cache
-        uses: actions/cache@v2
+      - name: Compress binaries
+        uses: svenstaro/upx-action@v2
         with:
-          path: |-
-            .cargo_home
-            target/*/.*
-            target/*/build
-            target/*/deps
-          key: ${{ matrix.config.os }}-${{ hashFiles('Cargo.lock') }}
-          restore-keys: |
-            ${{ matrix.config.os }}-
+          file: ${{ matrix.artifact_name }}
+          args: --lzma
+          strip: ${{ matrix.strip }}
+        if: ${{ matrix.compress }}
 
-      - name: Build (linux) - x86_64-unknown-linux-musl
-        if: startsWith(matrix.os, 'ubuntu') && startsWith(matrix.target, 'x86_64-unknown-linux-musl')
-        run: |
-          sudo apt-get install -y musl-tools
-
-          wget --quiet https://musl.cc/x86_64-linux-musl-cross.tgz
-
-          tar -xvzf x86_64-linux-musl-cross.tgz
-
-          export PATH=$PATH:$(pwd)/x86_64-linux-musl-cross/bin
-
-          rustup target add ${{ matrix.target }}
-
-          cargo build --release --locked --target ${{ matrix.target }}
-
-          tar -cvzf target/${{ matrix.target }}/release/cask-${{ matrix.target }}.tar.gz --directory=target/${{ matrix.target }}/release cask
-
-      - name: Build (linux) - aarch64-unknown-linux-musl
-        if: startsWith(matrix.os, 'ubuntu') && startsWith(matrix.target, 'aarch64-unknown-linux-musl')
-        run: |
-          wget --quiet https://musl.cc/aarch64-linux-musl-cross.tgz
-
-          tar -xvzf aarch64-linux-musl-cross.tgz
-
-          export PATH=$PATH:$(pwd)/aarch64-linux-musl-cross/bin
-
-          rustup target add ${{ matrix.target }}
-
-          cargo build --release --locked --target ${{ matrix.target }}
-
-          tar -cvzf target/${{ matrix.target }}/release/cask-${{ matrix.target }}.tar.gz --directory=target/${{ matrix.target }}/release cask
-
-      - name: Build (mac)
-        if: startsWith(matrix.os, 'macOS')
-        run: |
-          rustup target add ${{ matrix.target }}
-          cargo build --release --locked --target ${{ matrix.target }}
-          tar -cvzf target/${{ matrix.target }}/release/cask-${{ matrix.target }}.tar.gz --directory=target/${{ matrix.target }}/release cask
-
-      - name: Build (windows) - x86_64-pc-windows-msvc
-        if: startsWith(matrix.os, 'windows') && startsWith(matrix.target, 'x86_64-pc-windows-msvc')
-        run: |
-          rustup target add ${{ matrix.target }}
-
-          cargo build --release --locked --target ${{ matrix.target }}
-
-          tar -cvzf target/${{ matrix.target }}/release/cask-${{ matrix.target }}.tar.gz --directory=target/${{ matrix.target }}/release cask.exe
-
-      - name: Build (windows) - aarch64-pc-windows-msvc
-        if: startsWith(matrix.os, 'windows') && startsWith(matrix.target, 'aarch64-pc-windows-msvc')
-        run: |
-          rustup target add ${{ matrix.target }}
-
-          cargo build --release --locked --target ${{ matrix.target }}
-
-          tar -cvzf target/${{ matrix.target }}/release/cask-${{ matrix.target }}.tar.gz --directory=target/${{ matrix.target }}/release cask.exe
-
-      - name: Release to Github
-        uses: softprops/action-gh-release@v1
-        if: startsWith(github.repository, 'axetroy') && startsWith(github.ref, 'refs/tags/')
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
         with:
-          files: |
-            target/x86_64-pc-windows-msvc/release/cask-x86_64-pc-windows-msvc.tar.gz
-            # target/aarch64-pc-windows-msvc/release/cask-aarch64-pc-windows-msvc.tar.gz
+          name: ${{ matrix.target }}
+          path: ${{ matrix.artifact_name }}
 
-            target/x86_64-unknown-linux-musl/release/cask-x86_64-unknown-linux-musl.tar.gz
-            target/aarch64-unknown-linux-musl/release/cask-aarch64-unknown-linux-musl.tar.gz
-            target/mips64-unknown-linux-musl/release/cask-mips64-unknown-linux-musl.tar.gz
+      ###
+      # Below this line, steps will only be ran if a tag was pushed.
+      ###
 
-            target/x86_64-apple-darwin/release/cask-x86_64-apple-darwin.tar.gz
-            target/aarch64-apple-darwin/release/cask-aarch64-apple-darwin.tar.gz
-          draft: false
+      - name: Get tag name
+        id: tag_name
+        run: |
+          echo ::set-output name=current_version::${GITHUB_REF#refs/tags/v}
+        shell: bash
+        if: startsWith(github.ref, 'refs/tags/v')
+
+      - name: Get CHANGELOG.md entry
+        id: changelog_reader
+        uses: mindsers/changelog-reader-action@v1
+        with:
+          version: ${{ steps.tag_name.outputs.current_version }}
+          path: ./CHANGELOG.md
+        if: startsWith(github.ref, 'refs/tags/v')
+
+      - name: Publish
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: ${{ matrix.artifact_name }}
+          tag: ${{ github.ref }}
+          asset_name: cask-$tag-${{ matrix.release_name }}
+          body: ${{ steps.changelog_reader.outputs.log_entry }}
+        if: startsWith(github.ref, 'refs/tags/v')

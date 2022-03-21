@@ -105,6 +105,8 @@ impl Repository {
         let mut child = ChildProcess::new("git")
             .env("GIT_TERMINAL_PROMPT", "0")
             .env("GIT_SSH_COMMAND", "ssh -oBatchMode=yes")
+            // https://github.com/microsoft/Git-Credential-Manager-for-Windows/issues/504
+            .env("EnvironInteractiveKey", "NEVER")
             .stdin(Stdio::null())
             .stderr(Stdio::null())
             .stdout(Stdio::null())
@@ -148,6 +150,8 @@ impl Repository {
         let mut child = ChildProcess::new("git")
             .env("GIT_TERMINAL_PROMPT", "0")
             .env("GIT_SSH_COMMAND", "ssh -oBatchMode=yes")
+            // https://github.com/microsoft/Git-Credential-Manager-for-Windows/issues/504
+            .env("EnvironInteractiveKey", "NEVER")
             .stdin(Stdio::null())
             .stderr(Stdio::null())
             .stdout(Stdio::null())
@@ -190,6 +194,8 @@ impl Repository {
         let child = ChildProcess::new("git")
             .env("GIT_TERMINAL_PROMPT", "0")
             .env("GIT_SSH_COMMAND", "ssh -oBatchMode=yes")
+            // https://github.com/microsoft/Git-Credential-Manager-for-Windows/issues/504
+            .env("EnvironInteractiveKey", "NEVER")
             .stdin(Stdio::null())
             .stderr(Stdio::null())
             .stdout(Stdio::piped())

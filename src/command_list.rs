@@ -12,7 +12,10 @@ struct PackageInfo {
     name: String,
     bin: String,
     version: String,
+    #[serde(skip)]
     install_at: String,
+    #[header(hidden = true)]
+    create_at: String,
 }
 
 pub async fn list(cask: &cask::Cask, is_print_as_json: bool) -> Result<(), Report> {
@@ -38,8 +41,16 @@ pub async fn list(cask: &cask::Cask, is_print_as_json: bool) -> Result<(), Repor
             bin: package.package.bin,
             version: cask_info.version,
             install_at: create_at,
+            create_at: cask_info.created_at,
         });
     }
+
+    packages.sort_by(|a, b| {
+        let t1 = DateTime::parse_from_str(&a.create_at, "%+").unwrap();
+        let t2 = DateTime::parse_from_str(&b.create_at, "%+").unwrap();
+
+        t2.cmp(&t1)
+    });
 
     let table = Table::new(&packages).with(Style::psql()).to_string();
 

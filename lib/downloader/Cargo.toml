@@ -22,4 +22,5 @@ default = ["reqwest"]
 # See also https://github.com/briansmith/ring/issues/1182
 # and https://github.com/briansmith/ring/issues/562
 # and https://github.com/briansmith/ring/issues/1367
-tls = ["reqwest", "curl", "wget"]
+reqwest = ["reqwest"]
+cmd = []

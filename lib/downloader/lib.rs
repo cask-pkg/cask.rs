@@ -61,12 +61,7 @@ pub async fn download(url: &str, filepath: &Path) -> Result<(), Report> {
     Ok(())
 }
 
-#[cfg(feature = "curl")]
-pub async fn download(url: &str, filepath: &Path) -> Result<(), Report> {
-    Ok(())
-}
-
-#[cfg(feature = "wget")]
+#[cfg(feature = "cmd")]
 pub async fn download(url: &str, filepath: &Path) -> Result<(), Report> {
     Ok(())
 }

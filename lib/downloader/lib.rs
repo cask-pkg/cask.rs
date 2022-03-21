@@ -8,6 +8,7 @@ use futures_util::StreamExt;
 use indicatif::{ProgressBar, ProgressStyle};
 use reqwest::Client;
 
+#[cfg(feature = "reqwest")]
 pub async fn download(url: &str, filepath: &Path) -> Result<(), Report> {
     let client = &Client::new();
 
@@ -56,6 +57,16 @@ pub async fn download(url: &str, filepath: &Path) -> Result<(), Report> {
 
     pb.finish();
 
+    Ok(())
+}
+
+#[cfg(feature = "curl")]
+pub async fn download(url: &str, filepath: &Path) -> Result<(), Report> {
+    Ok(())
+}
+
+#[cfg(feature = "wget")]
+pub async fn download(url: &str, filepath: &Path) -> Result<(), Report> {
     Ok(())
 }
 

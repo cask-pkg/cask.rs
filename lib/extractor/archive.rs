@@ -1,8 +1,7 @@
 #![deny(warnings)]
 
 use core::result::Result;
-use std::io::Read;
-use std::path::Path;
+use std::{io::Read, path::Path};
 
 use eyre::Report;
 use tar::Archive;

@@ -1,10 +1,7 @@
 // #![deny(warnings)]
 
 use eyre::Report;
-use std::fs;
-use std::fs::File;
-use std::io::Write;
-use std::path::Path;
+use std::{fs, fs::File, io::Write, path::Path};
 
 pub fn symlink(src: &Path, dest: &Path, package_name: &str) -> Result<(), Report> {
     if cfg!(unix) {

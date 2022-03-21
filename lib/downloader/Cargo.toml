@@ -8,11 +8,10 @@ path = "lib.rs"
 
 [dependencies]
 eyre = "0.6.7"
-reqwest = { version = "0.11.9", default-features = false, features = [
+reqwest = { version = "0.11.9", default-features = false, optional = true, features = [
   "stream",
   "rustls-tls",
 ] }
-rustls = { version = "0.20.4", optional = true }
 futures-util = "0.3.21"
 indicatif = "0.16.2"
 tokio = { version = "1", features = ["full"] }
@@ -23,4 +22,4 @@ default = ["tls"]
 # See also https://github.com/briansmith/ring/issues/1182
 # and https://github.com/briansmith/ring/issues/562
 # and https://github.com/briansmith/ring/issues/1367
-tls = ["rustls", "default-tls"]
+tls = ["reqwest"]

@@ -4,6 +4,7 @@ use core::result::Result;
 use std::{cmp::min, fs, fs::File, io::Write, path::Path};
 
 use eyre::Report;
+#[cfg(feature = "lib")]
 use futures_util::StreamExt;
 use indicatif::{ProgressBar, ProgressStyle};
 

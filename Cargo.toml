@@ -50,10 +50,10 @@ codegen-units = 1
 panic = "abort"
 
 [features]
-default = ["rustls"]
+default = ["req"]
 # This feature allows us to use rustls only on architectures supported by ring.
 # See also https://github.com/briansmith/ring/issues/1182
 # and https://github.com/briansmith/ring/issues/562
 # and https://github.com/briansmith/ring/issues/1367
-rustls = ["downloader/lib"]
-non-rustls = ["downloader/cmd"]
+req = ["downloader/lib"]
+no_req = ["downloader/cmd"]

@@ -106,12 +106,11 @@ impl Repository {
 
         let mut child = ChildProcess::new("git")
             .env("GIT_TERMINAL_PROMPT", "0")
-            .env("GIT_SSH_COMMAND", "ssh -oBatchMode=yes")
-            // https://github.com/microsoft/Git-Credential-Manager-for-Windows/issues/504
-            .env("EnvironInteractiveKey", "NEVER")
             .env("GCM_INTERACTIVE", "never")
-            .env("GIT_ASKPASS", "echo")
-            .env("SSH_ASKPASS", "echo")
+            .env(
+                "GIT_SSH_COMMAND",
+                "ssh -o ControlMaster=no -o BatchMode=yes",
+            )
             .stdin(Stdio::null())
             .stderr(Stdio::null())
             .stdout(Stdio::null())
@@ -154,12 +153,11 @@ impl Repository {
     pub fn is_exist(&self) -> Result<bool, GitError> {
         let mut child = ChildProcess::new("git")
             .env("GIT_TERMINAL_PROMPT", "0")
-            .env("GIT_SSH_COMMAND", "ssh -oBatchMode=yes")
-            // https://github.com/microsoft/Git-Credential-Manager-for-Windows/issues/504
-            .env("EnvironInteractiveKey", "NEVER")
             .env("GCM_INTERACTIVE", "never")
-            .env("GIT_ASKPASS", "echo")
-            .env("SSH_ASKPASS", "echo")
+            .env(
+                "GIT_SSH_COMMAND",
+                "ssh -o ControlMaster=no -o BatchMode=yes",
+            )
             .stdin(Stdio::null())
             .stderr(Stdio::null())
             .stdout(Stdio::null())
@@ -201,12 +199,11 @@ impl Repository {
 
         let child = ChildProcess::new("git")
             .env("GIT_TERMINAL_PROMPT", "0")
-            .env("GIT_SSH_COMMAND", "ssh -oBatchMode=yes")
-            // https://github.com/microsoft/Git-Credential-Manager-for-Windows/issues/504
-            .env("EnvironInteractiveKey", "NEVER")
             .env("GCM_INTERACTIVE", "never")
-            .env("GIT_ASKPASS", "echo")
-            .env("SSH_ASKPASS", "echo")
+            .env(
+                "GIT_SSH_COMMAND",
+                "ssh -o ControlMaster=no -o BatchMode=yes",
+            )
             .stdin(Stdio::null())
             .stderr(Stdio::null())
             .stdout(Stdio::piped())

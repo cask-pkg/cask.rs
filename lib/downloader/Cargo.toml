@@ -23,4 +23,4 @@ default = ["tls"]
 # See also https://github.com/briansmith/ring/issues/1182
 # and https://github.com/briansmith/ring/issues/562
 # and https://github.com/briansmith/ring/issues/1367
-tls = ["rustls"]
+tls = ["rustls", "default-tls"]

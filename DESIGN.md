@@ -44,18 +44,14 @@ In the following document, the more information of `Cask.toml` will be described
 
 Cask is distributed, no servers, not to keep your package information.
 
-So you have to add the package yourself.
+So you have to add the package by yourself.
 
-eg. your repository address is `https://github.com/<username>/<repo>.git`, you need to create a `Cask.toml` config file in the root of the repository.
-
-Or you can create a new repository named `https://github.com/<username>/<repo>-cask.git` and then create `Cask.toml` in the root of the repository.
+The only thing you have to do is creating a file `Cask.toml` in the root of the repository.
 
 ```toml
 [package]
 name = "github.com/<username>/<repo>"
-bin = "gpm"
-# Cask will get versions from repository tags if versions field not provide.
-# versions = ["0.1.0"]
+bin = "<binary name>"
 authors = ["Username <email@email.com>"]
 keywords = ["key", "word"]
 repository = "https://github.com/<username>/<repo>"

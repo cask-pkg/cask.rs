@@ -131,10 +131,6 @@ pub struct DownloadTarget {
     pub ext: String,
 }
 
-pub fn get_formula_git_cask_url(package_name: &str) -> String {
-    format!("https://{}-cask.git", package_name)
-}
-
 pub fn get_formula_git_url(package_name: &str) -> String {
     format!("https://{}.git", package_name)
 }
@@ -178,14 +174,7 @@ pub fn fetch(cask: &cask::Cask, package_name: &str, temp: bool) -> Result<Formul
         };
     }
 
-    let package_cask_repo_url = get_formula_git_cask_url(package_name);
     let package_repo_url = get_formula_git_url(package_name);
-
-    let is_cask_repo_exist = git::new(&package_cask_repo_url)?.is_exist()?;
-
-    if is_cask_repo_exist {
-        return fetch_with_git_url(cask, package_name, &package_cask_repo_url, temp);
-    }
 
     let is_repo_exist = git::new(&package_repo_url)?.is_exist()?;
 

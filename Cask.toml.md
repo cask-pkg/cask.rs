@@ -42,6 +42,7 @@ As you can see, it only contains a few top-level fields:
 | [darwin](#Platform-specify-configuration)  | The information of macOS platform   |          |
 | [linux](#Platform-specify-configuration)   | The information of Linux platform   |          |
 | [windows](#Platform-specify-configuration) | The information of Windows platform |          |
+| [freebsd](#Platform-specify-configuration) | The information of Windows platform |          |
 
 ## Package
 
@@ -60,8 +61,15 @@ As you can see, it only contains a few top-level fields:
 
 Current Support the arch:
 
+- x86
 - x86_64
+- arm
+- armv7
 - aarch64
+- mips
+- mips64
+- mips64el
+- riscv64
 
 Every arch got a [Resource Target Object](#Resource-Target)
 

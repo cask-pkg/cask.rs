@@ -8,19 +8,16 @@ path = "lib.rs"
 
 [dependencies]
 eyre = "0.6.7"
-reqwest = { version = "0.11.9", default-features = false, optional = true, features = [
-  "stream",
-  "rustls-tls",
-] }
+reqwest = { version = "0.11.9", default-features = false, optional = true, features = ["stream"] }
 futures-util = "0.3.21"
 indicatif = "0.16.2"
 tokio = { version = "1", features = ["full"] }
 
 [features]
-default = ["lib"]
+default = ["rustls"]
 # This feature allows us to use rustls only on architectures supported by ring.
 # See also https://github.com/briansmith/ring/issues/1182
 # and https://github.com/briansmith/ring/issues/562
 # and https://github.com/briansmith/ring/issues/1367
-lib = ["reqwest"]
-cmd = []
+rustls = ["reqwest/rustls-tls"]
+openssl = []

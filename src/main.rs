@@ -1,13 +1,14 @@
 // #![deny(warnings)]
 
 mod cask;
+mod command_check_updates;
 mod command_clean;
 mod command_info;
 mod command_install;
 mod command_list;
 mod command_self_update;
 mod command_uninstall;
-mod command_upgrade;
+mod command_update;
 mod formula;
 mod hooker;
 mod symlink;
@@ -83,6 +84,17 @@ async fn main() {
                 )
                 .arg_required_else_help(true),
         )
+        .subcommand(
+            Command::new("check-updates")
+                .about("Check and update packages to latest")
+                .arg(
+                    Arg::new("check-only")
+                        .short('c')
+                        .long("check-only")
+                        .help("Check update only")
+                        .takes_value(false),
+                ),
+        )
         .subcommand(Command::new("self-update").about("Update Cask to the newest version"))
         .subcommand(Command::new("clean").about("Clear residual data"));
 
@@ -132,11 +144,18 @@ async fn main() {
 
             executor::block_on(f).expect("info installed package fail!");
         }
-        Some(("upgrade", sub_matches)) => {
+        Some(("update", sub_matches)) => {
             let package_name = sub_matches.value_of("PACKAGE").expect("required");
             let is_check_only = sub_matches.is_present("check-only");
 
-            let f = command_upgrade::upgrade(&cask, package_name, is_check_only);
+            let f = command_update::update(&cask, package_name, is_check_only);
+
+            executor::block_on(f).expect("info installed package fail!");
+        }
+        Some(("check-updates", sub_matches)) => {
+            let is_check_only = sub_matches.is_present("check-only");
+
+            let f = command_check_updates::check_updates(&cask, is_check_only);
 
             executor::block_on(f).expect("info installed package fail!");
         }

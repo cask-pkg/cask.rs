@@ -5,7 +5,7 @@ use crate::{cask, command_install, formula};
 use eyre::Report;
 use semver::Version;
 
-pub async fn upgrade(
+pub async fn update(
     cask: &cask::Cask,
     package_name: &str,
     is_check_only: bool,

@@ -407,6 +407,13 @@ impl Formula {
                 .map_err(|e| eyre::format_err!("{}", e))
         }
     }
+
+    // get the latest version of package
+    pub fn get_latest_version(&self) -> Result<Option<String>, Report> {
+        let version = self.get_versions()?;
+
+        Ok(version.first().map(|f| f.to_string()))
+    }
 }
 
 #[cfg(test)]

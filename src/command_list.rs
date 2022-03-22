@@ -19,8 +19,6 @@ struct PackageInfo {
 }
 
 pub async fn list(cask: &cask::Cask, is_print_as_json: bool) -> Result<(), Report> {
-    cask.init()?;
-
     let mut packages: Vec<PackageInfo> = vec![];
 
     for package in cask.list_formula()? {

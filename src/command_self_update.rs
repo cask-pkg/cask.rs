@@ -37,7 +37,7 @@ fn get_arch() -> String {
     {
         "riscv64gc".to_string()
     }
-    #[cfg(target_arch = "i686")]
+    #[cfg(target_arch = "x86")]
     {
         "i686".to_string()
     }

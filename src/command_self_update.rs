@@ -79,7 +79,7 @@ fn get_os() -> String {
     {
         "linux".to_string()
     }
-    #[cfg(target_vendor = "freebsd")]
+    #[cfg(target_os = "freebsd")]
     {
         "freebsd".to_string()
     }

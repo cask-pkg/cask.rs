@@ -10,4 +10,3 @@ use eyre::Report;
 pub async fn download(url: &str, filepath: &Path) -> Result<(), Report> {
     rustls::download(url, filepath).await
 }
-

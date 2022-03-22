@@ -82,7 +82,7 @@ jobs:
             compress: true
             cargo_flags: "--no-default-features"
           - os: ubuntu-latest
-            target: powerpc64el-unknown-linux-gnu
+            target: powerpc64le-unknown-linux-gnu
             artifact_name: cask
             cross: true
             strip: false

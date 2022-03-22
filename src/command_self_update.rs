@@ -41,9 +41,9 @@ fn get_arch() -> String {
     {
         "powerpc64".to_string()
     }
-    #[cfg(target_arch = "powerpc64el")]
+    #[cfg(target_arch = "powerpc64le")]
     {
-        "powerpc64el".to_string()
+        "powerpc64le".to_string()
     }
     #[cfg(target_arch = "riscv64")]
     {

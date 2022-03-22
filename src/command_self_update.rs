@@ -9,6 +9,10 @@ use eyre::Report;
 use semver::Version;
 
 fn get_arch() -> String {
+    #[cfg(target_arch = "arm")]
+    {
+        "arm".to_string()
+    }
     #[cfg(target_arch = "armv7")]
     {
         "armv7".to_string()
@@ -59,6 +63,10 @@ fn get_vendor() -> String {
     #[cfg(target_vendor = "unknown")]
     {
         "unknown".to_string()
+    }
+    #[cfg(target_vendor = "freebsd")]
+    {
+        "freebsd".to_string()
     }
 }
 

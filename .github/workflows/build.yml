@@ -145,7 +145,7 @@ jobs:
       - name: Compress binaries
         uses: svenstaro/upx-action@v2
         with:
-          file: target/${{ matrix.target }}/${{ matrix.artifact_name }}
+          file: target/${{ matrix.target }}/release/${{ matrix.artifact_name }}
           args: --lzma
           strip: ${{ matrix.strip }}
         if: ${{ matrix.compress }}

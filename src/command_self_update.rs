@@ -33,6 +33,18 @@ fn get_arch() -> String {
     {
         "mips64el".to_string()
     }
+    #[cfg(target_arch = "powerpc")]
+    {
+        "powerpc".to_string()
+    }
+    #[cfg(target_arch = "powerpc64")]
+    {
+        "powerpc64".to_string()
+    }
+    #[cfg(target_arch = "powerpc64el")]
+    {
+        "powerpc64el".to_string()
+    }
     #[cfg(target_arch = "riscv64")]
     {
         "riscv64gc".to_string()

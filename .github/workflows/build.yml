@@ -42,7 +42,6 @@ jobs:
           - os: ubuntu-latest
             target: x86_64-unknown-linux-musl
             artifact_name: cask
-            release_name: x86_64-unknown-linux-musl
             cross: true
             strip: true
             compress: true
@@ -50,7 +49,6 @@ jobs:
           - os: ubuntu-latest
             target: aarch64-unknown-linux-musl
             artifact_name: cask
-            release_name: aarch64-unknown-linux-musl
             cross: true
             strip: false
             compress: true
@@ -58,7 +56,6 @@ jobs:
           - os: ubuntu-latest
             target: armv7-unknown-linux-musleabihf
             artifact_name: cask
-            release_name: armv7-unknown-linux-musleabihf
             cross: true
             strip: false
             compress: true
@@ -66,15 +63,34 @@ jobs:
           - os: ubuntu-latest
             target: arm-unknown-linux-musleabihf
             artifact_name: cask
-            release_name: arm-unknown-linux-musleabihf
             cross: true
             strip: false
             compress: true
             cargo_flags: ""
           - os: ubuntu-latest
+            target: powerpc-unknown-linux-gnu
+            artifact_name: cask
+            cross: true
+            strip: false
+            compress: true
+            cargo_flags: "--no-default-features"
+          - os: ubuntu-latest
+            target: powerpc64-unknown-linux-gnu
+            artifact_name: cask
+            cross: true
+            strip: false
+            compress: true
+            cargo_flags: "--no-default-features"
+          - os: ubuntu-latest
+            target: powerpc64el-unknown-linux-gnu
+            artifact_name: cask
+            cross: true
+            strip: false
+            compress: true
+            cargo_flags: "--no-default-features"
+          - os: ubuntu-latest
             target: mips-unknown-linux-musl
             artifact_name: cask
-            release_name: mips-unknown-linux-musl
             cross: true
             strip: false
             compress: true
@@ -82,7 +98,6 @@ jobs:
           - os: ubuntu-latest
             target: mipsel-unknown-linux-musl
             artifact_name: cask
-            release_name: mipsel-unknown-linux-musl
             cross: true
             strip: false
             compress: true
@@ -90,7 +105,6 @@ jobs:
           - os: ubuntu-latest
             target: mips64-unknown-linux-gnuabi64
             artifact_name: cask
-            release_name: mips64-unknown-linux-gnuabi64
             cross: true
             strip: false
             compress: false
@@ -98,7 +112,6 @@ jobs:
           - os: ubuntu-latest
             target: mips64el-unknown-linux-gnuabi64
             artifact_name: cask
-            release_name: mips64el-unknown-linux-gnuabi64
             cross: true
             strip: false
             compress: false
@@ -106,7 +119,6 @@ jobs:
           - os: ubuntu-latest
             target: riscv64gc-unknown-linux-gnu
             artifact_name: cask
-            release_name: riscv64gc-unknown-linux-gnu
             cross: true
             strip: false
             compress: false
@@ -114,7 +126,6 @@ jobs:
           - os: windows-latest
             target: i686-pc-windows-msvc
             artifact_name: cask.exe
-            release_name: cask.exe
             cross: true
             strip: true
             compress: false
@@ -122,7 +133,6 @@ jobs:
           - os: windows-latest
             target: x86_64-pc-windows-msvc
             artifact_name: cask.exe
-            release_name: x86_64-pc-windows-msvc.exe
             cross: false
             strip: true
             compress: true
@@ -130,7 +140,6 @@ jobs:
           - os: windows-latest
             target: aarch64-pc-windows-msvc
             artifact_name: cask.exe
-            release_name: cask.exe
             cross: true
             strip: true
             compress: false
@@ -138,7 +147,6 @@ jobs:
           - os: macos-latest
             target: x86_64-apple-darwin
             artifact_name: cask
-            release_name: x86_64-apple-darwin
             cross: false
             strip: true
             compress: true
@@ -146,7 +154,6 @@ jobs:
           - os: macos-latest
             target: aarch64-apple-darwin
             artifact_name: cask
-            release_name: aarch64-apple-darwin
             cross: false
             strip: true
             compress: true
@@ -154,7 +161,6 @@ jobs:
           - os: ubuntu-latest
             target: x86_64-unknown-freebsd
             artifact_name: cask
-            release_name: x86_64-unknown-freebsd
             cross: true
             strip: false
             compress: false

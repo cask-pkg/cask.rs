@@ -17,9 +17,7 @@ path = "src/main.rs"
 
 [workspace]
 resolver = "2"
-members = [
-  "lib/extractor"
-]
+members = ["lib/extractor", "lib/downloader", "lib/git", "lib/shell"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -39,14 +37,23 @@ url = "2.2.2"
 semver = "1.0.6"
 tabled = "0.5.0"
 extractor = { path = "./lib/extractor" }
-downloader = { path = "./lib/downloader" }
+downloader = { path = "./lib/downloader", default-features = false }
 shell = { path = "./lib/shell" }
 git = { path = "./lib/git" }
 
 [profile.release]
 # https://github.com/johnthagen/min-sized-rust
-strip = true  # Automatically strip symbols from the binary.
-opt-level = "z"  # Optimize for size.
+strip = true      # Automatically strip symbols from the binary.
+opt-level = "z"   # Optimize for size.
 lto = true
 codegen-units = 1
 panic = "abort"
+
+[features]
+default = ["rustls"]
+# This feature allows us to use rustls only on architectures supported by ring.
+# See also https://github.com/briansmith/ring/issues/1182
+# and https://github.com/briansmith/ring/issues/562
+# and https://github.com/briansmith/ring/issues/1367
+rustls = ["downloader/rustls"]
+openssl = ["downloader/openssl"]

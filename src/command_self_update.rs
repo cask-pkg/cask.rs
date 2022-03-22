@@ -9,6 +9,38 @@ use eyre::Report;
 use semver::Version;
 
 fn get_arch() -> String {
+    #[cfg(target_arch = "arm")]
+    {
+        "arm".to_string()
+    }
+    #[cfg(target_arch = "armv7")]
+    {
+        "armv7".to_string()
+    }
+    #[cfg(target_arch = "mips")]
+    {
+        "mips".to_string()
+    }
+    #[cfg(target_arch = "mips64")]
+    {
+        "mips64".to_string()
+    }
+    #[cfg(target_arch = "mips64el")]
+    {
+        "mips64el".to_string()
+    }
+    #[cfg(target_arch = "mips64el")]
+    {
+        "mips64el".to_string()
+    }
+    #[cfg(target_arch = "riscv64")]
+    {
+        "riscv64gc".to_string()
+    }
+    #[cfg(target_arch = "x86")]
+    {
+        "i686".to_string()
+    }
     #[cfg(target_arch = "x86_64")]
     {
         "x86_64".to_string()
@@ -50,6 +82,10 @@ fn get_os() -> String {
     #[cfg(target_os = "linux")]
     {
         "linux".to_string()
+    }
+    #[cfg(target_os = "freebsd")]
+    {
+        "freebsd".to_string()
     }
 }
 

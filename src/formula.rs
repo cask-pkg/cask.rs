@@ -71,10 +71,12 @@ pub struct Platform {
     pub x86: Option<ResourceTarget>,
     pub x86_64: Option<ResourceTarget>,
     pub arm: Option<ResourceTarget>,
+    pub armv7: Option<ResourceTarget>,
     pub aarch64: Option<ResourceTarget>,
     pub mips: Option<ResourceTarget>,
     pub mips64: Option<ResourceTarget>,
     pub mips64el: Option<ResourceTarget>,
+    pub riscv64: Option<ResourceTarget>,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -281,6 +283,8 @@ impl Formula {
                 os.x86_64.as_ref()
             } else if cfg!(target_arch = "arm") {
                 os.arm.as_ref()
+            } else if cfg!(target_arch = "armv7") {
+                os.armv7.as_ref()
             } else if cfg!(target_arch = "aarch64") {
                 os.aarch64.as_ref()
             } else if cfg!(target_arch = "mips") {
@@ -289,6 +293,8 @@ impl Formula {
                 os.mips64.as_ref()
             } else if cfg!(target_arch = "mips64el") {
                 os.mips64el.as_ref()
+            } else if cfg!(target_arch = "riscv64") {
+                os.riscv64.as_ref()
             } else {
                 None
             }

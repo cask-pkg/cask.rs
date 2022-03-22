@@ -64,10 +64,6 @@ fn get_vendor() -> String {
     {
         "unknown".to_string()
     }
-    #[cfg(target_vendor = "freebsd")]
-    {
-        "freebsd".to_string()
-    }
 }
 
 fn get_os() -> String {
@@ -82,6 +78,10 @@ fn get_os() -> String {
     #[cfg(target_os = "linux")]
     {
         "linux".to_string()
+    }
+    #[cfg(target_vendor = "freebsd")]
+    {
+        "freebsd".to_string()
     }
 }
 

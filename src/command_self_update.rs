@@ -29,7 +29,7 @@ fn get_arch() -> String {
     {
         "mips64el".to_string()
     }
-    #[cfg(target_arch = "riscv64gc")]
+    #[cfg(target_arch = "riscv64")]
     {
         "riscv64gc".to_string()
     }

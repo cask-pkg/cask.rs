@@ -79,7 +79,7 @@ Show more information with `cask --help` command.
 | cask install \<PACKAGE\> [VERSION] | Install package                   |
 | cask uninstall \<PACKAGE\>         | Uninstall package                 |
 | cask info \<PACKAGE\>              | Show information of package       |
-| cask upgrade \<PACKAGE\>           | Upgrade package to latest         |
+| cask update \<PACKAGE\>            | Upgrade package to latest         |
 | cask list                          | List installed package            |
 | cask clean                         | Clear residual data               |
 | cask self-update                   | Update Cask to the newest version |

@@ -103,7 +103,7 @@ jobs:
             release_name: cask.exe
             cross: true
             strip: true
-            compress: true
+            compress: false
             cargo_flags: "--no-default-features"
           - os: windows-latest
             target: x86_64-pc-windows-msvc
@@ -119,7 +119,7 @@ jobs:
             release_name: cask.exe
             cross: true
             strip: true
-            compress: true
+            compress: false
             cargo_flags: "--no-default-features"
           - os: macos-latest
             target: x86_64-apple-darwin

@@ -178,7 +178,15 @@ pub async fn self_update(_cask: &cask::Cask) -> Result<(), Report> {
     // remove tarball file
     fs::remove_file(&resource_file_path).ok();
 
-    let current_bin_path = env::current_exe()?;
+    let current_bin_path = {
+        let p = env::current_exe()?;
+
+        if p.is_symlink() {
+            fs::read_link(p)?
+        } else {
+            p
+        }
+    };
 
     let temp_file = env::temp_dir().join(format!("old_{}", exe_name));
 

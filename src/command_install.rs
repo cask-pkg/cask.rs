@@ -116,12 +116,25 @@ pub async fn install(
     #[cfg(target_family = "windows")]
     let executable_name = format!("{}.exe", &package_formula.package.bin);
 
-    let output_file_path = extractor::extract(
-        &tar_file_path,
-        &package_dir.join("bin"),
-        &executable_name,
-        download_target.path.as_str(),
-    )?;
+    let output_file_path = {
+        if download_target.executable {
+            // Get and Set permissions
+            #[cfg(unix)]
+            {
+                use std::os::unix::prelude::PermissionsExt;
+
+                fs::set_permissions(&tar_file_path, fs::Permissions::from_mode(0o755))?;
+            };
+            tar_file_path
+        } else {
+            extractor::extract(
+                &tar_file_path,
+                &package_dir.join("bin"),
+                &executable_name,
+                download_target.path.as_str(),
+            )?
+        }
+    };
 
     // create symlink to $CASK_ROOT/bin
     {

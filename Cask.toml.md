@@ -6,21 +6,9 @@ This is the basic configuration of `Cask.Toml`.
 [package]
 name = "github.com/<username>/<repo>"
 bin = "gpm"
-# Cask will get versions from repository tags if versions field not provide.
-versions = ["0.1.0"]
-authors = ["Username <email@email.com>"]
-keywords = ["key", "word"]
 repository = "https://github.com/<username>/<repo>"
 description = """
 description of package.
-"""
-
-[hook]
-preinstall = """
-echo "running preinstall hook"
-"""
-postinstall = """
-echo "running postinstall hook"
 """
 
 [darwin]
@@ -77,7 +65,7 @@ Every arch got a [Resource Target Object](#Resource-Target)
 
 The target resource can be one of following types:
 
-1. String
+1. String: tarball URL
 
 The resource URL that will be download and extract. The tarball format support `.tar`/`.tgz`/`.tar.gz`/`.tar.bz2`/`.zip`
 
@@ -86,7 +74,7 @@ The resource URL that will be download and extract. The tarball format support `
 x86_64 = "https://github.com/<username>/<repo>/releases/download/v{version}/darwin_amd64.tar.gz"
 ```
 
-1. URL detail struct
+2. Object: tarball URL detail with more information
 
 | Field     | Description                                                   | type   | required | example       |
 | --------- | ------------------------------------------------------------- | ------ | -------- | ------------- |
@@ -100,6 +88,18 @@ The extension support `.tar`/`.tgz`/`.tar.gz`/`.tar.bz2`/`.zip`
 ```toml
 [darwin]
 x86_64 = { url = "https://github.com/<username>/<repo>/releases/download/v{version}/darwin_amd64.tar.gz", checksum = "15f841b9b8f60033528dfdce5883e622145911ede1f59d1f302042ded4c565a4", extension = ".tar.gz" }
+```
+
+3. Object: executable file URL
+
+| Field          | Description                                                   | type   | required | example |
+| -------------- | ------------------------------------------------------------- | ------ | -------- | ------- |
+| **executable** | The url of resource of executable that will be download       | string | true     |         |
+| checksum       | The checksum(SHA256) of resource. Check checksum if provided. | string |          |         |
+
+```toml
+[darwin]
+x86_64 = { executable = "https://github.com/<username>/<repo>/releases/download/v{version}/executable" }
 ```
 
 ### Hook

@@ -83,6 +83,7 @@ pub struct Platform {
 #[serde(untagged)]
 pub enum ResourceTarget {
     Detailed(ResourceTargetDetail),
+    Executable(ResourceTargetExecutable),
     Simple(String),
 }
 
@@ -92,6 +93,12 @@ pub struct ResourceTargetDetail {
     pub checksum: Option<String>,  // The hash256 of download resource
     pub extension: Option<String>, // The extension name of download resource. optional value: ".tar.gz" ".tar" ".zip"
     pub path: Option<String>,      // The folder that binary file locate in the tarball
+}
+
+#[derive(Deserialize, Serialize)]
+pub struct ResourceTargetExecutable {
+    pub executable: String, // The url will be download when install the package
+    pub checksum: Option<String>, // The hash256 of download resource
 }
 
 pub fn new(formula_file: &Path, repo: &str) -> Result<Formula, Report> {
@@ -131,6 +138,7 @@ pub struct DownloadTarget {
     pub path: String,
     pub checksum: Option<String>,
     pub ext: String,
+    pub executable: bool, // if target is a executable file not a tarball
 }
 
 fn get_formula_git_url(package_name: &str) -> String {
@@ -326,6 +334,7 @@ impl Formula {
 
             let download_url = match resource_target {
                 ResourceTarget::Detailed(detail) => detail.url.clone(),
+                ResourceTarget::Executable(exe) => exe.executable.clone(),
                 ResourceTarget::Simple(url) => url.to_string(),
             };
 
@@ -358,6 +367,7 @@ impl Formula {
 
             let mut path = match resource_target {
                 ResourceTarget::Detailed(arch) => arch.path.clone(),
+                ResourceTarget::Executable(_) => None,
                 ResourceTarget::Simple(_) => None,
             }
             .unwrap_or_else(|| "/".to_string());
@@ -375,11 +385,22 @@ impl Formula {
                     Some(ext) => ext.clone(),
                     None => get_ext_name_from_url()?,
                 },
+                ResourceTarget::Executable(_) => {
+                    #[cfg(unix)]
+                    {
+                        "".to_string()
+                    }
+                    #[cfg(windows)]
+                    {
+                        ".exe".to_string()
+                    }
+                }
                 ResourceTarget::Simple(_) => get_ext_name_from_url()?,
             };
 
             let checksum = match resource_target {
                 ResourceTarget::Detailed(arch) => arch.checksum.clone(),
+                ResourceTarget::Executable(arch) => arch.checksum.clone(),
                 ResourceTarget::Simple(_) => None,
             };
 
@@ -388,6 +409,7 @@ impl Formula {
                 path: path.trim().to_string(),
                 checksum,
                 ext: ext_name,
+                executable: matches!(resource_target, ResourceTarget::Executable(_)),
             })
         } else {
             Err(eyre::format_err!(
@@ -467,6 +489,7 @@ mod tests {
                     "https://github.com/axetroy/gpm.rs/releases/download/v{version}/gpm_windows_amd64.tar.gz"
                 );
             }
+            formula::ResourceTarget::Executable(_) => todo!(),
             formula::ResourceTarget::Simple(_) => todo!(),
         }
 
@@ -478,6 +501,7 @@ mod tests {
                     "https://github.com/axetroy/gpm.rs/releases/download/v{version}/gpm_darwin_amd64.tar.gz"
                 );
             }
+            formula::ResourceTarget::Executable(_) => todo!(),
             formula::ResourceTarget::Simple(_) => todo!(),
         }
         match darwin.aarch64.as_ref().unwrap() {
@@ -487,6 +511,7 @@ mod tests {
                     "https://github.com/axetroy/gpm.rs/releases/download/v{version}/gpm_darwin_arm64.tar.gz"
                 );
             }
+            formula::ResourceTarget::Executable(_) => todo!(),
             formula::ResourceTarget::Simple(_) => todo!(),
         }
 
@@ -498,6 +523,7 @@ mod tests {
                     "https://github.com/axetroy/gpm.rs/releases/download/v{version}/gpm_linux_amd64.tar.gz"
                 );
             }
+            formula::ResourceTarget::Executable(_) => todo!(),
             formula::ResourceTarget::Simple(_) => todo!(),
         }
         match linux.aarch64.as_ref().unwrap() {
@@ -507,6 +533,7 @@ mod tests {
                     "https://github.com/axetroy/gpm.rs/releases/download/v{version}/gpm_linux_arm64.tar.gz"
                 );
             }
+            formula::ResourceTarget::Executable(_) => todo!(),
             formula::ResourceTarget::Simple(_) => todo!(),
         }
     }
@@ -550,6 +577,7 @@ mod tests {
         // windows
         match windows.x86_64.as_ref().unwrap() {
             formula::ResourceTarget::Detailed(_) => todo!(),
+            formula::ResourceTarget::Executable(_) => todo!(),
             formula::ResourceTarget::Simple(url) => {
                 assert_eq!(
                     url,
@@ -561,6 +589,7 @@ mod tests {
         // darwin
         match darwin.x86_64.as_ref().unwrap() {
             formula::ResourceTarget::Detailed(_) => todo!(),
+            formula::ResourceTarget::Executable(_) => todo!(),
             formula::ResourceTarget::Simple(url) => {
                 assert_eq!(
                     url,
@@ -570,6 +599,7 @@ mod tests {
         }
         match darwin.aarch64.as_ref().unwrap() {
             formula::ResourceTarget::Detailed(_) => todo!(),
+            formula::ResourceTarget::Executable(_) => todo!(),
             formula::ResourceTarget::Simple(url) => {
                 assert_eq!(
                     url,
@@ -581,6 +611,7 @@ mod tests {
         // linux
         match linux.x86_64.as_ref().unwrap() {
             formula::ResourceTarget::Detailed(_) => todo!(),
+            formula::ResourceTarget::Executable(_) => todo!(),
             formula::ResourceTarget::Simple(url) => {
                 assert_eq!(
                     url,
@@ -590,6 +621,7 @@ mod tests {
         }
         match linux.aarch64.as_ref().unwrap() {
             formula::ResourceTarget::Detailed(_) => todo!(),
+            formula::ResourceTarget::Executable(_) => todo!(),
             formula::ResourceTarget::Simple(url) => {
                 assert_eq!(
                     url,

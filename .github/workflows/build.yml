@@ -42,6 +42,7 @@ jobs:
           - x86_64-apple-darwin
           - aarch64-apple-darwin
           - x86_64-unknown-freebsd
+          - aarch64-unknown-freebsd
         include:
           - os: ubuntu-latest
             target: x86_64-unknown-linux-musl
@@ -144,6 +145,13 @@ jobs:
             artifact_name: cask
             cross: true
             strip: false
+            cargo_flags: ""
+          - os: windows-latest
+            target: aarch64-unknown-freebsd
+            artifact_name: cask
+            cross: true
+            strip: false
+            compress: false
             cargo_flags: ""
 
     env:

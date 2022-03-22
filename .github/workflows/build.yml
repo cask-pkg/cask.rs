@@ -101,7 +101,7 @@ jobs:
             target: i686-pc-windows-msvc
             artifact_name: cask.exe
             release_name: cask.exe
-            cross: false
+            cross: true
             strip: true
             compress: true
             cargo_flags: "--no-default-features"
@@ -117,7 +117,7 @@ jobs:
             target: aarch64-pc-windows-msvc
             artifact_name: cask.exe
             release_name: cask.exe
-            cross: false
+            cross: true
             strip: true
             compress: true
             cargo_flags: "--no-default-features"

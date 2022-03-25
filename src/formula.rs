@@ -1,6 +1,6 @@
 // #![deny(warnings)]
 
-use crate::{cask, hooker};
+use crate::{cask, command_sync, hooker};
 
 use std::{
     collections::HashMap,
@@ -205,9 +205,7 @@ fn fetch_from_build_in(cask: &cask::Cask, package_name: &str) -> Result<Formula,
     // try found package in build-in
     let mut build_in_dir = cask.build_in_formula_dir();
 
-    if !build_in_dir.exists() {
-        eprintln!("did not fetch build-in formula. try running following command:\ncask sync")
-    }
+    command_sync::sync(cask)?;
 
     for p in package_name.split('/') {
         build_in_dir = build_in_dir.join(p)

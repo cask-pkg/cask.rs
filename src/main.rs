@@ -180,9 +180,7 @@ async fn main() {
             executor::block_on(f).expect("self-update fail!");
         }
         Some(("sync", _sub_matches)) => {
-            let f = command_sync::sync(&cask);
-
-            executor::block_on(f).expect("self-update fail!");
+            command_sync::sync(&cask).expect("sync build-in formula fail!");
         }
         Some((ext, sub_matches)) => {
             let args = sub_matches

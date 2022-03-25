@@ -42,34 +42,11 @@ In the following document, the more information of `Cask.toml` will be described
 
 ## How do I publish package?
 
-Cask is distributed, no servers, not to keep your package information.
+You can release your package with following ways:
 
-So you have to add the package by yourself.
+1. Create a [Cask.toml](Cask.toml.md) file in the root of your repository.
 
-The only thing you have to do is creating a file `Cask.toml` in the root of the repository.
-
-```toml
-[package]
-name = "github.com/<username>/<repo>"
-bin = "<binary name>"
-authors = ["Username <email@email.com>"]
-keywords = ["key", "word"]
-repository = "https://github.com/<username>/<repo>"
-description = """
-description of package.
-"""
-
-[darwin]
-x86_64 =  "https://github.com/<username>/<repo>/releases/download/v{version}/darwin_amd64.tar.gz"
-
-[windows]
-x86_64 = "https://github.com/<username>/<repo>/releases/download/v{version}/windows_amd64.tar.gz"
-
-[linux]
-x86_64 = "https://github.com/<username>/<repo>/releases/download/v{version}/linux_amd64.tar.gz"
-```
-
-modify the information above, eg. username, version, etc. and then push to remote.
+2. Create a [Cask.toml](Cask.toml.md) file [cask-core](https://github.com/cask-pkg/cask-core)
 
 try to install the package
 

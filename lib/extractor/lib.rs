@@ -13,6 +13,7 @@ use std::{
 };
 
 use eyre::Report;
+use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
 #[derive(Error, Debug)]
@@ -29,6 +30,27 @@ pub enum ExtractorError {
         path: String,
         msg: String,
     },
+}
+
+#[derive(Deserialize, Serialize, Debug, PartialEq)]
+pub enum Extension {
+    TarGz,
+    Tgz,
+    TarBiz2,
+    Tar,
+    Zip,
+}
+
+impl Extension {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Extension::TarGz => ".tar.gz",
+            Extension::Tgz => ".tgz",
+            Extension::TarBiz2 => ".tar.bz2",
+            Extension::Tar => ".tar",
+            Extension::Zip => ".zip",
+        }
+    }
 }
 
 pub fn extract(
@@ -63,22 +85,24 @@ pub fn extract(
         source: e,
     })?;
 
-    if tar_file_name.ends_with(".tar.gz") || tar_file_name.ends_with(".tgz") {
+    if tar_file_name.ends_with(Extension::TarGz.as_str())
+        || tar_file_name.ends_with(Extension::Tgz.as_str())
+    {
         match tgz::extract(tarball, dest_dir, filename, folder) {
             Ok(p) => ensure_extract_file_exist(&p),
             Err(e) => handle_extract_error(e),
         }
-    } else if tar_file_name.ends_with(".tar.bz2") {
+    } else if tar_file_name.ends_with(Extension::TarBiz2.as_str()) {
         match tbz2::extract(tarball, dest_dir, filename, folder) {
             Ok(p) => ensure_extract_file_exist(&p),
             Err(e) => handle_extract_error(e),
         }
-    } else if tar_file_name.ends_with(".tar") {
+    } else if tar_file_name.ends_with(Extension::Tar.as_str()) {
         match tar::extract(tarball, dest_dir, filename, folder) {
             Ok(p) => ensure_extract_file_exist(&p),
             Err(e) => handle_extract_error(e),
         }
-    } else if tar_file_name.ends_with(".zip") {
+    } else if tar_file_name.ends_with(Extension::Zip.as_str()) {
         match zip::extract(tarball, dest_dir, filename, folder) {
             Ok(p) => ensure_extract_file_exist(&p),
             Err(e) => handle_extract_error(e),

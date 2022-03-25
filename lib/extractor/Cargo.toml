@@ -14,3 +14,4 @@ zip = "0.5.13"
 bzip2-rs = "0.1.2"
 thiserror = "1.0.30"
 regex = "1.5.5"
+serde = { version = "1.0.136", features = ["derive"] }

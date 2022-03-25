@@ -88,10 +88,10 @@ pub enum ResourceTarget {
 
 #[derive(Deserialize, Serialize)]
 pub struct ResourceTargetDetail {
-    pub url: String,               // The url will be download when install the package
-    pub checksum: Option<String>,  // The hash256 of download resource
-    pub extension: Option<String>, // The extension name of download resource. optional value: ".tar.gz" ".tar" ".zip"
-    pub path: Option<String>,      // The folder that binary file locate in the tarball
+    pub url: String,              // The url will be download when install the package
+    pub checksum: Option<String>, // The hash256 of download resource
+    pub extension: Option<extractor::Extension>, // The extension name of download resource. optional value: ".tar.gz" ".tar" ".zip"
+    pub path: Option<String>, // The folder that binary file locate in the tarball
 }
 
 #[derive(Deserialize, Serialize)]
@@ -341,26 +341,27 @@ impl Formula {
 
             let renderer_url = tt.render("url_template", &render_context)?;
 
-            let get_ext_name_from_url = || -> Result<String, Report> {
+            let get_ext_name_from_url = || -> Result<&str, Report> {
                 let u = Url::parse(&renderer_url)?;
 
-                let default_ext = ".tar.gz".to_string();
-                if let Some(sep) = u.path_segments() {
-                    let filename = sep.last().unwrap_or(&default_ext);
+                let default_ext = extractor::Extension::TarGz;
 
-                    if filename.ends_with(".tar.gz") {
-                        Ok(".tar.gz".to_string())
-                    } else if filename.ends_with(".tgz") {
-                        Ok(".tgz".to_string())
-                    } else if filename.ends_with(".tar") {
-                        Ok(".tar".to_string())
-                    } else if filename.ends_with(".zip") {
-                        Ok(".zip".to_string())
+                if let Some(sep) = u.path_segments() {
+                    let filename = sep.last().unwrap_or(default_ext.as_str());
+
+                    if filename.ends_with(extractor::Extension::TarGz.as_str()) {
+                        Ok(extractor::Extension::TarGz.as_str())
+                    } else if filename.ends_with(extractor::Extension::Tgz.as_str()) {
+                        Ok(extractor::Extension::Tgz.as_str())
+                    } else if filename.ends_with(extractor::Extension::Tar.as_str()) {
+                        Ok(extractor::Extension::Tar.as_str())
+                    } else if filename.ends_with(extractor::Extension::Zip.as_str()) {
+                        Ok(extractor::Extension::Zip.as_str())
                     } else {
-                        Ok(default_ext)
+                        Ok(default_ext.as_str())
                     }
                 } else {
-                    Ok(default_ext)
+                    Ok(default_ext.as_str())
                 }
             };
 
@@ -381,8 +382,8 @@ impl Formula {
 
             let ext_name = match resource_target {
                 ResourceTarget::Detailed(arch) => match &arch.extension {
-                    Some(ext) => ext.clone(),
-                    None => get_ext_name_from_url()?,
+                    Some(ext) => ext.as_str().to_string(),
+                    None => get_ext_name_from_url()?.to_string(),
                 },
                 ResourceTarget::Executable(_) => {
                     #[cfg(unix)]
@@ -394,7 +395,7 @@ impl Formula {
                         ".exe".to_string()
                     }
                 }
-                ResourceTarget::Simple(_) => get_ext_name_from_url()?,
+                ResourceTarget::Simple(_) => get_ext_name_from_url()?.to_string(),
             };
 
             let checksum = match resource_target {

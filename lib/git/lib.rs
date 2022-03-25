@@ -346,7 +346,7 @@ mod tests_is_exist {
 
     #[test]
     fn test_is_exist_if_exist() {
-        let repo = new("https://github.com/axetroy/cask.rs.git").unwrap();
+        let repo = new("https://github.com/cask-pkg/cask.rs.git").unwrap();
 
         let exist = repo.is_exist().unwrap();
 

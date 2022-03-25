@@ -3,13 +3,13 @@
 
    <h1>Cask</h1>
 
-[![installation](https://github.com/axetroy/cask.rs/actions/workflows/installation.yml/badge.svg)](https://github.com/axetroy/cask.rs/actions/workflows/installation.yml)
-[![lint](https://github.com/axetroy/cask.rs/actions/workflows/lint.yml/badge.svg)](https://github.com/axetroy/cask.rs/actions/workflows/lint.yml)
-[![test](https://github.com/axetroy/cask.rs/actions/workflows/test.yml/badge.svg)](https://github.com/axetroy/cask.rs/actions/workflows/test.yml)
-[![build](https://github.com/axetroy/cask.rs/actions/workflows/build.yml/badge.svg)](https://github.com/axetroy/cask.rs/actions/workflows/build.yml)
-![Latest Version](https://img.shields.io/github/v/release/axetroy/cask.rs.svg)
-![License](https://img.shields.io/github/license/axetroy/cask.rs.svg)
-![Repo Size](https://img.shields.io/github/repo-size/axetroy/cask.rs.svg)
+[![installation](https://github.com/cask-pkg/cask.rs/actions/workflows/installation.yml/badge.svg)](https://github.com/cask-pkg/cask.rs/actions/workflows/installation.yml)
+[![lint](https://github.com/cask-pkg/cask.rs/actions/workflows/lint.yml/badge.svg)](https://github.com/cask-pkg/cask.rs/actions/workflows/lint.yml)
+[![test](https://github.com/cask-pkg/cask.rs/actions/workflows/test.yml/badge.svg)](https://github.com/cask-pkg/cask.rs/actions/workflows/test.yml)
+[![build](https://github.com/cask-pkg/cask.rs/actions/workflows/build.yml/badge.svg)](https://github.com/cask-pkg/cask.rs/actions/workflows/build.yml)
+![Latest Version](https://img.shields.io/github/v/release/cask-pkg/cask.rs.svg)
+![License](https://img.shields.io/github/license/cask-pkg/cask.rs.svg)
+![Repo Size](https://img.shields.io/github/repo-size/cask-pkg/cask.rs.svg)
 
 A universal, distributed package manager.
 
@@ -35,16 +35,16 @@ Then welcome to Cask.
 1. Shell (Mac/Linux)
 
    ```bash
-   curl -fsSL https://github.com/axetroy/cask.rs/raw/main/install.sh | bash
+   curl -fsSL https://github.com/cask-pkg/cask.rs/raw/main/install.sh | bash
    ```
 
 2. PowerShell (Windows):
 
    ```pwshell
-   iwr https://github.com/axetroy/cask.rs/raw/main/install.ps1 -useb | iex
+   iwr https://github.com/cask-pkg/cask.rs/raw/main/install.ps1 -useb | iex
    ```
 
-3. [Github release page](https://github.com/axetroy/cask.rs/releases)
+3. [Github release page](https://github.com/cask-pkg/cask.rs/releases)
 
    Download the executable, then put it in the `$PATH` directory.
 
@@ -95,8 +95,8 @@ Cask depends on [Git](https://git-scm.com)
 
 This project exists thanks to all the people who contribute. [How to contribute](CONTRIBUTING.md).
 
-<a href="https://github.com/axetroy/cask.rs/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=axetroy/cask.rs" />
+<a href="https://github.com/cask-pkg/cask.rs/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=cask-pkg/cask.rs" />
 </a>
 
 ## LICENSE

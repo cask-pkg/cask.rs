@@ -4,7 +4,7 @@ version = "0.2.3"
 authors = ["Axetroy <axetroy.dev@gmail.com>"]
 readme = "README.md"
 keywords = ["cask", "distributed", "binary", "package", "manager"]
-repository = "https://github.com/axetroy/cask.rs"
+repository = "https://github.com/cask-pkg/cask.rs"
 description = """
 General distributed binary distribution package management, written in Rust.
 """

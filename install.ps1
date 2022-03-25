@@ -3,7 +3,7 @@
 $ErrorActionPreference = 'Stop'
 
 $githubUrl = "https://github.com"
-$owner = "axetroy"
+$owner = "cask-pkg"
 $repoName = "cask.rs"
 $exeName = "cask"
 $version = ""

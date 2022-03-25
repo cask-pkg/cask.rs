@@ -2,7 +2,7 @@
 
 set -e
 
-owner="axetroy"
+owner="cask-pkg"
 repo="cask.rs"
 exe_name="cask"
 githubUrl="https://github.com"

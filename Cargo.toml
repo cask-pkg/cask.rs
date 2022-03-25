@@ -1,6 +1,6 @@
 [package]
 name = "cask"
-version = "0.2.3"
+version = "0.3.0"
 authors = ["Axetroy <axetroy.dev@gmail.com>"]
 readme = "README.md"
 keywords = ["cask", "distributed", "binary", "package", "manager"]

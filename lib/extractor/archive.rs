@@ -1,6 +1,7 @@
 #![deny(warnings)]
 
 use core::result::Result;
+use regex::Regex;
 use std::{io::Read, path::Path};
 
 use eyre::Report;
@@ -25,13 +26,21 @@ pub(crate) fn extract<R: Read>(
     for mut entry in files {
         let file_path = entry.path()?;
 
+        let re = Regex::new(r"^GNUSparseFile\.\d+/").unwrap();
+
+        // GNUSparseFile.0/gpm
+        // ./gpm
+        // /gpm
         let relative_path = format!("{}", file_path.display());
 
         let absolute_path = format!(
             "/{}",
-            relative_path
-                .trim_start_matches("./")
-                .trim_start_matches('/')
+            re.replace_all(
+                relative_path
+                    .trim_start_matches("./")
+                    .trim_start_matches('/'),
+                ""
+            )
         );
 
         if target_file_path == absolute_path {

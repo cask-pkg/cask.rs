@@ -2,8 +2,15 @@
 
 use crate::{cask, formula, symlink, util::iso8601};
 
-use std::{fs, fs::File, io, io::Write, time::SystemTime};
+use std::{
+    fs,
+    fs::File,
+    io::Write,
+    io::{self, Read},
+    time::SystemTime,
+};
 
+use atty::{is, Stream};
 use eyre::Report;
 use semver::{Version, VersionReq};
 use sha2::{Digest, Sha256};
@@ -13,7 +20,31 @@ pub async fn install(
     package_name: &str,
     version: Option<&str>,
 ) -> Result<(), Report> {
-    let package_formula = formula::fetch(cask, package_name, false)?;
+    let package_formula = if !is(Stream::Stdin) {
+        // Read Cask.toml from stdin
+        // cat Cask.toml | cask install
+        let mut buffer = Vec::new();
+        io::stdin().read_to_end(&mut buffer)?;
+
+        let content = std::str::from_utf8(&buffer).unwrap();
+
+        let mut f: formula::Formula = toml::from_str(content.trim())?;
+
+        let cask_file_path = cask.formula_dir().join("Cask.toml");
+        fs::write(&cask_file_path, content)?;
+
+        f.filepath = cask_file_path;
+        f.repository = "".to_string();
+        f.file_content = content.to_string();
+
+        f
+    } else {
+        if package_name.is_empty() {
+            return Err(eyre::format_err!("<PACKAGE> required"));
+        }
+
+        formula::fetch(cask, package_name, false)?
+    };
 
     // detect binary name conflict
     for f in cask.list_formula()? {

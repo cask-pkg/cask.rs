@@ -16,6 +16,7 @@ mod util;
 
 use std::{fs, process};
 
+use atty::{is, Stream};
 use clap::{arg, Arg, Command};
 use futures::executor;
 
@@ -28,21 +29,25 @@ async fn main() {
         .about(env!("CARGO_PKG_DESCRIPTION"))
         .author(env!("CARGO_PKG_AUTHORS"))
         .subcommand_required(true)
-        .arg_required_else_help(true)
         .allow_external_subcommands(true)
         .allow_invalid_utf8_for_external_subcommands(true)
         .subcommand(
             Command::new("install")
                 .alias("i")
                 .about("Install package")
-                .arg(arg!(<PACKAGE> "The package name or repository url"))
+                .arg(
+                    Arg::new("PACKAGE")
+                        .required(is(Stream::Stdin))
+                        .multiple_occurrences(false)
+                        .help("The package name or repository url"),
+                )
                 .arg(
                     Arg::new("VERSION")
                         .required(false)
                         .multiple_occurrences(false)
                         .help("Install specified version."),
                 )
-                .arg_required_else_help(true),
+                .arg_required_else_help(is(Stream::Stdin)),
         )
         .subcommand(
             Command::new("uninstall")
@@ -113,7 +118,10 @@ async fn main() {
 
     match matches.subcommand() {
         Some(("install", sub_matches)) => {
-            let package_name = sub_matches.value_of("PACKAGE").expect("required");
+            let package_name = sub_matches
+                .value_of("PACKAGE")
+                .or(Some(""))
+                .expect("required");
             let version = sub_matches.value_of("VERSION");
 
             executor::block_on(command_install::install(&cask, package_name, version))

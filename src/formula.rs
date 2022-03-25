@@ -14,7 +14,6 @@ use std::{
 use eyre::Report;
 use serde::{Deserialize, Serialize};
 use tinytemplate::TinyTemplate;
-use toml::from_str;
 use url::Url;
 
 #[derive(Deserialize, Serialize)]
@@ -121,7 +120,7 @@ pub fn new(formula_file: &Path, repo: &str) -> Result<Formula, Report> {
 
     drop(file);
 
-    let mut f: Formula = match from_str(&file_content) {
+    let mut f: Formula = match toml::from_str(&file_content) {
         Ok(r) => r,
         Err(e) => return Err(eyre::Report::from(e)),
     };

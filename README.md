@@ -63,6 +63,8 @@ cask install github.com/axetroy/dvm
 cask install github.com/axetroy/dvm 1.x
 # cask install <repository URL>
 cask install https://github.com/axetroy/dvm.git
+# cask install from stdin
+curl https://raw.githubusercontent.com/axetroy/dvm/master/Cask.toml | cask install
 
 # cask uninstall <package or the executable file name of the package>
 cask uninstall github.com/axetroy/dvm

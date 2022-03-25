@@ -86,6 +86,8 @@ Show more information with `cask --help` command.
 | cask list                          | List installed package              |
 | cask clean                         | Clear residual data                 |
 | cask self-update                   | Update Cask to the newest version   |
+| cask build-in sync                 | Sync build-in formula from remote   |
+| cask build-in list                 | List build-in formula               |
 
 ## Requirement
 

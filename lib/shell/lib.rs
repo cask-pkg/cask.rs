@@ -20,8 +20,6 @@ pub fn run(cwd: &Path, command: &str) -> Result<(), Report> {
 
     args = args.iter().filter(|s| !s.is_empty()).cloned().collect();
 
-    println!("{} {:?}", cmd, args);
-
     let mut child = match ChildProcess::new(cmd).current_dir(cwd).args(args).spawn() {
         Ok(child) => Ok(child),
         Err(e) => Err(eyre::format_err!("{}", e)),

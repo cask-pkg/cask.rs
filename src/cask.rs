@@ -92,6 +92,10 @@ impl Cask {
         self.root_dir().join("formula")
     }
 
+    pub fn build_in_formula_dir(&self) -> PathBuf {
+        self.root_dir().join("build-in")
+    }
+
     // the package folder
     pub fn package_dir(&self, package_name: &str) -> PathBuf {
         let hash_of_package = {

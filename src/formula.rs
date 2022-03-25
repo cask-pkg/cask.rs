@@ -188,13 +188,39 @@ pub fn fetch(cask: &cask::Cask, package_name: &str, temp: bool) -> Result<Formul
     let is_repo_exist = git::new(&package_repo_url)?.is_exist()?;
 
     if is_repo_exist {
-        return fetch_with_git_url(cask, package_name, &package_repo_url, temp);
+        fetch_with_git_url(cask, package_name, &package_repo_url, temp)
+    } else {
+        match fetch_from_build_in(cask, package_name) {
+            Ok(f) => Ok(f),
+            Err(e) => {
+                print_publishing_msg();
+
+                Err(e)
+            }
+        }
+    }
+}
+
+fn fetch_from_build_in(cask: &cask::Cask, package_name: &str) -> Result<Formula, Report> {
+    // try found package in build-in
+    let mut build_in_dir = cask.build_in_formula_dir();
+
+    if !build_in_dir.exists() {
+        eprintln!("did not fetch build-in formula. try running following command:\ncask sync")
     }
 
-    print_publishing_msg();
+    for p in package_name.split('/') {
+        build_in_dir = build_in_dir.join(p)
+    }
+
+    let cask_file_path = build_in_dir.join("Cask.toml");
+
+    if cask_file_path.exists() {
+        return new(&cask_file_path, "");
+    }
 
     Err(eyre::format_err!(
-        "fail to fetch package formula '{}'",
+        "can not found package in build-in formular '{}'",
         package_name
     ))
 }
@@ -240,15 +266,21 @@ fn fetch_with_git_url(
     ) {
         Ok(()) => {
             if !cask_file_path.exists() {
-                print_publishing_msg();
+                return match fetch_from_build_in(cask, package_name) {
+                    Ok(f) => Ok(f),
+                    Err(_) => {
+                        print_publishing_msg();
 
-                if temp {
-                    fs::remove_dir_all(formula_cloned_dir)?;
-                }
-                return Err(eyre::format_err!(
-                    "{} is not a valid formula!",
-                    package_name
-                ));
+                        if temp {
+                            fs::remove_dir_all(formula_cloned_dir)?;
+                        }
+
+                        return Err(eyre::format_err!(
+                            "{} is not a valid formula!",
+                            package_name
+                        ));
+                    }
+                };
             }
 
             match new(&cask_file_path, git_url) {

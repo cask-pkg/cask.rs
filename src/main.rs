@@ -7,6 +7,7 @@ mod command_info;
 mod command_install;
 mod command_list;
 mod command_self_update;
+mod command_sync;
 mod command_uninstall;
 mod command_update;
 mod formula;
@@ -101,7 +102,8 @@ async fn main() {
                 ),
         )
         .subcommand(Command::new("self-update").about("Update Cask to the newest version"))
-        .subcommand(Command::new("clean").about("Clear residual data"));
+        .subcommand(Command::new("clean").about("Clear residual data"))
+        .subcommand(Command::new("sync").about("Synchronized Built-in Formula from cask-core"));
 
     let matches = app.clone().get_matches();
 
@@ -174,6 +176,11 @@ async fn main() {
         }
         Some(("self-update", _sub_matches)) => {
             let f = command_self_update::self_update(&cask);
+
+            executor::block_on(f).expect("self-update fail!");
+        }
+        Some(("sync", _sub_matches)) => {
+            let f = command_sync::sync(&cask);
 
             executor::block_on(f).expect("self-update fail!");
         }

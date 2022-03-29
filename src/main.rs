@@ -78,7 +78,6 @@ async fn main() {
         )
         .subcommand(
             Command::new("update")
-                .alias("up")
                 .alias("upgrade")
                 .about("Upgrade package to latest")
                 .arg(arg!(<PACKAGE> "The package name"))
@@ -93,6 +92,7 @@ async fn main() {
         )
         .subcommand(
             Command::new("check-updates")
+                .alias("check-upgrades")
                 .about("Check and update packages to latest")
                 .arg(
                     Arg::new("check-only")
@@ -102,7 +102,11 @@ async fn main() {
                         .takes_value(false),
                 ),
         )
-        .subcommand(Command::new("self-update").about("Update Cask to the newest version"))
+        .subcommand(
+            Command::new("self-update")
+                .alias("self-upgrade")
+                .about("Update Cask to the newest version"),
+        )
         .subcommand(Command::new("clean").about("Clear residual data"))
         .subcommand(
             Command::new("build-in")

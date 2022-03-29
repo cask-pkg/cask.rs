@@ -16,11 +16,10 @@ mod hooker;
 mod symlink;
 mod util;
 
-use std::{fs, process};
+use std::process;
 
 use atty::{is, Stream};
 use clap::{arg, Arg, Command};
-use futures::executor;
 
 #[tokio::main]
 async fn main() {
@@ -136,58 +135,54 @@ async fn main() {
                 .expect("required");
             let version = sub_matches.value_of("VERSION");
 
-            executor::block_on(command_install::install(&cask, package_name, version))
-                .map_err(|err| {
-                    let dir = cask.package_dir(package_name);
-                    fs::remove_dir_all(dir).ok();
-                    err
-                })
+            command_install::install(&cask, package_name, version)
+                .await
                 .expect("install package fail!");
         }
         Some(("uninstall", sub_matches)) => {
             let package_name = sub_matches.value_of("PACKAGE").expect("required");
 
-            let f = command_uninstall::uninstall(&cask, package_name);
-
-            executor::block_on(f).expect("uninstall package fail!");
+            command_uninstall::uninstall(&cask, package_name)
+                .await
+                .expect("uninstall package fail!");
         }
         Some(("list", sub_matches)) => {
             let is_print_as_json = sub_matches.is_present("json");
-            let f = command_list::list(&cask, is_print_as_json);
-
-            executor::block_on(f).expect("list packages fail!");
+            command_list::list(&cask, is_print_as_json)
+                .await
+                .expect("list packages fail!");
         }
         Some(("info", sub_matches)) => {
             let package_name = sub_matches.value_of("PACKAGE").expect("required");
 
-            let f = command_info::info(&cask, package_name);
-
-            executor::block_on(f).expect("info installed package fail!");
+            command_info::info(&cask, package_name)
+                .await
+                .expect("info installed package fail!");
         }
         Some(("update", sub_matches)) => {
             let package_name = sub_matches.value_of("PACKAGE").expect("required");
             let is_check_only = sub_matches.is_present("check-only");
 
-            let f = command_update::update(&cask, package_name, is_check_only);
-
-            executor::block_on(f).expect("info installed package fail!");
+            command_update::update(&cask, package_name, is_check_only)
+                .await
+                .expect("info installed package fail!");
         }
         Some(("check-updates", sub_matches)) => {
             let is_check_only = sub_matches.is_present("check-only");
 
-            let f = command_check_updates::check_updates(&cask, is_check_only);
-
-            executor::block_on(f).expect("info installed package fail!");
+            command_check_updates::check_updates(&cask, is_check_only)
+                .await
+                .expect("info installed package fail!");
         }
         Some(("clean", _sub_matches)) => {
-            let f = command_clean::clean(&cask);
-
-            executor::block_on(f).expect("info installed package fail!");
+            command_clean::clean(&cask)
+                .await
+                .expect("info installed package fail!");
         }
         Some(("self-update", _sub_matches)) => {
-            let f = command_self_update::self_update(&cask);
-
-            executor::block_on(f).expect("self-update fail!");
+            command_self_update::self_update(&cask)
+                .await
+                .expect("self-update fail!");
         }
         Some(("build-in", sub_matches)) => match sub_matches.subcommand() {
             Some(("sync", _sub_matches)) => {
@@ -196,9 +191,7 @@ async fn main() {
             Some(("list", _sub_matches)) => {
                 command_build_in_list::list(&cask).expect("list build-in formula fail!");
             }
-            _ => {
-                process::exit(0x0);
-            }
+            _ => unreachable!(),
         },
         Some((ext, sub_matches)) => {
             let args = sub_matches

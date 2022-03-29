@@ -8,9 +8,9 @@ path = "lib.rs"
 
 [dependencies]
 eyre = "0.6.7"
-libflate = "1.1.2"
+libflate = "1.2.0"
 tar = "0.4.38"
-zip = "0.5.13"
+zip = "0.6.0"
 bzip2-rs = "0.1.2"
 thiserror = "1.0.30"
 regex = "1.5.5"

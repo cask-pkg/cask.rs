@@ -34,7 +34,7 @@ tinytemplate = "1.1"
 dirs = "4.0.0"
 sha2 = "0.10.2"
 url = "2.2.2"
-semver = "1.0.6"
+semver = "1.0.7"
 tabled = "0.5.0"
 atty = "0.2.14"
 extractor = { path = "./lib/extractor" }

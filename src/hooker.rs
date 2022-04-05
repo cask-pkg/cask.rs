@@ -34,7 +34,7 @@ impl Hook {
                     continue;
                 }
 
-                shell::run(cwd, script)?;
+                shell::run(cwd, script, shell::Output::Inherit)?;
             }
         }
 

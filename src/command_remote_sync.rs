@@ -10,9 +10,9 @@ pub fn sync(cask: &cask::Cask) -> Result<(), Report> {
     if mirror_dir.exists() {
         eprintln!("Updating build-in formula...");
 
-        shell::run(&mirror_dir, "git checkout ./")?;
-        shell::run(&mirror_dir, "git clean -df")?;
-        shell::run(&mirror_dir, "git pull --rebase")?;
+        shell::run(&mirror_dir, "git checkout ./", shell::Output::None)?;
+        shell::run(&mirror_dir, "git clean -df", shell::Output::None)?;
+        shell::run(&mirror_dir, "git pull --rebase", shell::Output::None)?;
     } else {
         eprintln!("Pulling build-in formula...");
 
@@ -30,7 +30,7 @@ pub fn sync(cask: &cask::Cask) -> Result<(), Report> {
         )?
     }
 
-    eprintln!("Fetch remote formula success");
+    eprintln!("Sync remote build-in formula success");
 
     Ok(())
 }

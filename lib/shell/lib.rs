@@ -81,7 +81,7 @@ mod tests {
 
         // let mut buffer = io::BufWriter::new(io::stdout());
 
-        run(&cwd, r#"echo "hello world""#, Output::Writer(&mut buf)).unwrap();
+        run(&cwd, r#"echo 'hello world'"#, Output::Writer(&mut buf)).unwrap();
 
         let result = std::str::from_utf8(&buf).unwrap();
 

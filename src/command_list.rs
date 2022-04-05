@@ -14,7 +14,7 @@ struct PackageInfo {
     version: String,
     #[serde(skip)]
     install_at: String,
-    #[header(hidden = true)]
+    #[tabled(skip)]
     create_at: String,
 }
 

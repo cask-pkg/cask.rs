@@ -7,10 +7,10 @@ edition = "2021"
 path = "lib.rs"
 
 [dependencies]
-eyre = "0.6.7"
+eyre = "0.6.8"
 libflate = "1.2.0"
 tar = "0.4.38"
-zip = "0.6.0"
+zip = "0.6.2"
 bzip2-rs = "0.1.2"
 thiserror = "1.0.30"
 regex = "1.5.5"

@@ -127,7 +127,7 @@ jobs:
             strip: true
             compress: false
             cargo_flags: "--no-default-features"
-          - os: windows-latest
+          - os: ubuntu-latest
             target: i686-pc-windows-gnu
             artifact_name: cask.exe
             cross: true
@@ -141,7 +141,7 @@ jobs:
             strip: true
             compress: true
             cargo_flags: ""
-          - os: windows-latest
+          - os: ubuntu-latest
             target: x86_64-pc-windows-gnu
             artifact_name: cask.exe
             cross: false

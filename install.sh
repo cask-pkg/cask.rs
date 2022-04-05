@@ -58,7 +58,12 @@ get_abi(){
             echo ""
         ;;
         *)
-            echo "-musl"
+            ldd=$(cat '/usr/bin/ldd')
+            if [[ "$ldd" == *"musl"* ]]; then
+                echo "-musl"
+            else
+                echo "-gnu"
+            fi
         ;;
     esac
 }

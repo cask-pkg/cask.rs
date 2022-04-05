@@ -10,12 +10,12 @@ A command line tool, manage your hundreds of repository, written with Rust.
 """
 
 [darwin]
-x86_64 = { url = "https://github.com/axetroy/gpm.rs/releases/download/v{version}/gpm_darwin_amd64.tar.gz" }
-aarch64 = { url = "https://github.com/axetroy/gpm.rs/releases/download/v{version}/gpm_darwin_arm64.tar.gz" }
+x86_64 = { url = "{package.repository}/releases/download/v{version}/gpm_darwin_amd64.tar.gz" }
+aarch64 = { url = "{package.repository}/releases/download/v{version}/gpm_darwin_arm64.tar.gz" }
 
 [windows]
-x86_64 = { url = "https://github.com/axetroy/gpm.rs/releases/download/v{version}/gpm_windows_amd64.tar.gz" }
+x86_64 = { url = "{package.repository}/releases/download/v{version}/gpm_windows_amd64.tar.gz" }
 
 [linux]
-x86_64 = { url = "https://github.com/axetroy/gpm.rs/releases/download/v{version}/gpm_linux_amd64.tar.gz" }
-aarch64 = { url = "https://github.com/axetroy/gpm.rs/releases/download/v{version}/gpm_linux_arm64.tar.gz" }
+x86_64 = { url = "{package.repository}/releases/download/v{version}/gpm_linux_amd64.tar.gz" }
+aarch64 = { url = "{package.repository}/releases/download/v{version}/gpm_linux_arm64.tar.gz" }

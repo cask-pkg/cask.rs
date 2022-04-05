@@ -101,14 +101,6 @@ pub struct ResourceTargetExecutable {
     pub checksum: Option<String>, // The hash256 of download resource
 }
 
-macro_rules! hashmap {
-    ($( $key: expr => $val: expr ),*) => {{
-         let mut map = ::std::collections::HashMap::new();
-         $( map.insert($key, $val); )*
-         map
-    }}
-}
-
 pub fn new(formula_file: &Path, repo: &str) -> Result<Formula, Report> {
     let mut file = match File::open(formula_file) {
         Ok(f) => f,
@@ -355,24 +347,18 @@ impl Formula {
 
     pub fn get_current_download_url(&self, version: &str) -> Result<DownloadTarget, Report> {
         #[derive(Serialize)]
-        struct URLTemplateContext {
-            name: String,
-            bin: String,
-            version: String,
+        struct URLTemplateContext<'a> {
+            version: &'a str,
+            package: &'a Package,
+            context: Option<&'a HashMap<String, String>>,
         }
 
         if let Some(resource_target) = self.get_current_arch() {
-            let mut render_context = hashmap![
-                "name" => self.package.name.clone(),
-                "bin" => self.package.bin.clone(),
-                "version" => version.to_string()
-            ];
-
-            if let Some(context) = &self.context {
-                for (k, v) in context {
-                    render_context.insert(k, v.to_string());
-                }
-            }
+            let render_context = URLTemplateContext {
+                version,
+                package: &self.package,
+                context: self.context.as_ref(),
+            };
 
             let mut tt = TinyTemplate::new();
 
@@ -507,14 +493,17 @@ mod tests {
         );
         assert_eq!(rc.package.name, "github.com/axetroy/gpm.rs");
         assert_eq!(rc.package.bin, "gpm");
-        assert_eq!(rc.package.versions.unwrap(), vec!["0.1.12", "0.1.11"]);
         assert_eq!(
-            rc.package.authors.unwrap(),
-            vec!["Axetroy <axetroy.dev@gmail.com>"]
+            rc.package.versions.as_ref().unwrap(),
+            &vec!["0.1.12", "0.1.11"]
         );
         assert_eq!(
-            rc.package.keywords.unwrap(),
-            vec!["gpm", "git", "project", "manager"]
+            rc.package.authors.as_ref().unwrap(),
+            &vec!["Axetroy <axetroy.dev@gmail.com>"]
+        );
+        assert_eq!(
+            rc.package.keywords.as_ref().unwrap(),
+            &vec!["gpm", "git", "project", "manager"]
         );
         assert_eq!(rc.package.repository, "https://github.com/axetroy/gpm.rs");
         assert_eq!(
@@ -522,16 +511,16 @@ mod tests {
             "A command line tool, manage your hundreds of repository, written with Rust.\n"
         );
 
-        let windows = &rc.windows.unwrap();
-        let darwin = &rc.darwin.unwrap();
-        let linux = &rc.linux.unwrap();
+        let windows = &rc.windows.as_ref().unwrap();
+        let darwin = &rc.darwin.as_ref().unwrap();
+        let linux = &rc.linux.as_ref().unwrap();
 
         // windows
         match windows.x86_64.as_ref().unwrap() {
             formula::ResourceTarget::Detailed(arch) => {
                 assert_eq!(
                     arch.url,
-                    "https://github.com/axetroy/gpm.rs/releases/download/v{version}/gpm_windows_amd64.tar.gz"
+                    "{package.repository}/releases/download/v{version}/gpm_windows_amd64.tar.gz"
                 );
             }
             formula::ResourceTarget::Executable(_) => todo!(),
@@ -543,7 +532,7 @@ mod tests {
             formula::ResourceTarget::Detailed(arch) => {
                 assert_eq!(
                     arch.url,
-                    "https://github.com/axetroy/gpm.rs/releases/download/v{version}/gpm_darwin_amd64.tar.gz"
+                    "{package.repository}/releases/download/v{version}/gpm_darwin_amd64.tar.gz"
                 );
             }
             formula::ResourceTarget::Executable(_) => todo!(),
@@ -553,19 +542,25 @@ mod tests {
             formula::ResourceTarget::Detailed(arch) => {
                 assert_eq!(
                     arch.url,
-                    "https://github.com/axetroy/gpm.rs/releases/download/v{version}/gpm_darwin_arm64.tar.gz"
+                    "{package.repository}/releases/download/v{version}/gpm_darwin_arm64.tar.gz"
                 );
             }
             formula::ResourceTarget::Executable(_) => todo!(),
             formula::ResourceTarget::Simple(_) => todo!(),
         }
 
+        #[cfg(target_os = "macos")]
+        assert_eq!(
+            &rc.get_current_download_url("0.1.12").as_ref().unwrap().url,
+            "https://github.com/axetroy/gpm.rs/releases/download/v0.1.12/gpm_darwin_amd64.tar.gz"
+        );
+
         // linux
         match linux.x86_64.as_ref().unwrap() {
             formula::ResourceTarget::Detailed(arch) => {
                 assert_eq!(
                     arch.url,
-                    "https://github.com/axetroy/gpm.rs/releases/download/v{version}/gpm_linux_amd64.tar.gz"
+                    "{package.repository}/releases/download/v{version}/gpm_linux_amd64.tar.gz"
                 );
             }
             formula::ResourceTarget::Executable(_) => todo!(),
@@ -575,7 +570,7 @@ mod tests {
             formula::ResourceTarget::Detailed(arch) => {
                 assert_eq!(
                     arch.url,
-                    "https://github.com/axetroy/gpm.rs/releases/download/v{version}/gpm_linux_arm64.tar.gz"
+                    "{package.repository}/releases/download/v{version}/gpm_linux_arm64.tar.gz"
                 );
             }
             formula::ResourceTarget::Executable(_) => todo!(),

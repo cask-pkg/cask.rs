@@ -16,13 +16,13 @@ foo = "bar"
 hello = "world"
 
 [darwin]
-x86_64 = "https://github.com/<username>/<repo>/releases/download/v{version}/darwin_amd64.tar.gz"
+x86_64 = "{package.repository}/releases/download/v{version}/{package.bin}_darwin_amd64.tar.gz"
 
 [windows]
-x86_64 = "https://github.com/<username>/<repo>/releases/download/v{version}/windows_amd64.tar.gz"
+x86_64 = "{package.repository}/releases/download/v{version}/{package.bin}_windows_amd64.tar.gz"
 
 [linux]
-x86_64 = "https://github.com/<username>/<repo>/releases/download/v{version}/linux_amd64.tar.gz"
+x86_64 = "{package.repository}/releases/download/v{version}/{package.bin}_linux_amd64.tar.gz"
 ```
 
 As you can see, it only contains a few top-level fields:

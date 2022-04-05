@@ -117,7 +117,7 @@ impl Repository {
             .arg("clone")
             .arg(self.remote.clone())
             .args(args)
-            .arg(dest.to_str().unwrap())
+            .arg(format!("{}", dest.display()))
             .spawn()
             .map_err(|e| GitError::CommandError { source: e })?;
 
@@ -229,7 +229,7 @@ impl Repository {
             return Err(GitError::CommandExitError { code: exit_code });
         }
 
-        let stdout = String::from_utf8(output.stdout).unwrap();
+        let stdout = String::from_utf8(output.stdout).expect("can not read data from stdout");
 
         for line in stdout.lines().into_iter().map(|f| f.to_string()) {
             let mut inter = line.split_whitespace();

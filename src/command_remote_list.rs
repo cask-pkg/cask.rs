@@ -2,7 +2,7 @@
 
 use std::{fs, path::Path};
 
-use crate::{cask, command_build_in_sync, formula};
+use crate::{cask, command_remote_sync, formula};
 
 use eyre::Report;
 
@@ -28,7 +28,7 @@ pub fn list(cask: &cask::Cask) -> Result<(), Report> {
     let mirror_dir = cask.build_in_formula_dir();
 
     if !mirror_dir.exists() {
-        command_build_in_sync::sync(cask)?;
+        command_remote_sync::sync(cask)?;
     }
 
     print_formula(&mirror_dir)

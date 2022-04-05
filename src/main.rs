@@ -1,13 +1,13 @@
 // #![deny(warnings)]
 
 mod cask;
-mod command_build_in_list;
-mod command_build_in_sync;
 mod command_check_updates;
 mod command_clean;
 mod command_info;
 mod command_install;
 mod command_list;
+mod command_remote_list;
+mod command_remote_sync;
 mod command_self_update;
 mod command_uninstall;
 mod command_update;
@@ -108,10 +108,14 @@ async fn main() {
         )
         .subcommand(Command::new("clean").about("Clear residual data"))
         .subcommand(
-            Command::new("build-in")
+            Command::new("remote")
                 .about("Operation for build-in formula")
                 .subcommand(Command::new("sync").about("Sync build-in formula from remote"))
-                .subcommand(Command::new("list").about("List build-in formula")),
+                .subcommand(
+                    Command::new("list")
+                        .alias("ls")
+                        .about("List build-in formula on remote"),
+                ),
         );
 
     let matches = app.clone().get_matches();
@@ -184,12 +188,12 @@ async fn main() {
                 .await
                 .expect("self-update fail!");
         }
-        Some(("build-in", sub_matches)) => match sub_matches.subcommand() {
+        Some(("remote", sub_matches)) => match sub_matches.subcommand() {
             Some(("sync", _sub_matches)) => {
-                command_build_in_sync::sync(&cask).expect("sync build-in formula fail!");
+                command_remote_sync::sync(&cask).expect("sync build-in formula fail!");
             }
             Some(("list", _sub_matches)) => {
-                command_build_in_list::list(&cask).expect("list build-in formula fail!");
+                command_remote_list::list(&cask).expect("list build-in formula fail!");
             }
             _ => unreachable!(),
         },

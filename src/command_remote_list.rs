@@ -27,9 +27,7 @@ fn print_formula(dir_path: &Path) -> Result<(), Report> {
 pub fn list(cask: &cask::Cask) -> Result<(), Report> {
     let mirror_dir = cask.build_in_formula_dir();
 
-    if !mirror_dir.exists() {
-        command_remote_sync::sync(cask)?;
-    }
+    command_remote_sync::sync(cask)?;
 
     print_formula(&mirror_dir)
 }

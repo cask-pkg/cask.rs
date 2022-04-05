@@ -59,7 +59,7 @@ get_abi(){
         ;;
         *)
             ldd=$(cat '/usr/bin/ldd')
-            if [[ "$ldd" == *"musl"* ]]; then
+            if [ "$ldd" == *"musl"* ]; then
                 echo "-musl"
             else
                 echo "-gnu"

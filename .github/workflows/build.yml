@@ -35,7 +35,6 @@ jobs:
           - mips64el-unknown-linux-gnuabi64
           - riscv64gc-unknown-linux-gnu
           - i686-pc-windows-msvc
-          - i686-pc-windows-gnu
           - x86_64-pc-windows-msvc
           - x86_64-pc-windows-gnu
           - aarch64-pc-windows-msvc
@@ -122,13 +121,6 @@ jobs:
             cargo_flags: "--no-default-features"
           - os: windows-latest
             target: i686-pc-windows-msvc
-            artifact_name: cask.exe
-            cross: true
-            strip: true
-            compress: false
-            cargo_flags: "--no-default-features"
-          - os: ubuntu-latest
-            target: i686-pc-windows-gnu
             artifact_name: cask.exe
             cross: true
             strip: true

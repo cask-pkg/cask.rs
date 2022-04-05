@@ -141,7 +141,7 @@ jobs:
             cross: false
             strip: true
             compress: true
-            cargo_flags: ""
+            cargo_flags: "--no-default-features"
           - os: windows-latest
             target: aarch64-pc-windows-msvc
             artifact_name: cask.exe

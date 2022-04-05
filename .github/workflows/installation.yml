@@ -53,10 +53,13 @@ jobs:
           echo "${HOME}\.cask\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
       - name: Run cask command
+        continue-on-error: true
         run: |
           cask --help
+
           # make sure $HOME/.cask/bin has been add to $PATH
           cask ls
+
           # try print information of package
           cask info github.com/axetroy/gpm.rs
 

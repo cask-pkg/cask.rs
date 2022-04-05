@@ -11,6 +11,10 @@ description = """
 description of package.
 """
 
+[context]
+foo = "bar"
+hello = "world"
+
 [darwin]
 x86_64 = "https://github.com/<username>/<repo>/releases/download/v{version}/darwin_amd64.tar.gz"
 

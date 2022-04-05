@@ -35,6 +35,7 @@ async fn main() {
         .subcommand(
             Command::new("install")
                 .alias("i")
+                .visible_alias("i")
                 .about("Install package")
                 .arg(
                     Arg::new("PACKAGE")
@@ -53,6 +54,7 @@ async fn main() {
         .subcommand(
             Command::new("uninstall")
                 .alias("rm")
+                .visible_alias("rm")
                 .about("Uninstall package")
                 .arg(arg!(<PACKAGE> "The package name or the executable file name of the package"))
                 .arg_required_else_help(true),
@@ -60,6 +62,7 @@ async fn main() {
         .subcommand(
             Command::new("list")
                 .alias("ls")
+                .visible_alias("ls")
                 .about("List installed package")
                 .arg(
                     Arg::new("json")
@@ -78,6 +81,7 @@ async fn main() {
         .subcommand(
             Command::new("update")
                 .alias("upgrade")
+                .visible_alias("upgrade")
                 .about("Upgrade package to latest")
                 .arg(arg!(<PACKAGE> "The package name"))
                 .arg(
@@ -92,6 +96,7 @@ async fn main() {
         .subcommand(
             Command::new("check-updates")
                 .alias("check-upgrades")
+                .visible_alias("check-upgrades")
                 .about("Check and update packages to latest")
                 .arg(
                     Arg::new("check-only")
@@ -104,6 +109,7 @@ async fn main() {
         .subcommand(
             Command::new("self-update")
                 .alias("self-upgrade")
+                .visible_alias("self-upgrade")
                 .about("Update Cask to the newest version"),
         )
         .subcommand(Command::new("clean").about("Clear residual data"))
@@ -114,6 +120,7 @@ async fn main() {
                 .subcommand(
                     Command::new("list")
                         .alias("ls")
+                        .visible_alias("ls")
                         .about("List build-in formula on remote"),
                 ),
         );

@@ -178,16 +178,6 @@ jobs:
           toolchain: stable
           target: ${{ matrix.target }}
 
-      - name: Cache Cargo home
-        uses: actions/cache@v2
-        with:
-          # See https://doc.rust-lang.org/cargo/guide/cargo-home.html#caching-the-cargo-home-in-ci
-          path: |
-            ~/.cargo/registry/index
-            ~/.cargo/registry/cache
-            ~/.cargo/git/db
-          key: 1-cargo-home-${{ matrix.os }}-${{ hashFiles('Cargo.lock') }}
-
       - name: cargo build
         uses: actions-rs/cargo@v1
         with:

@@ -258,6 +258,7 @@ fn fetch_with_git_url(
         git::CloneOption {
             depth: Some(1),
             quiet: Some(true),
+            verbose: Some(false),
             single_branch: Some(true),
             dissociate: Some(true),
             filter: Some("tree:0".to_string()),

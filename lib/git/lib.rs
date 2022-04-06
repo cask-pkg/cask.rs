@@ -63,6 +63,7 @@ pub fn new(url: &str) -> Result<Repository, GitError> {
 pub struct CloneOption {
     pub depth: Option<i32>,
     pub quiet: Option<bool>,
+    pub verbose: Option<bool>,
     pub single_branch: Option<bool>,
     pub dissociate: Option<bool>,
     pub filter: Option<String>,
@@ -85,6 +86,12 @@ impl Repository {
         if let Some(quiet) = options.quiet {
             if quiet {
                 args.push("--quiet".to_string())
+            }
+        }
+
+        if let Some(verbose) = options.verbose {
+            if verbose {
+                args.push("--verbose".to_string())
             }
         }
 
@@ -297,6 +304,7 @@ mod tests_clone {
             CloneOption {
                 depth: Some(1),
                 quiet: Some(true),
+                verbose: Some(true),
                 single_branch: Some(true),
                 dissociate: Some(true),
                 filter: Some("tree:0".to_string()),
@@ -318,6 +326,7 @@ mod tests_clone {
             CloneOption {
                 depth: Some(1),
                 quiet: Some(true),
+                verbose: Some(true),
                 single_branch: Some(true),
                 dissociate: Some(true),
                 filter: Some("tree:0".to_string()),

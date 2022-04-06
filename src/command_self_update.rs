@@ -8,18 +8,73 @@ use crate::cask;
 use eyre::Report;
 use semver::Version;
 
+/// run the following command to show all build target
+/// rustc --print target-list
+
 fn get_arch() -> String {
     #[cfg(target_arch = "arm")]
     {
         "arm".to_string()
     }
+    #[cfg(target_arch = "armebv7r")]
+    {
+        "armebv7r".to_string()
+    }
+    #[cfg(target_arch = "armv4t")]
+    {
+        "armv4t".to_string()
+    }
+    #[cfg(target_arch = "armv5te")]
+    {
+        "armv5te".to_string()
+    }
+    #[cfg(target_arch = "armv6")]
+    {
+        "armv6".to_string()
+    }
+    #[cfg(target_arch = "armv6k")]
+    {
+        "armv6k".to_string()
+    }
     #[cfg(target_arch = "armv7")]
     {
         "armv7".to_string()
     }
+    #[cfg(target_arch = "armv7a")]
+    {
+        "armv7a".to_string()
+    }
+    #[cfg(target_arch = "armv7r")]
+    {
+        "armv7r".to_string()
+    }
+    #[cfg(target_arch = "armv7s")]
+    {
+        "armv7s".to_string()
+    }
     #[cfg(target_arch = "mips")]
     {
         "mips".to_string()
+    }
+    #[cfg(target_arch = "mipsel")]
+    {
+        "mipsel".to_string()
+    }
+    #[cfg(target_arch = "mipsisa32r6")]
+    {
+        "mipsisa32r6".to_string()
+    }
+    #[cfg(target_arch = "mipsisa32r6el")]
+    {
+        "mipsisa32r6el".to_string()
+    }
+    #[cfg(target_arch = "mipsisa64r6")]
+    {
+        "mipsisa64r6".to_string()
+    }
+    #[cfg(target_arch = "mipsisa64r6el")]
+    {
+        "mipsisa64r6el".to_string()
     }
     #[cfg(target_arch = "mips64")]
     {
@@ -29,15 +84,11 @@ fn get_arch() -> String {
     {
         "mips64el".to_string()
     }
-    #[cfg(target_arch = "mips64el")]
-    {
-        "mips64el".to_string()
-    }
     #[cfg(target_arch = "riscv64")]
     {
         "riscv64gc".to_string()
     }
-    #[cfg(target_arch = "x86")]
+    #[cfg(target_arch = "i686")]
     {
         "i686".to_string()
     }
@@ -63,6 +114,22 @@ fn get_vendor() -> String {
     #[cfg(target_vendor = "pc")]
     {
         "pc".to_string()
+    }
+    #[cfg(target_vendor = "uwp")]
+    {
+        "uwp".to_string()
+    }
+    #[cfg(target_vendor = "wrs")]
+    {
+        "wrs".to_string()
+    }
+    #[cfg(target_vendor = "sony")]
+    {
+        "sony".to_string()
+    }
+    #[cfg(target_vendor = "sun")]
+    {
+        "sun".to_string()
     }
     #[cfg(target_vendor = "unknown")]
     {

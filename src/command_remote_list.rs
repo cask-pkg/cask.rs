@@ -24,10 +24,10 @@ fn print_formula(dir_path: &Path) -> Result<(), Report> {
     Ok(())
 }
 
-pub fn list(cask: &cask::Cask) -> Result<(), Report> {
+pub fn list(cask: &cask::Cask, is_verbose: bool) -> Result<(), Report> {
     let mirror_dir = cask.build_in_formula_dir();
 
-    command_remote_sync::sync(cask)?;
+    command_remote_sync::sync(cask, is_verbose)?;
 
     print_formula(&mirror_dir)
 }

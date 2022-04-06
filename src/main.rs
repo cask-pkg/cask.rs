@@ -116,12 +116,29 @@ async fn main() {
         .subcommand(
             Command::new("remote")
                 .about("Operation for build-in formula")
-                .subcommand(Command::new("sync").about("Sync build-in formula from remote"))
+                .subcommand(
+                    Command::new("sync")
+                        .about("Sync build-in formula from remote")
+                        .arg(
+                            Arg::new("verbose")
+                                .short('v')
+                                .long("verbose")
+                                .help("Print verbose information")
+                                .takes_value(false),
+                        ),
+                )
                 .subcommand(
                     Command::new("list")
                         .alias("ls")
                         .visible_alias("ls")
-                        .about("List build-in formula on remote"),
+                        .about("List build-in formula on remote")
+                        .arg(
+                            Arg::new("verbose")
+                                .short('v')
+                                .long("verbose")
+                                .help("Print verbose information")
+                                .takes_value(false),
+                        ),
                 ),
         );
 
@@ -196,11 +213,13 @@ async fn main() {
                 .expect("self-update fail!");
         }
         Some(("remote", sub_matches)) => match sub_matches.subcommand() {
-            Some(("sync", _sub_matches)) => {
-                command_remote_sync::sync(&cask).expect("sync build-in formula fail!");
+            Some(("sync", sync_sub_matches)) => {
+                let is_verbose = sync_sub_matches.is_present("verbose");
+                command_remote_sync::sync(&cask, is_verbose).expect("sync build-in formula fail!");
             }
-            Some(("list", _sub_matches)) => {
-                command_remote_list::list(&cask).expect("list build-in formula fail!");
+            Some(("list", sync_sub_matches)) => {
+                let is_verbose = sync_sub_matches.is_present("verbose");
+                command_remote_list::list(&cask, is_verbose).expect("list build-in formula fail!");
             }
             _ => unreachable!(),
         },

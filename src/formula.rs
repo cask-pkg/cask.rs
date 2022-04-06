@@ -206,7 +206,7 @@ fn fetch_from_build_in(cask: &cask::Cask, package_name: &str) -> Result<Formula,
     // try found package in build-in
     let mut build_in_dir = cask.build_in_formula_dir();
 
-    command_remote_sync::sync(cask)?;
+    command_remote_sync::sync(cask, false)?;
 
     for p in package_name.split('/') {
         build_in_dir = build_in_dir.join(p)

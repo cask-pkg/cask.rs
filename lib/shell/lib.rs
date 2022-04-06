@@ -14,7 +14,7 @@ pub enum Output<'a> {
     None,                          // do none output anything
 }
 
-pub fn run(cwd: &Path, command: &str, output: Output) -> Result<(), Report> {
+pub fn run(cwd: &Path, command: &str, output: &mut Output) -> Result<(), Report> {
     let cmd: &str;
     let mut args = vec![""];
     if cfg!(unix) {
@@ -81,7 +81,7 @@ mod tests {
 
         // let mut buffer = io::BufWriter::new(io::stdout());
 
-        run(&cwd, r#"echo 'hello world'"#, Output::Writer(&mut buf)).unwrap();
+        run(&cwd, r#"echo 'hello world'"#, &mut Output::Writer(&mut buf)).unwrap();
 
         let result = std::str::from_utf8(&buf).unwrap();
 

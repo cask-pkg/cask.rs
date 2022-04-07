@@ -118,6 +118,8 @@ impl Repository {
             args.push(format!("--filter={}", filter))
         }
 
+        let mut stderr = io::stderr();
+
         let mut child = ChildProcess::new("git")
             .env("GIT_TERMINAL_PROMPT", "0")
             .env("GCM_INTERACTIVE", "never")
@@ -126,14 +128,23 @@ impl Repository {
                 "ssh -o ControlMaster=no -o BatchMode=yes",
             )
             .stdin(Stdio::null())
-            .stderr(Stdio::null())
-            .stdout(Stdio::null())
+            .stderr(Stdio::piped())
+            .stdout(Stdio::piped())
             .arg("clone")
             .arg(self.remote.clone())
             .args(args)
             .arg(format!("{}", dest.display()))
             .spawn()
             .map_err(|e| GitError::CommandError { source: e })?;
+
+        if let Some(verbose) = options.verbose {
+            if verbose {
+                io::copy(&mut child.stdout.take().unwrap(), &mut stderr)
+                    .map_err(|e| GitError::CommandError { source: e })?;
+                io::copy(&mut child.stderr.take().unwrap(), &mut stderr)
+                    .map_err(|e| GitError::CommandError { source: e })?;
+            }
+        }
 
         let timeout = Duration::from_secs(300); // 5min
 

@@ -49,6 +49,13 @@ async fn main() {
                         .multiple_occurrences(false)
                         .help("Install specified version."),
                 )
+                .arg(
+                    Arg::new("verbose")
+                        .short('v')
+                        .long("verbose")
+                        .help("Print verbose information")
+                        .takes_value(false),
+                )
                 .arg_required_else_help(is(Stream::Stdin)),
         )
         .subcommand(
@@ -91,6 +98,13 @@ async fn main() {
                         .help("Check update only")
                         .takes_value(false),
                 )
+                .arg(
+                    Arg::new("verbose")
+                        .short('v')
+                        .long("verbose")
+                        .help("Print verbose information")
+                        .takes_value(false),
+                )
                 .arg_required_else_help(true),
         )
         .subcommand(
@@ -103,6 +117,13 @@ async fn main() {
                         .short('c')
                         .long("check-only")
                         .help("Check update only")
+                        .takes_value(false),
+                )
+                .arg(
+                    Arg::new("verbose")
+                        .short('v')
+                        .long("verbose")
+                        .help("Print verbose information")
                         .takes_value(false),
                 ),
         )
@@ -162,8 +183,9 @@ async fn main() {
                 .or(Some(""))
                 .expect("required");
             let version = sub_matches.value_of("VERSION");
+            let is_verbose = sub_matches.is_present("verbose");
 
-            command_install::install(&cask, package_name, version)
+            command_install::install(&cask, package_name, version, is_verbose)
                 .await
                 .expect("install package fail!");
         }
@@ -190,15 +212,17 @@ async fn main() {
         Some(("update", sub_matches)) => {
             let package_name = sub_matches.value_of("PACKAGE").expect("required");
             let is_check_only = sub_matches.is_present("check-only");
+            let is_verbose = sub_matches.is_present("verbose");
 
-            command_update::update(&cask, package_name, is_check_only)
+            command_update::update(&cask, package_name, is_check_only, is_verbose)
                 .await
                 .expect("info installed package fail!");
         }
         Some(("check-updates", sub_matches)) => {
             let is_check_only = sub_matches.is_present("check-only");
+            let is_verbose = sub_matches.is_present("verbose");
 
-            command_check_updates::check_updates(&cask, is_check_only)
+            command_check_updates::check_updates(&cask, is_check_only, is_verbose)
                 .await
                 .expect("info installed package fail!");
         }

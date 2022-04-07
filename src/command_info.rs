@@ -55,7 +55,7 @@ pub async fn info(cask: &cask::Cask, package_name: &str) -> Result<(), Report> {
 
         Ok(())
     } else {
-        let package_formula = formula::fetch(cask, package_name, true)?;
+        let package_formula = formula::fetch(cask, package_name, true, false)?;
 
         let msg = format!(
             r#"{}

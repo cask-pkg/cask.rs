@@ -158,7 +158,12 @@ fn print_publishing_msg() {
     eprintln!("{}", msg);
 }
 
-pub fn fetch(cask: &cask::Cask, package_name: &str, temp: bool) -> Result<Formula, Report> {
+pub fn fetch(
+    cask: &cask::Cask,
+    package_name: &str,
+    temp: bool,
+    is_verbose: bool,
+) -> Result<Formula, Report> {
     eprintln!("Fetching {} formula...", package_name);
 
     if let Ok(package_addr) = Url::parse(package_name) {
@@ -169,7 +174,7 @@ pub fn fetch(cask: &cask::Cask, package_name: &str, temp: bool) -> Result<Formul
                 let is_package_repo_exist = repo.is_exist()?;
 
                 if is_package_repo_exist {
-                    fetch_with_git_url(cask, package_name, package_addr.as_str(), temp)
+                    fetch_with_git_url(cask, package_name, package_addr.as_str(), temp, is_verbose)
                 } else {
                     Err(eyre::format_err!(
                         "The package '{}' does not exist!",
@@ -189,7 +194,7 @@ pub fn fetch(cask: &cask::Cask, package_name: &str, temp: bool) -> Result<Formul
     let is_repo_exist = git::new(&package_repo_url)?.is_exist()?;
 
     if is_repo_exist {
-        fetch_with_git_url(cask, package_name, &package_repo_url, temp)
+        fetch_with_git_url(cask, package_name, &package_repo_url, temp, is_verbose)
     } else {
         match fetch_from_build_in(cask, package_name) {
             Ok(f) => Ok(f),
@@ -230,6 +235,7 @@ fn fetch_with_git_url(
     package_name: &str,
     git_url: &str,
     temp: bool,
+    is_verbose: bool,
 ) -> Result<Formula, Report> {
     let unix_time = {
         let start = SystemTime::now();
@@ -257,9 +263,9 @@ fn fetch_with_git_url(
         &formula_cloned_dir,
         git::CloneOption {
             depth: Some(1),
-            quiet: Some(true),
-            verbose: Some(false),
-            progress: Some(false),
+            quiet: Some(!is_verbose),
+            verbose: Some(is_verbose),
+            progress: Some(!is_verbose),
             single_branch: Some(true),
             dissociate: Some(true),
             filter: Some("tree:0".to_string()),
@@ -678,7 +684,7 @@ mod tests {
         let root_dir = env::current_dir().unwrap().join("fixtures").join(".cask");
         let c = cask::new(&root_dir);
 
-        let formula = formula::fetch(&c, "https://github.com/axetroy/prune.v", true).unwrap();
+        let formula = formula::fetch(&c, "https://github.com/axetroy/prune.v", true,false).unwrap();
 
         assert_eq!(formula.package.name, "github.com/axetroy/prune.v")
     }

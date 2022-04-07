@@ -9,6 +9,7 @@ pub async fn update(
     cask: &cask::Cask,
     package_name: &str,
     is_check_only: bool,
+    is_verbose: bool,
 ) -> Result<(), Report> {
     let packages = cask.list_formula()?;
 
@@ -30,7 +31,7 @@ pub async fn update(
     let current = Version::parse(&cask_info.version)
         .map_err(|e| eyre::format_err!("invalid semver version '{}': {}", &cask_info.version, e))?;
 
-    let remote_formula = formula::fetch(cask, &package_formula.package.name, true)?;
+    let remote_formula = formula::fetch(cask, &package_formula.package.name, true, is_verbose)?;
 
     let remote_versions = remote_formula.get_versions()?;
 
@@ -62,7 +63,13 @@ pub async fn update(
             latest, &package_formula.package.name, cask_info.version
         );
     } else {
-        command_install::install(cask, &package_formula.package.name, Some(latest_str)).await?;
+        command_install::install(
+            cask,
+            &package_formula.package.name,
+            Some(latest_str),
+            is_verbose,
+        )
+        .await?;
 
         eprintln!(
             "Upgrade {}@{} from  to '{}' finish!",

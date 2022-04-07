@@ -14,7 +14,11 @@ struct PackageInfo {
     latest_version: String,
 }
 
-pub async fn check_updates(cask: &cask::Cask, is_check_only: bool) -> Result<(), Report> {
+pub async fn check_updates(
+    cask: &cask::Cask,
+    is_check_only: bool,
+    is_verbose: bool,
+) -> Result<(), Report> {
     let mut packages: Vec<PackageInfo> = vec![];
 
     for package in cask.list_formula()? {
@@ -50,7 +54,13 @@ pub async fn check_updates(cask: &cask::Cask, is_check_only: bool) -> Result<(),
         );
 
         if !is_check_only {
-            command_install::install(cask, &package.name, Some(&package.latest_version)).await?;
+            command_install::install(
+                cask,
+                &package.name,
+                Some(&package.latest_version),
+                is_verbose,
+            )
+            .await?;
         }
     }
 

@@ -19,6 +19,7 @@ pub async fn install(
     cask: &cask::Cask,
     package_name: &str,
     version: Option<&str>,
+    is_verbose: bool,
 ) -> Result<(), Report> {
     let package_formula = if !is(Stream::Stdin) {
         // Read Cask.toml from stdin
@@ -43,7 +44,7 @@ pub async fn install(
             return Err(eyre::format_err!("<PACKAGE> required"));
         }
 
-        formula::fetch(cask, package_name, false)?
+        formula::fetch(cask, package_name, false, is_verbose)?
     };
 
     // detect binary name conflict

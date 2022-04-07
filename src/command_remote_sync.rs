@@ -34,7 +34,7 @@ pub fn sync(cask: &cask::Cask, is_verbose: bool) -> Result<(), Report> {
             git::CloneOption {
                 depth: Some(1),
                 quiet: Some(true),
-                verbose: Some(true),
+                verbose: Some(is_verbose),
                 progress: Some(true),
                 single_branch: Some(true),
                 dissociate: Some(true),

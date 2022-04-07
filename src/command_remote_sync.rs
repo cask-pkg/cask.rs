@@ -35,6 +35,7 @@ pub fn sync(cask: &cask::Cask, is_verbose: bool) -> Result<(), Report> {
                 depth: Some(1),
                 quiet: Some(true),
                 verbose: Some(true),
+                progress: Some(true),
                 single_branch: Some(true),
                 dissociate: Some(true),
                 filter: Some("tree:0".to_string()),

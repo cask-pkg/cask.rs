@@ -64,6 +64,7 @@ pub struct CloneOption {
     pub depth: Option<i32>,
     pub quiet: Option<bool>,
     pub verbose: Option<bool>,
+    pub progress: Option<bool>,
     pub single_branch: Option<bool>,
     pub dissociate: Option<bool>,
     pub filter: Option<String>,
@@ -92,6 +93,12 @@ impl Repository {
         if let Some(verbose) = options.verbose {
             if verbose {
                 args.push("--verbose".to_string())
+            }
+        }
+
+        if let Some(progress) = options.progress {
+            if progress {
+                args.push("--progress".to_string())
             }
         }
 
@@ -305,6 +312,7 @@ mod tests_clone {
                 depth: Some(1),
                 quiet: Some(true),
                 verbose: Some(true),
+                progress: Some(true),
                 single_branch: Some(true),
                 dissociate: Some(true),
                 filter: Some("tree:0".to_string()),
@@ -327,6 +335,7 @@ mod tests_clone {
                 depth: Some(1),
                 quiet: Some(true),
                 verbose: Some(true),
+                progress: Some(true),
                 single_branch: Some(true),
                 dissociate: Some(true),
                 filter: Some("tree:0".to_string()),

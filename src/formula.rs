@@ -684,7 +684,8 @@ mod tests {
         let root_dir = env::current_dir().unwrap().join("fixtures").join(".cask");
         let c = cask::new(&root_dir);
 
-        let formula = formula::fetch(&c, "https://github.com/axetroy/prune.v", true,false).unwrap();
+        let formula =
+            formula::fetch(&c, "https://github.com/axetroy/prune.v", true, false).unwrap();
 
         assert_eq!(formula.package.name, "github.com/axetroy/prune.v")
     }

@@ -15,7 +15,8 @@ pub fn sync(cask: &cask::Cask, is_verbose: bool) -> Result<(), Report> {
         if is_verbose {
             let mut stderr = io::stderr();
             let mut output = shell::Output::Writer(&mut stderr);
-            shell::run(&mirror_dir, "git checkout ./", &mut output)?;
+            shell::run(&mirror_dir, "git fetch", &mut output)?;
+            shell::run(&mirror_dir, "git checkout main", &mut output)?;
             shell::run(&mirror_dir, "git clean -df", &mut output)?;
             shell::run(&mirror_dir, "git pull --rebase", &mut output)?;
         } else {

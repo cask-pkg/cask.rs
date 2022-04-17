@@ -84,6 +84,7 @@ cask rm dvm
 | cask uninstall \<PACKAGE\>         | 卸载包                     |
 | cask info \<PACKAGE\>              | 显示包信息                 |
 | cask update \<PACKAGE\>            | 更新包到最新版本           |
+| cask homepage \<PACKAGE\>          | 打开包的主页               |
 | cask check-updates                 | 检查并更新包到最新版本     |
 | cask list                          | 列出已安装的包             |
 | cask clean                         | 清除缓存数据               |

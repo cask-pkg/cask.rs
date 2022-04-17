@@ -3,6 +3,7 @@
 mod cask;
 mod command_check_updates;
 mod command_clean;
+mod command_homepage;
 mod command_info;
 mod command_install;
 mod command_list;
@@ -106,6 +107,14 @@ async fn main() {
                         .help("Print verbose information")
                         .takes_value(false),
                 )
+                .arg_required_else_help(true),
+        )
+        .subcommand(
+            Command::new("homepage")
+                .alias("home")
+                .visible_alias("home")
+                .about("Open homepage of package")
+                .arg(arg!(<PACKAGE> "The package name"))
                 .arg_required_else_help(true),
         )
         .subcommand(
@@ -225,7 +234,14 @@ async fn main() {
 
             command_update::update(&cask, package_name, is_check_only, is_verbose)
                 .await
-                .expect("info installed package fail!");
+                .expect("update package fail!");
+        }
+        Some(("homepage", sub_matches)) => {
+            let package_name = sub_matches.value_of("PACKAGE").expect("required");
+
+            command_homepage::homepage(&cask, package_name)
+                .await
+                .expect("open homepage of package fail!");
         }
         Some(("check-updates", sub_matches)) => {
             let is_check_only = sub_matches.is_present("check-only");
@@ -233,12 +249,10 @@ async fn main() {
 
             command_check_updates::check_updates(&cask, is_check_only, is_verbose)
                 .await
-                .expect("info installed package fail!");
+                .expect("check-updates of packages fail!");
         }
         Some(("clean", _sub_matches)) => {
-            command_clean::clean(&cask)
-                .await
-                .expect("info installed package fail!");
+            command_clean::clean(&cask).await.expect("clean fail!");
         }
         Some(("self-update", _sub_matches)) => {
             command_self_update::self_update(&cask)

@@ -66,6 +66,7 @@ pub struct Package {
     pub authors: Option<Vec<String>>,  // The author of package
     pub keywords: Option<Vec<String>>, // The keywords of the package
     pub license: Option<String>,       // The license of the package
+    pub homepage: Option<String>,      // The homepage of the package
 }
 
 #[derive(Deserialize, Serialize, Debug)]

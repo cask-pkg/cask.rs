@@ -84,6 +84,7 @@ Show more information with `cask --help` command.
 | cask uninstall \<PACKAGE\>         | Uninstall package                           |
 | cask info \<PACKAGE\>              | Show information of package                 |
 | cask update \<PACKAGE\>            | Update package to latest                    |
+| cask homepage \<PACKAGE\>          | Open homepage of package                    |
 | cask check-updates                 | Check and update packages to latest         |
 | cask list                          | List installed package                      |
 | cask clean                         | Clear residual data                         |

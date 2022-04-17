@@ -137,7 +137,7 @@ x86_64 = { executable = "https://github.com/<username>/<repo>/releases/download/
 | postinstall | The script will run after install package  | string |          |         |
 
 ```toml
-[hook]
+[hook.windows.cmd]
 preinstall = """
 echo "running preinstall hook"
 """

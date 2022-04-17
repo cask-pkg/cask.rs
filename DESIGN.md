@@ -42,7 +42,7 @@ In the following document, the more information of `Cask.toml` will be described
 
 ## How do I publish package?
 
-You can release your package with following ways:
+You can release your package with following ways(pick one):
 
 1. Create a [Cask.toml](Cask.toml.md) file in the root of your repository.
 

@@ -224,4 +224,56 @@ mod tests {
 
         assert_eq!(result, "hello bash")
     }
+
+    #[cfg(target_family = "windows")]
+    #[test]
+    fn test_with_bash_multiple_line_script() {
+        let cwd = env::current_dir().unwrap();
+
+        let mut buf = Vec::new();
+
+        let script = r#"
+            ls -lh
+            echo "hello world"
+        "#;
+
+        run_with(
+            Terminal::PowerShell,
+            &cwd,
+            script,
+            &mut Output::Writer(&mut buf),
+            HashMap::from([]),
+        )
+        .unwrap();
+
+        let result = std::str::from_utf8(&buf).unwrap().trim();
+
+        assert!(result.contains("hello world"))
+    }
+
+    #[cfg(target_family = "unix")]
+    #[test]
+    fn test_with_bash_multiple_line_script() {
+        let cwd = env::current_dir().unwrap();
+
+        let mut buf = Vec::new();
+
+        let script = r#"
+            ls -lh
+            echo "hello world"
+        "#;
+
+        run_with(
+            Terminal::Bash,
+            &cwd,
+            script,
+            &mut Output::Writer(&mut buf),
+            HashMap::from([]),
+        )
+        .unwrap();
+
+        let result = std::str::from_utf8(&buf).unwrap().trim();
+
+        assert!(result.contains("hello world"))
+    }
 }

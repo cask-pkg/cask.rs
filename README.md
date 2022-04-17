@@ -56,6 +56,36 @@ Then welcome to Cask.
    cask self-update
    ```
 
+try running following command
+
+```terminal
+$ cask --help
+cask v0.4.1
+Axetroy <axetroy.dev@gmail.com>
+General distributed binary distribution package management, written in Rust.
+
+USAGE:
+    cask <SUBCOMMAND>
+
+OPTIONS:
+    -h, --help       Print help information
+    -V, --version    Print version information
+
+SUBCOMMANDS:
+    check-updates     Check and update packages to latest [aliases: check-upgrades]
+    clean             Clear residual data [aliases: clear]
+    help              Print this message or the help of the given subcommand(s)
+    homepage          Open homepage of package [aliases: home]
+    info              Show information of package
+    install           Install package [aliases: i]
+    list              List installed package [aliases: ls]
+    remote            Operation for build-in formula
+    self-uninstall    Uninstall cask itself and installed package
+    self-update       Update Cask to the newest version [aliases: self-upgrade]
+    uninstall         Uninstall package [aliases: rm]
+    update            Upgrade package to latest [aliases: upgrade]
+```
+
 ## Usage
 
 ```sh

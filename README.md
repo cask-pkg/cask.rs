@@ -78,18 +78,19 @@ Show more information with `cask --help` command.
 
 ## Command
 
-| Command                            | Description                                |
-| ---------------------------------- | ------------------------------------------ |
-| cask install \<PACKAGE\> [VERSION] | Install package                            |
-| cask uninstall \<PACKAGE\>         | Uninstall package                          |
-| cask info \<PACKAGE\>              | Show information of package                |
-| cask update \<PACKAGE\>            | Update package to latest                   |
-| cask check-updates                 | Check and update packages to latest        |
-| cask list                          | List installed package                     |
-| cask clean                         | Clear residual data                        |
-| cask self-update                   | Update Cask to the newest version          |
-| cask remote sync                   | Sync build-in formula from remote to local |
-| cask remote list                   | List build-in formula on remote            |
+| Command                            | Description                                 |
+| ---------------------------------- | ------------------------------------------- |
+| cask install \<PACKAGE\> [VERSION] | Install package                             |
+| cask uninstall \<PACKAGE\>         | Uninstall package                           |
+| cask info \<PACKAGE\>              | Show information of package                 |
+| cask update \<PACKAGE\>            | Update package to latest                    |
+| cask check-updates                 | Check and update packages to latest         |
+| cask list                          | List installed package                      |
+| cask clean                         | Clear residual data                         |
+| cask self-update                   | Update Cask to the newest version           |
+| cask self-uninstall                | Uninstall cask itself and installed package |
+| cask remote sync                   | Sync build-in formula from remote to local  |
+| cask remote list                   | List build-in formula on remote             |
 
 ## Requirement
 

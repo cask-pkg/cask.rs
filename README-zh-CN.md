@@ -78,18 +78,19 @@ cask rm dvm
 
 ## 命令
 
-| Command                            | Description            |
-| ---------------------------------- | ---------------------- |
-| cask install \<PACKAGE\> [VERSION] | 安装包                 |
-| cask uninstall \<PACKAGE\>         | 卸载包                 |
-| cask info \<PACKAGE\>              | 显示包信息             |
-| cask update \<PACKAGE\>            | 更新包到最新版本       |
-| cask check-updates                 | 检查并更新包到最新版本 |
-| cask list                          | 列出已安装的包         |
-| cask clean                         | 清除缓存数据           |
-| cask self-update                   | 升级 Cask              |
-| cask remote sync                   | 同步远端的内置包信息   |
-| cask remote list                   | 显示远端的内置包信息   |
+| Command                            | Description                |
+| ---------------------------------- | -------------------------- |
+| cask install \<PACKAGE\> [VERSION] | 安装包                     |
+| cask uninstall \<PACKAGE\>         | 卸载包                     |
+| cask info \<PACKAGE\>              | 显示包信息                 |
+| cask update \<PACKAGE\>            | 更新包到最新版本           |
+| cask check-updates                 | 检查并更新包到最新版本     |
+| cask list                          | 列出已安装的包             |
+| cask clean                         | 清除缓存数据               |
+| cask self-update                   | 升级 Cask                  |
+| cask self-uninstall                | 卸载 Cask 以及安装的包     |
+| cask remote sync                   | 同步远端的内置包信息到本地 |
+| cask remote list                   | 显示远端的内置包信息       |
 
 ## 使用条件
 

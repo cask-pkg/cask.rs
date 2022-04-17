@@ -8,6 +8,7 @@ mod command_install;
 mod command_list;
 mod command_remote_list;
 mod command_remote_sync;
+mod command_self_uninstall;
 mod command_self_update;
 mod command_uninstall;
 mod command_update;
@@ -134,6 +135,9 @@ async fn main() {
                 .about("Update Cask to the newest version"),
         )
         .subcommand(
+            Command::new("self-uninstall").about("Uninstall cask itself and installed package"),
+        )
+        .subcommand(
             Command::new("clean")
                 .alias("clear")
                 .visible_alias("clear")
@@ -240,6 +244,11 @@ async fn main() {
             command_self_update::self_update(&cask)
                 .await
                 .expect("self-update fail!");
+        }
+        Some(("self-uninstall", _sub_matches)) => {
+            command_self_uninstall::self_uninstall(&cask)
+                .await
+                .expect("self-uninstall fail!");
         }
         Some(("remote", sub_matches)) => match sub_matches.subcommand() {
             Some(("sync", sync_sub_matches)) => {

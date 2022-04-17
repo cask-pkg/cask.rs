@@ -139,7 +139,7 @@ async fn main() {
                 .about("Operation for build-in formula")
                 .subcommand(
                     Command::new("sync")
-                        .about("Sync build-in formula from remote")
+                        .about("Sync build-in formula from remote to local")
                         .arg(
                             Arg::new("verbose")
                                 .short('v')

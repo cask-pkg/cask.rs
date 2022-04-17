@@ -46,15 +46,19 @@ You can release your package with following ways(pick one):
 
 1. Create a [Cask.toml](Cask.toml.md) file in the root of your repository.
 
-2. Create a [Cask.toml](Cask.toml.md) file [cask-core](https://github.com/cask-pkg/cask-core)
+2. Create a [Cask.toml](Cask.toml.md) file in [cask-core](https://github.com/cask-pkg/cask-core)
 
-try to install the package
+   And then run the following command
+
+   ```bash
+   cask remote sync
+   ```
+
+Finally, try to install the package
 
 ```bash
 cask install github.com/<username>/<repo>
 ```
-
-for more information about [Cask.toml](Cask.toml.md)
 
 ## How do I publish a new version to an exist package?
 

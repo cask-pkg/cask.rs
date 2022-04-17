@@ -14,6 +14,7 @@ pub enum Output<'a> {
     None,                          // do none output anything
 }
 
+#[derive(PartialEq, Debug, Clone, Copy)]
 pub enum Terminal {
     Cmd,
     PowerShell,

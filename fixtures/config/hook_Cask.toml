@@ -1,0 +1,19 @@
+[package]
+name = "github.com/axetroy/gpm.rs"
+bin = "gpm"
+versions = ["0.1.12", "0.1.11"]
+authors = ["Axetroy <axetroy.dev@gmail.com>"]
+keywords = ["gpm", "git", "project", "manager"]
+repository = "https://github.com/axetroy/gpm.rs"
+description = """
+A command line tool, manage your hundreds of repository, written with Rust.
+"""
+
+[hook.windows.cmd]
+preinstall = "echo 'hello cmd'"
+
+[hook.unix.sh]
+preinstall = "echo 'hello sh'"
+
+[darwin]
+x86_64 = "https://github.com/axetroy/gpm.rs/releases/download/v{version}/gpm_darwin_amd64.tar.gz"

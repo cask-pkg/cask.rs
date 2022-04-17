@@ -67,13 +67,16 @@ pub async fn install(
         }
     }
 
+    let hook_cwd = &cask
+        .package_dir(&package_formula.package.name)
+        .join("repository");
+
     if let Some(hook) = &package_formula.hook {
-        hook.run(
-            "preinstall",
-            &cask
-                .package_dir(&package_formula.package.name)
-                .join("repository"),
-        )?;
+        if !hook_cwd.exists() {
+            fs::create_dir_all(hook_cwd)?;
+        }
+
+        hook.run("preinstall", hook_cwd)?;
     }
 
     let remote_versions = package_formula.get_versions()?;
@@ -210,13 +213,8 @@ pub async fn install(
         formula_file.write_all(package_formula.get_file_content().as_bytes())?;
     }
 
-    if let Some(hook) = &package_formula.hook {
-        hook.run(
-            "postinstall",
-            &cask
-                .package_dir(&package_formula.package.name)
-                .join("repository"),
-        )?;
+    if let Some(hook) = package_formula.hook {
+        hook.run("postinstall", hook_cwd)?;
     }
 
     eprintln!(

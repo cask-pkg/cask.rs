@@ -23,6 +23,14 @@ x86_64 = "{package.repository}/releases/download/v{version}/{package.bin}_window
 
 [linux]
 x86_64 = "{package.repository}/releases/download/v{version}/{package.bin}_linux_amd64.tar.gz"
+
+[hook.windows.cmd] = """
+echo "hello cmd"
+"""
+
+[hook.unix.sh] = """
+echo "hello sh"
+"""
 ```
 
 As you can see, it only contains a few top-level fields:
@@ -30,7 +38,11 @@ As you can see, it only contains a few top-level fields:
 | Field                                      | Description                         | required |
 | ------------------------------------------ | ----------------------------------- | -------- |
 | [package](#Package)                        | Defined the information of package  | true     |
-| [hook](#Hook)                              | The hook should run in some moment  |          |
+| [hook.windows](#Terminal)                  | The hook for windows                |          |
+| [hook.unix](#Terminal)                     | The hook for unix                   |          |
+| [hook.linux](#Terminal)                    | The hook for linux                  |          |
+| [hook.macos](#Terminal)                    | The hook for macos                  |          |
+| [hook.freebsd](#Terminal)                  | The hook for freebsd                |          |
 | [darwin](#Platform-specify-configuration)  | The information of macOS platform   |          |
 | [linux](#Platform-specify-configuration)   | The information of Linux platform   |          |
 | [windows](#Platform-specify-configuration) | The information of Windows platform |          |
@@ -105,6 +117,15 @@ x86_64 = { url = "https://github.com/<username>/<repo>/releases/download/v{versi
 [darwin]
 x86_64 = { executable = "https://github.com/<username>/<repo>/releases/download/v{version}/executable" }
 ```
+
+### Terminal
+
+| Terminal   | Description | type          | required | example |
+| ---------- | ----------- | ------------- | -------- | ------- |
+| cmd        | cmd.exe     | [Hook](#Hook) |          |         |
+| powershell | PowerShell  | [Hook](#Hook) |          |         |
+| sh         | sh          | [Hook](#Hook) |          |         |
+| bash       | bash        | [Hook](#Hook) |          |         |
 
 ### Hook
 

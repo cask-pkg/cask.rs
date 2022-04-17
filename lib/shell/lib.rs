@@ -110,7 +110,10 @@ mod tests {
 
         run(&cwd, r#"echo 'hello world'"#, &mut Output::Writer(&mut buf)).unwrap();
 
-        let result = std::str::from_utf8(&buf).unwrap().trim();
+        let result = std::str::from_utf8(&buf)
+            .unwrap()
+            .trim()
+            .trim_matches(&['\''] as &[_]);
 
         assert_eq!(result, "hello world")
     }
@@ -130,7 +133,10 @@ mod tests {
         )
         .unwrap();
 
-        let result = std::str::from_utf8(&buf).unwrap().trim();
+        let result = std::str::from_utf8(&buf)
+            .unwrap()
+            .trim()
+            .trim_matches(&['\''] as &[_]);
 
         assert_eq!(result, "hello cmd")
     }
@@ -150,7 +156,10 @@ mod tests {
         )
         .unwrap();
 
-        let result = std::str::from_utf8(&buf).unwrap().trim();
+        let result = std::str::from_utf8(&buf)
+            .unwrap()
+            .trim()
+            .trim_matches(&['\''] as &[_]);
 
         assert_eq!(result, "hello powershell")
     }

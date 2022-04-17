@@ -40,15 +40,15 @@ As you can see, it only contains a few top-level fields:
 | Field                                      | Description                         | required |
 | ------------------------------------------ | ----------------------------------- | -------- |
 | [package](#Package)                        | Defined the information of package  | true     |
+| [darwin](#Platform-specify-configuration)  | The information of macOS platform   |          |
+| [linux](#Platform-specify-configuration)   | The information of Linux platform   |          |
+| [windows](#Platform-specify-configuration) | The information of Windows platform |          |
+| [freebsd](#Platform-specify-configuration) | The information of Windows platform |          |
 | [hook.windows](#Terminal)                  | The hook for windows                |          |
 | [hook.unix](#Terminal)                     | The hook for unix                   |          |
 | [hook.linux](#Terminal)                    | The hook for linux                  |          |
 | [hook.macos](#Terminal)                    | The hook for macos                  |          |
 | [hook.freebsd](#Terminal)                  | The hook for freebsd                |          |
-| [darwin](#Platform-specify-configuration)  | The information of macOS platform   |          |
-| [linux](#Platform-specify-configuration)   | The information of Linux platform   |          |
-| [windows](#Platform-specify-configuration) | The information of Windows platform |          |
-| [freebsd](#Platform-specify-configuration) | The information of Windows platform |          |
 
 ## Package
 

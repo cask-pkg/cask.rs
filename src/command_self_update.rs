@@ -266,6 +266,7 @@ pub async fn self_update(_cask: &cask::Cask) -> Result<(), Report> {
 
     let temp_file = env::temp_dir().join(format!("old_{}", exe_name));
 
+    fs::set_permissions(&binary_file_path, permissions)?;
     fs::rename(&current_bin_path, &temp_file)?;
     fs::rename(binary_file_path, &current_bin_path)?;
 

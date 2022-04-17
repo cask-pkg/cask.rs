@@ -24,12 +24,14 @@ x86_64 = "{package.repository}/releases/download/v{version}/{package.bin}_window
 [linux]
 x86_64 = "{package.repository}/releases/download/v{version}/{package.bin}_linux_amd64.tar.gz"
 
-[hook.windows.cmd] = """
-echo "hello cmd"
+[hook.windows.cmd]
+postinstall = """
+echo "hello postinstall from cmd"
 """
 
-[hook.unix.sh] = """
-echo "hello sh"
+[hook.unix.sh]
+postinstall = """
+echo "hello postinstall from sh"
 """
 ```
 

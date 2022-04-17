@@ -62,6 +62,7 @@ As you can see, it only contains a few top-level fields:
 | authors         | The authors of package package                                                                                                                   | Array\<string\> |          | `["Axetroy <axetroy.dev@gmail.com>"]`     |
 | keywords        | The keywords of package                                                                                                                          | Array\<string\> |          | `["foo", "bar"]`                          |
 | license         | The license of package                                                                                                                           | string          |          | `"MIT"`                                   |
+| homepage        | The homepage of package                                                                                                                          | string          |          | `"https://example.com"`                   |
 
 ## Platform-specify-configuration
 

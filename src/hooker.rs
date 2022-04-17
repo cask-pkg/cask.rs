@@ -1,6 +1,6 @@
-// #![deny(warnings)]
+#![deny(warnings)]
 
-use std::path::Path;
+use std::{collections::HashMap, path::Path};
 
 use eyre::Report;
 use serde::{Deserialize, Serialize};
@@ -119,6 +119,7 @@ impl Hook {
                     cwd,
                     script,
                     &mut shell::Output::Inherit,
+                    HashMap::from([]),
                 )?;
             }
         }

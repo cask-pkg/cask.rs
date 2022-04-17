@@ -3,6 +3,7 @@
 use eyre::Report;
 
 use std::{
+    collections::HashMap,
     io,
     path::Path,
     process::{Command as ChildProcess, Stdio},
@@ -27,6 +28,7 @@ pub fn run_with(
     cwd: &Path,
     command: &str,
     output: &mut Output,
+    envs: HashMap<String, String>,
 ) -> Result<(), Report> {
     let commands: Vec<&str> = {
         match terminal {
@@ -53,6 +55,8 @@ pub fn run_with(
     let mut cmd = ChildProcess::new(cmd);
 
     let mut ps = cmd.current_dir(cwd).args(args);
+
+    ps.envs(envs);
 
     match &output {
         Output::Writer(_) => {
@@ -87,18 +91,24 @@ pub fn run_with(
     }
 }
 
-pub fn run(cwd: &Path, command: &str, output: &mut Output) -> Result<(), Report> {
+pub fn run(
+    cwd: &Path,
+    command: &str,
+    output: &mut Output,
+    envs: HashMap<String, String>,
+) -> Result<(), Report> {
     let terminal = if cfg!(unix) {
         Terminal::Sh
     } else {
         Terminal::Cmd
     };
 
-    run_with(terminal, cwd, command, output)
+    run_with(terminal, cwd, command, output, envs)
 }
 
 #[cfg(test)]
 mod tests {
+    use std::collections::HashMap;
     use std::env;
 
     use crate::{run, run_with, Output, Terminal};
@@ -109,7 +119,13 @@ mod tests {
 
         let mut buf = Vec::new();
 
-        run(&cwd, r#"echo 'hello world'"#, &mut Output::Writer(&mut buf)).unwrap();
+        run(
+            &cwd,
+            r#"echo 'hello world'"#,
+            &mut Output::Writer(&mut buf),
+            HashMap::from([]),
+        )
+        .unwrap();
 
         let result = std::str::from_utf8(&buf)
             .unwrap()
@@ -131,6 +147,7 @@ mod tests {
             &cwd,
             r#"echo 'hello cmd'"#,
             &mut Output::Writer(&mut buf),
+            HashMap::from([]),
         )
         .unwrap();
 
@@ -154,6 +171,7 @@ mod tests {
             &cwd,
             r#"echo 'hello powershell'"#,
             &mut Output::Writer(&mut buf),
+            HashMap::from([]),
         )
         .unwrap();
 
@@ -177,6 +195,7 @@ mod tests {
             &cwd,
             r#"echo 'hello sh'"#,
             &mut Output::Writer(&mut buf),
+            HashMap::from([]),
         )
         .unwrap();
 
@@ -197,6 +216,7 @@ mod tests {
             &cwd,
             r#"echo 'hello bash'"#,
             &mut Output::Writer(&mut buf),
+            HashMap::from([]),
         )
         .unwrap();
 

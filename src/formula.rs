@@ -169,6 +169,7 @@ pub fn fetch(
 ) -> Result<Formula, Report> {
     eprintln!("Fetching {} formula...", package_name);
 
+    // if package is a url
     if let Ok(package_addr) = Url::parse(package_name) {
         let scheme = package_addr.scheme();
         return match scheme {

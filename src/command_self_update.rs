@@ -255,6 +255,15 @@ pub async fn self_update(_cask: &cask::Cask) -> Result<(), Report> {
         }
     };
 
+    let permissions = fs::metadata(&current_bin_path)?.permissions();
+
+    if permissions.readonly() {
+        return Err(eyre::format_err!(
+            "You do not have write permission to {}",
+            current_bin_path.display()
+        ));
+    }
+
     let temp_file = env::temp_dir().join(format!("old_{}", exe_name));
 
     fs::rename(&current_bin_path, &temp_file)?;

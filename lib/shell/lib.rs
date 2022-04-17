@@ -14,17 +14,36 @@ pub enum Output<'a> {
     None,                          // do none output anything
 }
 
-pub fn run(cwd: &Path, command: &str, output: &mut Output) -> Result<(), Report> {
-    let cmd: &str;
-    let mut args = vec![""];
-    if cfg!(unix) {
-        cmd = "sh";
-        args.push("-c");
-    } else {
-        cmd = "C:\\Windows\\System32\\cmd.exe";
-        args.push("--%");
-        args.push("/c");
-    }
+pub enum Terminal {
+    Cmd,
+    PowerShell,
+    Sh,
+    Bash,
+}
+
+pub fn run_with(
+    terminal: Terminal,
+    cwd: &Path,
+    command: &str,
+    output: &mut Output,
+) -> Result<(), Report> {
+    let commands: Vec<&str> = {
+        match terminal {
+            Terminal::Cmd => vec!["cmd.exe", "--%", "/c"],
+            Terminal::PowerShell => vec![
+                "powershell.exe",
+                "-NoLogo",
+                "-NoProfile",
+                "-NonInteractive",
+                "-Command",
+            ],
+            Terminal::Sh => vec!["sh", "-c"],
+            Terminal::Bash => vec!["bash", "-c"],
+        }
+    };
+
+    let cmd = commands.first().unwrap();
+    let mut args = commands.clone().split_off(1);
 
     args.push(command);
 
@@ -67,24 +86,112 @@ pub fn run(cwd: &Path, command: &str, output: &mut Output) -> Result<(), Report>
     }
 }
 
+pub fn run(cwd: &Path, command: &str, output: &mut Output) -> Result<(), Report> {
+    let terminal = if cfg!(unix) {
+        Terminal::Sh
+    } else {
+        Terminal::Cmd
+    };
+
+    run_with(terminal, cwd, command, output)
+}
+
 #[cfg(test)]
 mod tests {
     use std::env;
 
-    use crate::{run, Output};
+    use crate::{run, run_with, Output, Terminal};
 
     #[test]
-    fn test_shell_echo() {
+    fn test_echo() {
         let cwd = env::current_dir().unwrap();
 
         let mut buf = Vec::new();
 
-        // let mut buffer = io::BufWriter::new(io::stdout());
-
         run(&cwd, r#"echo 'hello world'"#, &mut Output::Writer(&mut buf)).unwrap();
 
-        let result = std::str::from_utf8(&buf).unwrap();
+        let result = std::str::from_utf8(&buf).unwrap().trim();
 
-        println!("{}", result);
+        assert_eq!(result, "hello world")
+    }
+
+    #[cfg(target_os = "windows")]
+    #[test]
+    fn test_with_cmd() {
+        let cwd = env::current_dir().unwrap();
+
+        let mut buf = Vec::new();
+
+        run_with(
+            Terminal::Cmd,
+            &cwd,
+            r#"echo 'hello cmd'"#,
+            &mut Output::Writer(&mut buf),
+        )
+        .unwrap();
+
+        let result = std::str::from_utf8(&buf).unwrap().trim();
+
+        assert_eq!(result, "hello cmd")
+    }
+
+    #[cfg(target_os = "windows")]
+    #[test]
+    fn test_with_powershell() {
+        let cwd = env::current_dir().unwrap();
+
+        let mut buf = Vec::new();
+
+        run_with(
+            Terminal::Cmd,
+            &cwd,
+            r#"echo 'hello powershell'"#,
+            &mut Output::Writer(&mut buf),
+        )
+        .unwrap();
+
+        let result = std::str::from_utf8(&buf).unwrap().trim();
+
+        assert_eq!(result, "hello powershell")
+    }
+
+    #[cfg(target_family = "unix")]
+    #[test]
+    fn test_with_sh() {
+        let cwd = env::current_dir().unwrap();
+
+        let mut buf = Vec::new();
+
+        run_with(
+            Terminal::Sh,
+            &cwd,
+            r#"echo 'hello sh'"#,
+            &mut Output::Writer(&mut buf),
+        )
+        .unwrap();
+
+        let result = std::str::from_utf8(&buf).unwrap().trim();
+
+        assert_eq!(result, "hello sh")
+    }
+
+    #[cfg(target_family = "unix")]
+    #[test]
+    fn test_with_bash() {
+        let cwd = env::current_dir().unwrap();
+
+        let mut buf = Vec::new();
+
+        run_with(
+            Terminal::Bash,
+            &cwd,
+            r#"echo 'hello bash'"#,
+            &mut Output::Writer(&mut buf),
+        )
+        .unwrap();
+
+        let result = std::str::from_utf8(&buf).unwrap().trim();
+
+        assert_eq!(result, "hello bash")
     }
 }

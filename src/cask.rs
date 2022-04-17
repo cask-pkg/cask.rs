@@ -9,7 +9,7 @@ use std::path::PathBuf;
 
 use eyre::Report;
 use sha2::{Digest, Sha256};
-
+use which::which;
 pub struct Cask {
     root: PathBuf, // the root of the cask
 }
@@ -34,6 +34,8 @@ impl Cask {
         if !self.formula_dir().exists() {
             fs::create_dir_all(&self.formula_dir())?;
         }
+
+        which("git").expect("git is required by Cask.");
 
         Ok(())
     }

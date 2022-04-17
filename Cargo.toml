@@ -37,6 +37,7 @@ url = "2.2.2"
 semver = "1.0.7"
 tabled = "0.6.1"
 atty = "0.2.14"
+which = "4.2.5"
 extractor = { path = "./lib/extractor" }
 downloader = { path = "./lib/downloader", default-features = false }
 shell = { path = "./lib/shell" }

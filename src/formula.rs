@@ -1,6 +1,6 @@
-// #![deny(warnings)]
+#![deny(warnings)]
 
-use crate::{cask, command_remote_sync, hooker};
+use crate::{cask, hooker};
 use std::collections::HashMap;
 
 use std::{
@@ -189,29 +189,33 @@ pub fn fetch(
         };
     }
 
-    let package_repo_url = get_formula_git_url(package_name);
+    let fo = find_package_in_build_in(cask, package_name)?;
 
-    let is_repo_exist = git::new(&package_repo_url)?.is_exist()?;
-
-    if is_repo_exist {
-        fetch_with_git_url(cask, package_name, &package_repo_url, temp, is_verbose)
+    if let Some(f) = fo {
+        Ok(f)
     } else {
-        match fetch_from_build_in(cask, package_name) {
-            Ok(f) => Ok(f),
-            Err(e) => {
-                print_publishing_msg();
+        let package_repo_url = get_formula_git_url(package_name);
 
-                Err(e)
-            }
+        let is_repo_exist = git::new(&package_repo_url)?.is_exist()?;
+
+        if is_repo_exist {
+            fetch_with_git_url(cask, package_name, &package_repo_url, temp, is_verbose)
+        } else {
+            Err(eyre::format_err!("can not found package {}", package_name))
         }
     }
 }
 
-fn fetch_from_build_in(cask: &cask::Cask, package_name: &str) -> Result<Formula, Report> {
+fn find_package_in_build_in(
+    cask: &cask::Cask,
+    package_name: &str,
+) -> Result<Option<Formula>, Report> {
     // try found package in build-in
     let mut build_in_dir = cask.build_in_formula_dir();
 
-    command_remote_sync::sync(cask, false)?;
+    if !build_in_dir.exists() {
+        return Ok(None);
+    }
 
     for p in package_name.split('/') {
         build_in_dir = build_in_dir.join(p)
@@ -220,13 +224,10 @@ fn fetch_from_build_in(cask: &cask::Cask, package_name: &str) -> Result<Formula,
     let cask_file_path = build_in_dir.join("Cask.toml");
 
     if cask_file_path.exists() {
-        return new(&cask_file_path, "");
+        return new(&cask_file_path, "").map(Some);
     }
 
-    Err(eyre::format_err!(
-        "can not found package in build-in formular '{}'",
-        package_name
-    ))
+    Ok(None)
 }
 
 // fetch remote formula
@@ -273,21 +274,12 @@ fn fetch_with_git_url(
     ) {
         Ok(()) => {
             if !cask_file_path.exists() {
-                return match fetch_from_build_in(cask, package_name) {
-                    Ok(f) => Ok(f),
-                    Err(_) => {
-                        print_publishing_msg();
+                print_publishing_msg();
 
-                        if temp {
-                            fs::remove_dir_all(formula_cloned_dir)?;
-                        }
-
-                        return Err(eyre::format_err!(
-                            "{} is not a valid formula!",
-                            package_name
-                        ));
-                    }
-                };
+                return Err(eyre::format_err!(
+                    "{} is not a valid formula!",
+                    package_name
+                ));
             }
 
             match new(&cask_file_path, git_url) {

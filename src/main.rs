@@ -133,7 +133,12 @@ async fn main() {
                 .visible_alias("self-upgrade")
                 .about("Update Cask to the newest version"),
         )
-        .subcommand(Command::new("clean").about("Clear residual data"))
+        .subcommand(
+            Command::new("clean")
+                .alias("clear")
+                .visible_alias("clear")
+                .about("Clear residual data"),
+        )
         .subcommand(
             Command::new("remote")
                 .about("Operation for build-in formula")

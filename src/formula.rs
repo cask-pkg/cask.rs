@@ -104,6 +104,13 @@ pub struct ResourceTargetExecutable {
     pub checksum: Option<String>, // The hash256 of download resource
 }
 
+#[derive(Serialize)]
+pub struct URLTemplateContext<'a> {
+    version: &'a str,
+    package: &'a Package,
+    context: Option<&'a HashMap<String, String>>,
+}
+
 pub fn new(formula_file: &Path, repo: &str) -> Result<Formula, Report> {
     let mut file = match File::open(formula_file) {
         Ok(f) => f,
@@ -305,7 +312,7 @@ fn fetch_with_git_url(
     }
 }
 
-impl Formula {
+impl<'a> Formula {
     fn get_current_os(&self) -> Option<&Platform> {
         if cfg!(target_os = "macos") {
             self.darwin.as_ref()
@@ -349,20 +356,19 @@ impl Formula {
         self.file_content.clone()
     }
 
-    pub fn get_current_download_url(&self, version: &str) -> Result<DownloadTarget, Report> {
-        #[derive(Serialize)]
-        struct URLTemplateContext<'a> {
-            version: &'a str,
-            package: &'a Package,
-            context: Option<&'a HashMap<String, String>>,
-        }
+    pub fn ger_renderer_context(&'a self, version: &'a str) -> URLTemplateContext<'a> {
+        let render_context = URLTemplateContext {
+            version,
+            package: &self.package,
+            context: self.context.as_ref(),
+        };
 
+        render_context
+    }
+
+    pub fn get_current_download_url(&self, version: &str) -> Result<DownloadTarget, Report> {
         if let Some(resource_target) = self.get_current_arch() {
-            let render_context = URLTemplateContext {
-                version,
-                package: &self.package,
-                context: self.context.as_ref(),
-            };
+            let render_context = self.ger_renderer_context(version);
 
             let mut tt = TinyTemplate::new();
 

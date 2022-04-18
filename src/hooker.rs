@@ -4,6 +4,7 @@ use std::{collections::HashMap, path::Path};
 
 use eyre::Report;
 use serde::{Deserialize, Serialize};
+use tinytemplate::TinyTemplate;
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct HookDefinition {
@@ -96,7 +97,10 @@ impl Hook {
         }
     }
 
-    pub fn run(&self, hook_name: &str, cwd: &Path) -> Result<(), Report> {
+    pub fn run<C>(&self, hook_name: &str, cwd: &Path, render_context: C) -> Result<(), Report>
+    where
+        C: Serialize,
+    {
         let hook_op = self.resolve();
 
         if let Some(terminal_hook) = hook_op {
@@ -114,10 +118,16 @@ impl Hook {
             if let Some(script) = script_op {
                 eprintln!("Running '{}' hook", hook_name);
 
+                let mut tt = TinyTemplate::new();
+
+                tt.add_template(hook_name, script)?;
+
+                let renderer_script = tt.render(hook_name, &render_context)?;
+
                 shell::run_with(
                     terminal_hook.terminal,
                     cwd,
-                    script,
+                    &renderer_script,
                     &mut shell::Output::Inherit,
                     HashMap::from([]),
                 )?;
@@ -130,7 +140,7 @@ impl Hook {
 
 #[cfg(test)]
 mod tests {
-    use std::env;
+    use std::{collections::HashMap, env};
 
     use crate::hooker::{self, HookDefinition, Terminal};
 
@@ -163,15 +173,27 @@ mod tests {
             freebsd: None,
         };
 
-        let r1 = hook.run("preinstall", &env::current_dir().unwrap());
+        let r1 = hook.run(
+            "preinstall",
+            &env::current_dir().unwrap(),
+            HashMap::<String, String>::from([]),
+        );
 
         assert!(r1.is_ok());
 
-        let r2 = hook.run("postinstall", &env::current_dir().unwrap());
+        let r2 = hook.run(
+            "postinstall",
+            &env::current_dir().unwrap(),
+            HashMap::<String, String>::from([]),
+        );
 
         assert!(r2.is_ok());
 
-        let r3 = hook.run("unknown", &env::current_dir().unwrap());
+        let r3 = hook.run(
+            "unknown",
+            &env::current_dir().unwrap(),
+            HashMap::<String, String>::from([]),
+        );
 
         assert!(r3.is_err());
     }

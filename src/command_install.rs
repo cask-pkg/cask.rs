@@ -71,14 +71,6 @@ pub async fn install(
         .package_dir(&package_formula.package.name)
         .join("repository");
 
-    if let Some(hook) = &package_formula.hook {
-        if !hook_cwd.exists() {
-            fs::create_dir_all(hook_cwd)?;
-        }
-
-        hook.run("preinstall", hook_cwd)?;
-    }
-
     let remote_versions = package_formula.get_versions()?;
 
     if remote_versions.is_empty() {
@@ -117,12 +109,22 @@ pub async fn install(
         }
     }?;
 
+    if let Some(hook) = &package_formula.hook {
+        if !hook_cwd.exists() {
+            fs::create_dir_all(hook_cwd)?;
+        }
+
+        let renderer_context = &package_formula.ger_renderer_context(&download_version);
+
+        hook.run("preinstall", hook_cwd, renderer_context)?;
+    }
+
     // init formula folder
     cask.init_package(&package_formula.package.name)?;
 
     let package_dir = cask.package_dir(&package_formula.package.name);
 
-    let download_target = package_formula.get_current_download_url(&download_version)?;
+    let download_target = &package_formula.get_current_download_url(&download_version)?;
 
     let tar_file_path = cask
         .package_version_dir(&package_formula.package.name)
@@ -130,13 +132,13 @@ pub async fn install(
 
     downloader::download(&download_target.url, &tar_file_path).await?;
 
-    if let Some(checksum) = download_target.checksum {
+    if let Some(checksum) = &download_target.checksum {
         let mut file = File::open(&tar_file_path)?;
         let mut hasher = Sha256::new();
         io::copy(&mut file, &mut hasher)?;
         drop(file);
         let hash = format!("{:x}", hasher.finalize());
-        if hash != checksum {
+        if hash != *checksum {
             fs::remove_file(tar_file_path)?;
             return Err(eyre::format_err!(
                 "The file SHA256 is '{}' but expect '{}'",
@@ -213,8 +215,10 @@ pub async fn install(
         formula_file.write_all(package_formula.get_file_content().as_bytes())?;
     }
 
-    if let Some(hook) = package_formula.hook {
-        hook.run("postinstall", hook_cwd)?;
+    if let Some(hook) = &package_formula.hook {
+        let renderer_context = package_formula.ger_renderer_context(&download_version);
+
+        hook.run("postinstall", hook_cwd, renderer_context)?;
     }
 
     eprintln!(

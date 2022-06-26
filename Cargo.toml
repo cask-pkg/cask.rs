@@ -22,7 +22,7 @@ members = ["lib/extractor", "lib/downloader", "lib/git", "lib/shell"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-clap = "3.1.18"
+clap = "3.2.6"
 serde = { version = "1.0.136", features = ["derive"] }
 serde_json = "1.0.80"
 eyre = "0.6.8"
@@ -34,7 +34,7 @@ tinytemplate = "1.1"
 dirs = "4.0.0"
 sha2 = "0.10.2"
 url = "2.2.2"
-semver = "1.0.9"
+semver = "1.0.10"
 tabled = "0.7.0"
 atty = "0.2.14"
 which = "4.2.5"

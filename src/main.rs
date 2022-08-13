@@ -273,7 +273,11 @@ async fn main() {
                 let is_verbose = sync_sub_matches.is_present("verbose");
                 command_remote_list::list(&cask, is_verbose).expect("list build-in formula fail!");
             }
-            _ => unreachable!(),
+            _ => {
+                let sub_cmd = app.find_subcommand_mut("remote").unwrap();
+                sub_cmd.print_help().unwrap();
+                process::exit(0x1);
+            }
         },
         Some((ext, sub_matches)) => {
             let args = sub_matches

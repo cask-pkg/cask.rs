@@ -32,7 +32,7 @@ pub enum ExtractorError {
     },
 }
 
-#[derive(Deserialize, Serialize, Debug, PartialEq)]
+#[derive(Deserialize, Serialize, Debug, PartialEq, Eq)]
 pub enum Extension {
     TarGz,
     Tgz,

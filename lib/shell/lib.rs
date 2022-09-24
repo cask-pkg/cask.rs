@@ -50,7 +50,7 @@ pub fn run_with(
 
     args.push(command);
 
-    args = args.iter().filter(|s| !s.is_empty()).cloned().collect();
+    args.retain(|s| !s.is_empty());
 
     let mut cmd = ChildProcess::new(cmd);
 

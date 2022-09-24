@@ -42,7 +42,7 @@ pub async fn clean(cask: &cask::Cask) -> Result<(), Report> {
 
         if !cask_file_path.exists() {
             fs::remove_dir_all(path)?;
-            break;
+            continue;
         }
 
         let f = formula::new(&cask_file_path, "")?;

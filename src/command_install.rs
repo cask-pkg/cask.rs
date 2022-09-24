@@ -1,13 +1,12 @@
 #![deny(warnings)]
 
-use crate::{cask, formula, symlink, util::iso8601};
+use crate::{cask, formula, symlink, util::get_iso8601};
 
 use std::{
     fs,
     fs::File,
     io::Write,
     io::{self, Read},
-    time::SystemTime,
 };
 
 use atty::{is, Stream};
@@ -205,7 +204,7 @@ pub async fn install(
 
                 "#,
                 package_formula.package.name,
-                iso8601(&SystemTime::now()),
+                get_iso8601(),
                 download_version,
                 package_formula.repository
             )

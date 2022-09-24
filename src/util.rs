@@ -1,9 +1,17 @@
 #![deny(warnings)]
 
-use chrono::prelude::{DateTime, Utc};
+pub fn get_iso8601() -> String {
+    format!("{:?}", chrono::offset::Local::now())
+}
 
-pub fn iso8601(st: &std::time::SystemTime) -> String {
-    let dt: DateTime<Utc> = (*st).into();
-    format!("{}", dt.format("%+"))
-    // formats like "2001-07-08T00:34:60.026490+09:30"
+#[cfg(test)]
+mod tests {
+    use crate::util;
+
+    #[test]
+    fn test_to_iso8601() {
+        let result = util::get_iso8601();
+
+        println!("{}", result)
+    }
 }

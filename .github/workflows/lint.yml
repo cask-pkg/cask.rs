@@ -40,11 +40,6 @@ jobs:
           override: true
           components: rustfmt, clippy
 
-      - name: Install rust
-        uses: hecrj/setup-rust-action@v1
-        with:
-          rust-version: "1.60.0"
-
       - name: Install clippy and rustfmt
         run: |
           rustup component add clippy

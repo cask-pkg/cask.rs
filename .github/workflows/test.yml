@@ -24,12 +24,7 @@ jobs:
         with:
           profile: minimal
           toolchain: stable
-          override: true
-
-      - name: Install rust
-        uses: hecrj/setup-rust-action@v1
-        with:
-          rust-version: "1.60.0"
+          override: target/*/build
 
       - name: Configure cargo data directory
         run: |

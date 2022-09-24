@@ -43,6 +43,7 @@ extractor = { path = "./lib/extractor" }
 downloader = { path = "./lib/downloader", default-features = false }
 shell = { path = "./lib/shell" }
 git = { path = "./lib/git" }
+is_executable = "1.0.1"
 
 [profile.release]
 # https://github.com/johnthagen/min-sized-rust

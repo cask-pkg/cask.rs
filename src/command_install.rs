@@ -12,6 +12,7 @@ use std::{
 
 use atty::{is, Stream};
 use eyre::Report;
+use is_executable::IsExecutable;
 use semver::{Version, VersionReq};
 use sha2::{Digest, Sha256};
 
@@ -155,13 +156,6 @@ pub async fn install(
 
     let output_file_path = {
         if download_target.executable {
-            // Get and Set permissions
-            #[cfg(unix)]
-            {
-                use std::os::unix::prelude::PermissionsExt;
-
-                fs::set_permissions(&tar_file_path, fs::Permissions::from_mode(0o755))?;
-            };
             tar_file_path
         } else {
             extractor::extract(
@@ -172,6 +166,16 @@ pub async fn install(
             )?
         }
     };
+
+    if !output_file_path.is_executable() {
+        // Make sure it's a executable
+        #[cfg(unix)]
+        {
+            use std::os::unix::prelude::PermissionsExt;
+
+            fs::set_permissions(&output_file_path, fs::Permissions::from_mode(0o755))?;
+        }
+    }
 
     // create symlink to $CASK_ROOT/bin
     {

@@ -144,7 +144,7 @@ impl Cask {
 
         let dir = fs::read_dir(formula_dir)?;
 
-        for entry in dir.into_iter().filter(|f| f.is_ok()).map(|f| f.unwrap()) {
+        for entry in dir.into_iter().filter_map(|f| f.ok()) {
             let p = entry.path();
 
             if !p.is_dir() {

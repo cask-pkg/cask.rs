@@ -9,7 +9,7 @@ use eyre::Report;
 fn print_formula(dir_path: &Path) -> Result<(), Report> {
     let dir = fs::read_dir(dir_path)?;
 
-    for entry in dir.into_iter().filter(|f| f.is_ok()).map(|f| f.unwrap()) {
+    for entry in dir.into_iter().filter_map(|f| f.ok()) {
         let p = entry.path();
 
         if p.is_dir() {

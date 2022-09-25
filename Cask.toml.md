@@ -11,6 +11,28 @@ description = """
 description of package.
 """
 
+[darwin]
+x86_64 = "{package.repository}/releases/download/v{version}/{package.bin}_darwin_amd64.tar.gz"
+
+[windows]
+x86_64 = "{package.repository}/releases/download/v{version}/{package.bin}_windows_amd64.tar.gz"
+
+[linux]
+x86_64 = "{package.repository}/releases/download/v{version}/{package.bin}_linux_amd64.tar.gz"
+```
+
+<details>
+<summary>Full configuration example</summary>
+
+```toml
+[package]
+name = "github.com/<username>/<repo>"
+bin = "gpm"
+repository = "https://github.com/<username>/<repo>"
+description = """
+description of package.
+"""
+
 [context]
 foo = "bar"
 hello = "world"
@@ -27,13 +49,17 @@ x86_64 = "{package.repository}/releases/download/v{version}/{package.bin}_linux_
 [hook.windows.cmd]
 postinstall = """
 echo "hello postinstall from cmd"
+echo "{context.foo}"
 """
 
 [hook.unix.sh]
 postinstall = """
 echo "hello postinstall from sh"
+echo "{context.bar}"
 """
 ```
+
+</details>
 
 As you can see, it only contains a few top-level fields:
 
@@ -43,7 +69,7 @@ As you can see, it only contains a few top-level fields:
 | [darwin](#Platform-specify-configuration)  | The information of macOS platform   |          |
 | [linux](#Platform-specify-configuration)   | The information of Linux platform   |          |
 | [windows](#Platform-specify-configuration) | The information of Windows platform |          |
-| [freebsd](#Platform-specify-configuration) | The information of Windows platform |          |
+| [freebsd](#Platform-specify-configuration) | The information of FreeBSD platform |          |
 | [hook.windows](#Terminal)                  | The hook for windows                |          |
 | [hook.unix](#Terminal)                     | The hook for unix                   |          |
 | [hook.linux](#Terminal)                    | The hook for linux                  |          |

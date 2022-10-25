@@ -19,7 +19,7 @@ on:
 
 jobs:
   binaries:
-    name: ${{ matrix.os }} for ${{ matrix.target }}
+    name: ${{ matrix.os }}/${{ matrix.target }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 30
     strategy:

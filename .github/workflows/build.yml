@@ -163,7 +163,7 @@ jobs:
             strip: false
             compress: false
             cargo_flags: ""
-          - os: ubuntu-latest
+          - os: windows-latest
             target: aarch64-unknown-freebsd
             artifact_name: cask
             cross: true

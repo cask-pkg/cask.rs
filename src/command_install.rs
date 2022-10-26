@@ -155,7 +155,11 @@ pub async fn install(
 
     let output_file_path = {
         if download_target.executable {
-            tar_file_path
+            let new_bin_path = package_dir.join("bin").join(executable_name);
+
+            fs::rename(tar_file_path, &new_bin_path)?;
+
+            new_bin_path
         } else {
             extractor::extract(
                 &tar_file_path,

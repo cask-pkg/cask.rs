@@ -18,6 +18,7 @@ case "$(uname -sr)" in
     
     Linux*Microsoft*)
         #  echo 'WSL'  # Windows Subsystem for Linux
+        xbin="$(wslpath -a "${xbin}")";
     ;;
     
     Linux*)

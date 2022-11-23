@@ -7,6 +7,7 @@ mod command_homepage;
 mod command_info;
 mod command_install;
 mod command_list;
+mod command_relink;
 mod command_remote_list;
 mod command_remote_sync;
 mod command_self_uninstall;
@@ -152,6 +153,7 @@ async fn main() {
                 .visible_alias("clear")
                 .about("Clear residual data"),
         )
+        .subcommand(Command::new("relink").about("Relink installed packages"))
         .subcommand(
             Command::new("remote")
                 .about("Operation for build-in formula")
@@ -253,6 +255,9 @@ async fn main() {
         }
         Some(("clean", _sub_matches)) => {
             command_clean::clean(&cask).await.expect("clean fail!");
+        }
+        Some(("relink", _sub_matches)) => {
+            command_relink::relink(&cask).await.expect("relink fail!");
         }
         Some(("self-update", _sub_matches)) => {
             command_self_update::self_update(&cask)

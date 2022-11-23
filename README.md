@@ -60,7 +60,7 @@ try running following command
 
 ```terminal
 $ cask --help
-cask v0.4.1
+cask v0.4.6
 Axetroy <axetroy.dev@gmail.com>
 General distributed binary distribution package management, written in Rust.
 
@@ -79,6 +79,7 @@ SUBCOMMANDS:
     info              Show information of package
     install           Install package [aliases: i]
     list              List installed package [aliases: ls]
+    relink            Relink installed packages
     remote            Operation for build-in formula
     self-uninstall    Uninstall cask itself and installed package
     self-update       Update Cask to the newest version [aliases: self-upgrade]

@@ -44,7 +44,7 @@ pub(crate) fn extract<R: Read>(
         );
 
         if target_file_path == absolute_path {
-            entry.unpack(&dest)?;
+            entry.unpack(dest)?;
             return Ok(());
         }
     }

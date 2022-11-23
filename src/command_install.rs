@@ -195,7 +195,7 @@ pub async fn install(
     {
         let file_path = &package_dir.join("Cask.toml");
 
-        let mut formula_file = File::create(&file_path)?;
+        let mut formula_file = File::create(file_path)?;
 
         formula_file.write_all(
             format!(

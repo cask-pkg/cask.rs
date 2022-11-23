@@ -19,7 +19,7 @@ pub(crate) fn extract(
     let output_file_path = dest_dir.join(filename);
 
     archive::extract(
-        File::open(&src_filepath)?,
+        File::open(src_filepath)?,
         filename,
         folder,
         &output_file_path,

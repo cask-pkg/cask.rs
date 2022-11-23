@@ -16,7 +16,7 @@ pub(crate) fn extract(
 ) -> Result<PathBuf, Report> {
     let output_file_path = dest_dir.join(filename);
 
-    let tar_file = fs::File::open(&src_filepath)?;
+    let tar_file = fs::File::open(src_filepath)?;
     let mut archive = zip::ZipArchive::new(tar_file)?;
 
     let target_file_path = format!("{}/{}", folder, filename).replace("//", "/");

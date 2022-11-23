@@ -7,4 +7,34 @@
 
 (set -o igncr) 2>/dev/null && set -o igncr; # cygwin encoding fix
 
-"{filepath}" "$@"
+xbin="{filepath}"
+
+# https://stackoverflow.com/questions/3466166/how-to-check-if-running-in-cygwin-mac-or-linux
+case "$(uname -sr)" in
+    
+    Darwin*)
+        #  echo 'Mac OS X'
+    ;;
+    
+    Linux*Microsoft*)
+        #  echo 'WSL'  # Windows Subsystem for Linux
+    ;;
+    
+    Linux*)
+        #  echo 'Linux'
+    ;;
+    
+    CYGWIN*|MINGW*|MINGW32*|MSYS*)
+        # https://cygwin.com/cygwin-ug-net/cygpath.html
+        xbin="$(cygpath -u "${xbin}")";
+    ;;
+    
+    # Add here more strings to compare
+    # See correspondence table at the bottom of this answer
+    
+    *)
+        # echo 'Other OS'
+    ;;
+esac
+
+"${xbin}" "$@"

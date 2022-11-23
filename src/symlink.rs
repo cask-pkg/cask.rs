@@ -61,7 +61,8 @@ pub fn symlink(src: &Path, dest: &Path, package_name: &str) -> Result<(), Report
 
             let bat_script = include_str!("./script/exe.sh")
                 .replace("{filepath}", &src_file_path)
-                .replace("{package}", package_name);
+                .replace("{package}", package_name)
+                .replace("\r\n", "\n");
 
             shell_file.write_all(bat_script.as_str().as_bytes())?;
         }

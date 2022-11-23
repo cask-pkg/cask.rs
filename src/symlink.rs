@@ -108,7 +108,7 @@ mod tests {
             assert!(shell_content
                 .contains(format!(r#"# package: {}"#, "github.com/axetroy/test").as_str()));
             assert!(shell_content.contains(format!(r#"# filepath: {}"#, src.display()).as_str()));
-            assert!(shell_content.contains(format!(r#""{}" "$@""#, src.display()).as_str()));
+            assert!(shell_content.contains(format!(r#"xbin="{}""#, src.display()).as_str()));
 
             let bat = dest.parent().unwrap().join("test.bat");
 

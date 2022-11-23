@@ -2,8 +2,6 @@
 
 use crate::{cask, symlink};
 
-use std::fs;
-
 use eyre::Report;
 
 pub async fn relink(cask: &cask::Cask) -> Result<(), Report> {
@@ -20,14 +18,6 @@ pub async fn relink(cask: &cask::Cask) -> Result<(), Report> {
         let executable_name = format!("{}.exe", &package_formula.package.bin);
 
         let output_file_path = package_dir.join("bin").join(executable_name);
-
-        // unlink before symlink
-        {
-            fs::remove_file(&symlink_file).ok();
-
-            #[cfg(target_family = "windows")]
-            fs::remove_file(format!("{}.cmd", &symlink_file)).ok();
-        }
 
         symlink::symlink(
             &output_file_path,

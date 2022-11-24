@@ -26,7 +26,7 @@ pub async fn relink(cask: &cask::Cask) -> Result<(), Report> {
             fs::remove_file(&symlink_file).ok();
 
             #[cfg(target_family = "windows")]
-            fs::remove_file(format!("{}.bat", &symlink_file)).ok();
+            fs::remove_file(format!("{}.bat", &symlink_file.display())).ok();
         }
 
         symlink::symlink(

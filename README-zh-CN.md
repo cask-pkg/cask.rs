@@ -32,6 +32,13 @@
 
 那么欢迎来到 Cask。
 
+## 跨平台支持
+
+- [x] macOS(x86_64/arm64)
+- [x] Windows(i686/x86_64/arm64/MSYS2/Cygin/WSL)
+- [x] Linux(arm/arm64/x86_64/mips/mips64/mips64el)
+- [x] freeBSD(x86_64)
+
 ## 安装
 
 1. Shell (Mac/Linux)

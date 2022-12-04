@@ -2,7 +2,7 @@
 
 use crate::{cask, formula};
 
-use std::{fs, io::ErrorKind};
+use std::{fs, io::ErrorKind, path::PathBuf};
 
 use eyre::Report;
 
@@ -11,6 +11,8 @@ pub async fn clean(cask: &cask::Cask) -> Result<(), Report> {
     let formula_dir = cask.formula_dir();
 
     let dir = fs::read_dir(formula_dir)?;
+
+    let clean_log = |p: PathBuf| eprintln!("Remove {}", p.display());
 
     for entry in dir {
         let file = entry?;
@@ -27,13 +29,9 @@ pub async fn clean(cask: &cask::Cask) -> Result<(), Report> {
             if version_dir.exists() {
                 for download_resource in fs::read_dir(version_dir)? {
                     let resource_file_path = download_resource?;
-                    fs::remove_file(&resource_file_path.path()).map_err(|err| {
-                        eyre::format_err!(
-                            "can not remove file '{}': {}",
-                            resource_file_path.path().display(),
-                            err
-                        )
-                    })?;
+                    fs::remove_file(&resource_file_path.path())?;
+
+                    clean_log(resource_file_path.path());
                 }
             }
         }
@@ -41,7 +39,8 @@ pub async fn clean(cask: &cask::Cask) -> Result<(), Report> {
         let cask_file_path = path.join("Cask.toml");
 
         if !cask_file_path.exists() {
-            fs::remove_dir_all(path)?;
+            fs::remove_dir_all(&path)?;
+            clean_log(path);
             continue;
         }
 
@@ -72,7 +71,7 @@ pub async fn clean(cask: &cask::Cask) -> Result<(), Report> {
                                 if p.as_os_str().to_string_lossy() == path_str {
                                     if let Ok(()) = fs::remove_file(&symlink) {
                                         eprintln!(
-                                            "symlink file '{}' has been removed",
+                                            "The symlink file '{}' has been removed",
                                             symlink.display()
                                         );
                                     }
@@ -83,7 +82,7 @@ pub async fn clean(cask: &cask::Cask) -> Result<(), Report> {
                                     // try to remove and ignore error
                                     if let Ok(()) = fs::remove_file(&symlink) {
                                         eprintln!(
-                                            "symlink file '{}' has been removed",
+                                            "The broken symlink file '{}' has been removed",
                                             symlink.display()
                                         );
                                     }
@@ -93,19 +92,11 @@ pub async fn clean(cask: &cask::Cask) -> Result<(), Report> {
                     } else if symlink.is_file() {
                         // shell script
                         {
-                            let file_content = fs::read_to_string(&symlink).map_err(|err| {
-                                eyre::format_err!(
-                                    "can not read file '{}': {}",
-                                    symlink.display(),
-                                    err
-                                )
-                            })?;
+                            let file_content = fs::read_to_string(&symlink)?;
+
                             if file_content.contains(&path_str) {
                                 if let Ok(()) = fs::remove_file(&symlink) {
-                                    eprintln!(
-                                        "shell script '{}' has been removed",
-                                        symlink.display()
-                                    );
+                                    clean_log(symlink);
                                 }
                             }
                         }
@@ -116,26 +107,19 @@ pub async fn clean(cask: &cask::Cask) -> Result<(), Report> {
                                 .parent()
                                 .ok_or_else(|| {
                                     eyre::format_err!(
-                                        "cant not get parent folder of '{}'",
+                                        "Can not get parent folder of '{}'",
                                         path.display()
                                     )
                                 })?
                                 .join(f.package.bin.clone() + ".bat");
 
                             if bat_file_path.exists() {
-                                let file_content =
-                                    fs::read_to_string(&bat_file_path).map_err(|err| {
-                                        eyre::format_err!(
-                                            "can not read file '{}': {}",
-                                            bat_file_path.display(),
-                                            err
-                                        )
-                                    })?;
+                                let file_content = fs::read_to_string(&bat_file_path)?;
 
                                 if file_content.contains(&path_str) {
                                     if let Ok(()) = fs::remove_file(&bat_file_path) {
                                         eprintln!(
-                                            "batch script '{}' has been removed",
+                                            "The batch script '{}' has been removed",
                                             bat_file_path.display()
                                         );
                                     }
@@ -143,7 +127,7 @@ pub async fn clean(cask: &cask::Cask) -> Result<(), Report> {
                             }
                         }
                     } else if let Ok(()) = fs::remove_file(&symlink) {
-                        eprintln!("unknown file '{}' has been removed", symlink.display());
+                        eprintln!("The unknown file '{}' has been removed", symlink.display());
                     }
                 }
             }

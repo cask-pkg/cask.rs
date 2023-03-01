@@ -90,7 +90,7 @@ jobs:
             artifact_name: cask
             cross: true
             strip: false
-            compress: true
+            compress: false
             cargo_flags: "--no-default-features"
           - os: ubuntu-latest
             target: mipsel-unknown-linux-musl

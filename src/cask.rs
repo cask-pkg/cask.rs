@@ -24,15 +24,15 @@ impl Cask {
     // init the cask folder
     pub fn init(&self) -> Result<(), Report> {
         if !self.root_dir().exists() {
-            fs::create_dir_all(&self.root_dir())?;
+            fs::create_dir_all(self.root_dir())?;
         }
 
         if !self.bin_dir().exists() {
-            fs::create_dir_all(&self.bin_dir())?;
+            fs::create_dir_all(self.bin_dir())?;
         }
 
         if !self.formula_dir().exists() {
-            fs::create_dir_all(&self.formula_dir())?;
+            fs::create_dir_all(self.formula_dir())?;
         }
 
         which("git").expect("git is required by Cask.");

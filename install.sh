@@ -81,7 +81,7 @@ executable_folder="/usr/local/bin" # Eventually, the executable file will be pla
 # if version is empty
 if [ -z "$version" ]; then
     asset_path=$(
-        command curl -sSf ${githubUrl}/${owner}/${repo}/releases |
+        command curl -sSfv ${githubUrl}/${owner}/${repo}/releases |
         command grep -o "/${owner}/${repo}/releases/download/.*/${file_name}" |
         command head -n 1
     )

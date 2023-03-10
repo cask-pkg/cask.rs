@@ -68,6 +68,23 @@ get_abi(){
     esac
 }
 
+function get_latest_release() {
+    curl --silent "https://api.github.com/repos/$1/$2/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/'
+}
+
+# parse flag
+for i in "$@"; do
+    case $i in
+        -v=*|--version=*)
+            version="${i#*=}"
+            shift # past argument=value
+        ;;
+        *)
+            # unknown option
+        ;;
+    esac
+done
+
 downloadFolder="${HOME}/Downloads"
 mkdir -p ${downloadFolder} # make sure download folder exists
 os=$(get_os)
@@ -80,16 +97,10 @@ executable_folder="/usr/local/bin" # Eventually, the executable file will be pla
 
 # if version is empty
 if [ -z "$version" ]; then
-    asset_path=$(
-        command curl -sSfv ${githubUrl}/${owner}/${repo}/releases |
-        command grep -o "/${owner}/${repo}/releases/download/.*/${file_name}" |
-        command head -n 1
-    )
-    if [[ ! "$asset_path" ]]; then exit 1; fi
-    asset_uri="${githubUrl}${asset_path}"
-else
-    asset_uri="${githubUrl}/${owner}/${repo}/releases/download/${version}/${file_name}"
+    version=$(get_latest_release $owner $repo)
 fi
+
+asset_uri="${githubUrl}/${owner}/${repo}/releases/download/${version}/${file_name}"
 
 echo "[1/3] Download ${asset_uri} to ${downloadFolder}"
 rm -f ${downloaded_file}

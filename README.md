@@ -44,13 +44,13 @@ Then welcome to Cask.
 1. Shell (Mac/Linux)
 
    ```bash
-   curl -fsSL https://cdn.jsdelivr.net/gh/cask-pkg/cask.rs/install.sh | bash
+   curl -fsSL https://raw.githubusercontent.com/cask-pkg/cask.rs/main/install.sh | bash
    ```
 
 2. PowerShell (Windows):
 
    ```pwshell
-   iwr https://cdn.jsdelivr.net/gh/cask-pkg/cask.rs/install.ps1 -useb | iex
+   iwr https://raw.githubusercontent.com/cask-pkg/cask.rs/main/install.ps1 -useb | iex
    ```
 
 3. [Github release page](https://github.com/cask-pkg/cask.rs/releases)

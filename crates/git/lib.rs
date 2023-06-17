@@ -256,7 +256,7 @@ impl Repository {
 
         let stdout = String::from_utf8(output.stdout).expect("can not read data from stdout");
 
-        for line in stdout.lines().into_iter().map(|f| f.to_string()) {
+        for line in stdout.lines().map(|f| f.to_string()) {
             let mut inter = line.split_whitespace();
 
             let hash = inter

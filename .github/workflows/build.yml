@@ -170,16 +170,16 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Setup Rust toolchain
-        uses: actions-rs/toolchain@v1
+        uses: actions-rs/toolchain@v2
         with:
           toolchain: stable
           target: ${{ matrix.target }}
 
       - name: cargo build
-        uses: actions-rs/cargo@v1
+        uses: actions-rs/cargo@v2
         with:
           command: build
           args: --release --locked --target=${{ matrix.target }} ${{ matrix.cargo_flags }}

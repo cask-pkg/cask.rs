@@ -31,10 +31,10 @@ jobs:
           - aarch64-unknown-linux-gnu
           - armv7-unknown-linux-musleabihf
           - arm-unknown-linux-musleabihf
-          - mips-unknown-linux-musl
-          - mipsel-unknown-linux-musl
-          - mips64-unknown-linux-gnuabi64
-          - mips64el-unknown-linux-gnuabi64
+          # - mips-unknown-linux-musl
+          # - mipsel-unknown-linux-musl
+          # - mips64-unknown-linux-gnuabi64
+          # - mips64el-unknown-linux-gnuabi64
           - riscv64gc-unknown-linux-gnu
           - i686-pc-windows-msvc
           - x86_64-pc-windows-msvc
@@ -85,34 +85,34 @@ jobs:
             strip: false
             compress: true
             cargo_flags: ""
-          - os: ubuntu-latest
-            target: mips-unknown-linux-musl
-            artifact_name: cask
-            cross: true
-            strip: false
-            compress: false
-            cargo_flags: "--no-default-features"
-          - os: ubuntu-latest
-            target: mipsel-unknown-linux-musl
-            artifact_name: cask
-            cross: true
-            strip: false
-            compress: true
-            cargo_flags: "--no-default-features"
-          - os: ubuntu-latest
-            target: mips64-unknown-linux-gnuabi64
-            artifact_name: cask
-            cross: true
-            strip: false
-            compress: false
-            cargo_flags: "--no-default-features"
-          - os: ubuntu-latest
-            target: mips64el-unknown-linux-gnuabi64
-            artifact_name: cask
-            cross: true
-            strip: false
-            compress: false
-            cargo_flags: "--no-default-features"
+          # - os: ubuntu-latest
+          #   target: mips-unknown-linux-musl
+          #   artifact_name: cask
+          #   cross: true
+          #   strip: false
+          #   compress: false
+          #   cargo_flags: "--no-default-features"
+          # - os: ubuntu-latest
+          #   target: mipsel-unknown-linux-musl
+          #   artifact_name: cask
+          #   cross: true
+          #   strip: false
+          #   compress: true
+          #   cargo_flags: "--no-default-features"
+          # - os: ubuntu-latest
+          #   target: mips64-unknown-linux-gnuabi64
+          #   artifact_name: cask
+          #   cross: true
+          #   strip: false
+          #   compress: false
+          #   cargo_flags: "--no-default-features"
+          # - os: ubuntu-latest
+          #   target: mips64el-unknown-linux-gnuabi64
+          #   artifact_name: cask
+          #   cross: true
+          #   strip: false
+          #   compress: false
+          #   cargo_flags: "--no-default-features"
           - os: ubuntu-latest
             target: riscv64gc-unknown-linux-gnu
             artifact_name: cask

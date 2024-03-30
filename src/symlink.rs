@@ -48,7 +48,7 @@ pub fn symlink(src: &Path, dest: &Path, package_name: &str) -> Result<(), Report
                 .replace("{filepath}", &src_file_path)
                 .replace("{package}", package_name);
 
-            bat_file.write_all(bat_script.as_str().as_bytes())?;
+            bat_file.write_all(bat_script.as_bytes())?;
         }
 
         // generate a shell
@@ -64,7 +64,7 @@ pub fn symlink(src: &Path, dest: &Path, package_name: &str) -> Result<(), Report
                 .replace("{package}", package_name)
                 .replace("\r\n", "\n");
 
-            shell_file.write_all(bat_script.as_str().as_bytes())?;
+            shell_file.write_all(bat_script.as_bytes())?;
         }
     }
 

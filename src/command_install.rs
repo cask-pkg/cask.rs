@@ -216,7 +216,6 @@ pub async fn install(
             .map(|s| s.trim_start().to_owned())
             .collect::<Vec<String>>()
             .join("\n")
-            .as_str()
             .as_bytes(),
         )?;
         formula_file.write_all(package_formula.get_file_content().as_bytes())?;

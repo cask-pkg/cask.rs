@@ -5,7 +5,7 @@ use crate::cask;
 use chrono::prelude::*;
 use eyre::Report;
 use serde::{Deserialize, Serialize};
-use tabled::{Style, Table, Tabled};
+use tabled::{settings::Style, Table, Tabled};
 
 #[derive(Serialize, Deserialize, Debug, Tabled)]
 struct PackageInfo {

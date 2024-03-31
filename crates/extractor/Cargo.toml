@@ -8,7 +8,7 @@ path = "lib.rs"
 
 [dependencies]
 eyre = "0.6.8"
-libflate = "1.2.0"
+libflate = "2.0.0"
 tar = "0.4.38"
 zip = "0.6.2"
 bzip2-rs = "0.1.2"

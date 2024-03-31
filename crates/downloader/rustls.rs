@@ -29,8 +29,8 @@ pub(crate) async fn download(url: &str, filepath: &Path) -> Result<(), Report> {
     let pb = ProgressBar::new(total_size);
     pb.set_style(
         ProgressStyle::default_bar()
-            .template(progress_template)
-            .progress_chars("#>-"),
+            .progress_chars("#>-")
+            .template(progress_template)?,
     );
     pb.set_message(format!("Downloading {}", url));
 

@@ -22,34 +22,30 @@ mod util;
 use std::process;
 
 use atty::{is, Stream};
-use clap::{arg, Arg, Command};
+use clap::{arg, crate_version, Arg, Command};
 
 #[tokio::main]
 async fn main() {
-    let version = format!("v{}", env!("CARGO_PKG_VERSION"));
-
     let mut app = Command::new(env!("CARGO_BIN_NAME"))
-        .version(version.as_str())
+        .version(crate_version!())
         .about(env!("CARGO_PKG_DESCRIPTION"))
         .author(env!("CARGO_PKG_AUTHORS"))
         .subcommand_required(true)
         .allow_external_subcommands(true)
-        .allow_invalid_utf8_for_external_subcommands(true)
         .subcommand(
             Command::new("install")
-                .alias("i")
                 .visible_alias("i")
                 .about("Install package")
                 .arg(
                     Arg::new("PACKAGE")
                         .required(is(Stream::Stdin))
-                        .multiple_occurrences(false)
+                        .num_args(1)
                         .help("The package name or repository url"),
                 )
                 .arg(
                     Arg::new("VERSION")
                         .required(false)
-                        .multiple_occurrences(false)
+                        .num_args(0..=1)
                         .help("Install specified version."),
                 )
                 .arg(
@@ -57,13 +53,12 @@ async fn main() {
                         .short('v')
                         .long("verbose")
                         .help("Print verbose information")
-                        .takes_value(false),
+                        .num_args(0..=1),
                 )
                 .arg_required_else_help(is(Stream::Stdin)),
         )
         .subcommand(
             Command::new("uninstall")
-                .alias("rm")
                 .visible_alias("rm")
                 .about("Uninstall package")
                 .arg(arg!(<PACKAGE> "The package name or the executable file name of the package"))
@@ -71,7 +66,6 @@ async fn main() {
         )
         .subcommand(
             Command::new("list")
-                .alias("ls")
                 .visible_alias("ls")
                 .about("List installed package")
                 .arg(
@@ -79,7 +73,7 @@ async fn main() {
                         .short('j')
                         .long("json")
                         .help("Print json format instead of pretty format")
-                        .takes_value(false),
+                        .num_args(0..=1),
                 ),
         )
         .subcommand(
@@ -90,7 +84,6 @@ async fn main() {
         )
         .subcommand(
             Command::new("update")
-                .alias("upgrade")
                 .visible_alias("upgrade")
                 .about("Upgrade package to latest")
                 .arg(arg!(<PACKAGE> "The package name"))
@@ -99,20 +92,19 @@ async fn main() {
                         .short('c')
                         .long("check-only")
                         .help("Check update only")
-                        .takes_value(false),
+                        .num_args(0..=1),
                 )
                 .arg(
                     Arg::new("verbose")
                         .short('v')
                         .long("verbose")
                         .help("Print verbose information")
-                        .takes_value(false),
+                        .num_args(0..=1),
                 )
                 .arg_required_else_help(true),
         )
         .subcommand(
             Command::new("homepage")
-                .alias("home")
                 .visible_alias("home")
                 .about("Open homepage of package")
                 .arg(arg!(<PACKAGE> "The package name"))
@@ -120,7 +112,6 @@ async fn main() {
         )
         .subcommand(
             Command::new("check-updates")
-                .alias("check-upgrades")
                 .visible_alias("check-upgrades")
                 .about("Check and update packages to latest")
                 .arg(
@@ -128,19 +119,18 @@ async fn main() {
                         .short('c')
                         .long("check-only")
                         .help("Check update only")
-                        .takes_value(false),
+                        .num_args(0..=1),
                 )
                 .arg(
                     Arg::new("verbose")
                         .short('v')
                         .long("verbose")
                         .help("Print verbose information")
-                        .takes_value(false),
+                        .num_args(0..=1),
                 ),
         )
         .subcommand(
             Command::new("self-update")
-                .alias("self-upgrade")
                 .visible_alias("self-upgrade")
                 .about("Update Cask to the newest version"),
         )
@@ -149,7 +139,6 @@ async fn main() {
         )
         .subcommand(
             Command::new("clean")
-                .alias("clear")
                 .visible_alias("clear")
                 .about("Clear residual data"),
         )
@@ -165,12 +154,11 @@ async fn main() {
                                 .short('v')
                                 .long("verbose")
                                 .help("Print verbose information")
-                                .takes_value(false),
+                                .num_args(0..=1),
                         ),
                 )
                 .subcommand(
                     Command::new("list")
-                        .alias("ls")
                         .visible_alias("ls")
                         .about("List build-in formula on remote")
                         .arg(
@@ -178,7 +166,7 @@ async fn main() {
                                 .short('v')
                                 .long("verbose")
                                 .help("Print verbose information")
-                                .takes_value(false),
+                                .num_args(0..=1),
                         ),
                 ),
         );
@@ -198,56 +186,54 @@ async fn main() {
 
     match matches.subcommand() {
         Some(("install", sub_matches)) => {
-            let package_name = sub_matches
-                .value_of("PACKAGE")
-                .or(Some(""))
-                .expect("required");
-            let version = sub_matches.value_of("VERSION");
-            let is_verbose = sub_matches.is_present("verbose");
+            let package_name = sub_matches.get_one::<String>("PACKAGE").expect("required");
+
+            let version = sub_matches.get_one::<String>("VERSION").map(|x| x.as_str());
+            let is_verbose = sub_matches.contains_id("verbose");
 
             command_install::install(&cask, package_name, version, is_verbose)
                 .await
                 .expect("install package fail!");
         }
         Some(("uninstall", sub_matches)) => {
-            let package_name = sub_matches.value_of("PACKAGE").expect("required");
+            let package_name = sub_matches.get_one::<String>("PACKAGE").expect("required");
 
             command_uninstall::uninstall(&cask, package_name)
                 .await
                 .expect("uninstall package fail!");
         }
         Some(("list", sub_matches)) => {
-            let is_print_as_json = sub_matches.is_present("json");
+            let is_print_as_json = sub_matches.contains_id("json");
             command_list::list(&cask, is_print_as_json)
                 .await
                 .expect("list packages fail!");
         }
         Some(("info", sub_matches)) => {
-            let package_name = sub_matches.value_of("PACKAGE").expect("required");
+            let package_name = sub_matches.get_one::<String>("PACKAGE").expect("required");
 
             command_info::info(&cask, package_name)
                 .await
                 .expect("info installed package fail!");
         }
         Some(("update", sub_matches)) => {
-            let package_name = sub_matches.value_of("PACKAGE").expect("required");
-            let is_check_only = sub_matches.is_present("check-only");
-            let is_verbose = sub_matches.is_present("verbose");
+            let package_name = sub_matches.get_one::<String>("PACKAGE").expect("required");
+            let is_check_only = sub_matches.contains_id("check-only");
+            let is_verbose = sub_matches.contains_id("verbose");
 
             command_update::update(&cask, package_name, is_check_only, is_verbose)
                 .await
                 .expect("update package fail!");
         }
         Some(("homepage", sub_matches)) => {
-            let package_name = sub_matches.value_of("PACKAGE").expect("required");
+            let package_name = sub_matches.get_one::<String>("PACKAGE").expect("required");
 
             command_homepage::homepage(&cask, package_name)
                 .await
                 .expect("open homepage of package fail!");
         }
         Some(("check-updates", sub_matches)) => {
-            let is_check_only = sub_matches.is_present("check-only");
-            let is_verbose = sub_matches.is_present("verbose");
+            let is_check_only = sub_matches.contains_id("check-only");
+            let is_verbose = sub_matches.contains_id("verbose");
 
             command_check_updates::check_updates(&cask, is_check_only, is_verbose)
                 .await
@@ -271,11 +257,11 @@ async fn main() {
         }
         Some(("remote", sub_matches)) => match sub_matches.subcommand() {
             Some(("sync", sync_sub_matches)) => {
-                let is_verbose = sync_sub_matches.is_present("verbose");
+                let is_verbose = sync_sub_matches.contains_id("verbose");
                 command_remote_sync::sync(&cask, is_verbose).expect("sync build-in formula fail!");
             }
             Some(("list", sync_sub_matches)) => {
-                let is_verbose = sync_sub_matches.is_present("verbose");
+                let is_verbose = sync_sub_matches.contains_id("verbose");
                 command_remote_list::list(&cask, is_verbose).expect("list build-in formula fail!");
             }
             _ => {
@@ -286,7 +272,7 @@ async fn main() {
         },
         Some((ext, sub_matches)) => {
             let args = sub_matches
-                .values_of_os("")
+                .get_many::<String>("")
                 .unwrap_or_default()
                 .collect::<Vec<_>>();
             eprintln!("Unknown the command {:?} with argument {:?}", ext, args);

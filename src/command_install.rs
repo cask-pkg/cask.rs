@@ -12,7 +12,7 @@ use std::{
 use atty::{is, Stream};
 use eyre::Report;
 use is_executable::IsExecutable;
-use semver::{Version, VersionReq};
+use semver::Version;
 use sha2::{Digest, Sha256};
 
 pub async fn install(
@@ -85,14 +85,14 @@ pub async fn install(
             .or_else(|| remote_versions.first().map(|v| v.as_str()))
             .expect("can not found remote version");
 
-        let version_req = VersionReq::parse(v)
+        let specified_version = Version::parse(v)
             .map_err(|e| eyre::format_err!("invalid semver version {}: {}", v, e))?;
 
         let mut target_version: String = "".to_string();
 
         for remote_v_str in &remote_versions {
-            if let Ok(remote_v) = Version::parse(remote_v_str) {
-                if version_req.matches(&remote_v) {
+            if let Ok(remote_version) = Version::parse(remote_v_str) {
+                if specified_version.to_string() == remote_version.to_string() {
                     target_version = remote_v_str.to_string();
                     break;
                 }

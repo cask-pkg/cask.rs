@@ -103,12 +103,12 @@ jobs:
           #   cross: true
           #   strip: false
           #   cargo_flags: "--no-default-features"
-          - os: ubuntu-latest
-            target: riscv64gc-unknown-linux-gnu
-            artifact_name: cask
-            cross: true
-            strip: false
-            cargo_flags: "--no-default-features"
+          # - os: ubuntu-latest
+          #   target: riscv64gc-unknown-linux-gnu
+          #   artifact_name: cask
+          #   cross: true
+          #   strip: false
+          #   cargo_flags: "--no-default-features"
           - os: windows-latest
             target: i686-pc-windows-msvc
             artifact_name: cask.exe

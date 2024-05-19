@@ -146,7 +146,7 @@ jobs:
             cross: true
             strip: false
             cargo_flags: ""
-          - os: windows-latest
+          - os: ubuntu-latest
             target: aarch64-unknown-freebsd
             artifact_name: cask
             cross: true

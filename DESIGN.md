@@ -10,7 +10,7 @@ Mainly have a few more troublesome things:
 
 1. Not cross-platform
 
-   Every platform has its oackage, eg `Brew` in MacOS, `scoop` in Windows
+   Every platform has its own packager manager, eg `Brew` in MacOS, `scoop` in Windows
 
 2. Package manager usually has a center server
 
@@ -48,7 +48,7 @@ You can release your package with following ways(pick one):
 
 2. Create a [Cask.toml](Cask.toml.md) file in [cask-core](https://github.com/cask-pkg/cask-core)
 
-   And then run the following command
+   And then run the following command in your local machine
 
    ```bash
    cask remote sync

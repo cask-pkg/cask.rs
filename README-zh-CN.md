@@ -36,7 +36,7 @@
 
 - [x] macOS(x86_64/arm64)
 - [x] Windows(i686/x86_64/arm64/MSYS2/Cygin/WSL)
-- [x] Linux(arm/arm64/x86_64/mips/mips64/mips64el)
+- [x] Linux(arm/arm64/x86_64)
 - [x] freeBSD(x86_64)
 
 ## 安装

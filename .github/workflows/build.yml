@@ -35,7 +35,7 @@ jobs:
           # - mipsel-unknown-linux-musl
           # - mips64-unknown-linux-gnuabi64
           # - mips64el-unknown-linux-gnuabi64
-          - riscv64gc-unknown-linux-gnu
+          # - riscv64gc-unknown-linux-gnu
           - i686-pc-windows-msvc
           - x86_64-pc-windows-msvc
           - aarch64-pc-windows-msvc

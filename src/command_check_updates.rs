@@ -107,7 +107,10 @@ pub async fn check_updates(
             .await
             {
                 if e.to_string().contains("404 Not Found") {
-                    eprintln!("Warning: Package {}'s distribute files not found. Skipping...", package.name);
+                    eprintln!(
+                        "Warning: Package {}'s distribute files not found. Skipping...",
+                        package.name
+                    );
                 } else {
                     eprintln!("Error installing package {}: {}", package.name, e);
                 }

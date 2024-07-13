@@ -6,137 +6,144 @@ on:
       - "**/*.rs"
       - "**/Cargo.toml"
       - "**/Cargo.lock"
-      - ".github/workflows/build.yml"
       - "Cross.toml"
+      - ".github/workflows/build.yml"
   pull_request:
     paths:
       - "**/*.rs"
       - "**/Cargo.toml"
       - "**/Cargo.lock"
-      - ".github/workflows/build.yml"
       - "Cross.toml"
+      - ".github/workflows/build.yml"
   workflow_dispatch:
 
 jobs:
   binaries:
-    name: ${{ matrix.os }} for ${{ matrix.target }}
+    name: ${{ matrix.os }}/${{ matrix.target }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 30
     strategy:
       matrix:
         target:
           - x86_64-unknown-linux-musl
+          - x86_64-unknown-linux-gnu
           - aarch64-unknown-linux-musl
+          - aarch64-unknown-linux-gnu
           - armv7-unknown-linux-musleabihf
           - arm-unknown-linux-musleabihf
-          - mips64-unknown-linux-gnuabi64
-          - mips64el-unknown-linux-gnuabi64
-          - riscv64gc-unknown-linux-gnu
+          # - mips-unknown-linux-musl
+          # - mipsel-unknown-linux-musl
+          # - mips64-unknown-linux-gnuabi64
+          # - mips64el-unknown-linux-gnuabi64
+          # - riscv64gc-unknown-linux-gnu
           - i686-pc-windows-msvc
           - x86_64-pc-windows-msvc
           - aarch64-pc-windows-msvc
           - x86_64-apple-darwin
           - aarch64-apple-darwin
           - x86_64-unknown-freebsd
-          - loongarch64-unknown-linux-gnu
         include:
           - os: ubuntu-latest
             target: x86_64-unknown-linux-musl
             artifact_name: cask
             cross: true
             strip: true
-            compress: false
+            cargo_flags: ""
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            artifact_name: cask
+            cross: true
+            strip: true
             cargo_flags: ""
           - os: ubuntu-latest
             target: aarch64-unknown-linux-musl
             artifact_name: cask
             cross: true
             strip: false
-            compress: false
+            cargo_flags: ""
+          - os: ubuntu-latest
+            target: aarch64-unknown-linux-gnu
+            artifact_name: cask
+            cross: true
+            strip: false
             cargo_flags: ""
           - os: ubuntu-latest
             target: armv7-unknown-linux-musleabihf
             artifact_name: cask
             cross: true
             strip: false
-            compress: false
             cargo_flags: ""
           - os: ubuntu-latest
             target: arm-unknown-linux-musleabihf
             artifact_name: cask
             cross: true
             strip: false
-            compress: false
             cargo_flags: ""
-          - os: ubuntu-latest
-            target: mips64-unknown-linux-gnuabi64
-            artifact_name: cask
-            cross: true
-            strip: false
-            compress: false
-            cargo_flags: "-Z build-std=core,std,alloc,proc_macro,panic_abort"
-          - os: ubuntu-latest
-            target: mips64el-unknown-linux-gnuabi64
-            artifact_name: cask
-            cross: true
-            strip: false
-            compress: false
-            cargo_flags: "-Z build-std=core,std,alloc,proc_macro,panic_abort"
-          - os: ubuntu-latest
-            target: riscv64gc-unknown-linux-gnu
-            artifact_name: cask
-            cross: true
-            strip: false
-            compress: false
-            cargo_flags: ""
+          # - os: ubuntu-latest
+          #   target: mips-unknown-linux-musl
+          #   artifact_name: cask
+          #   cross: true
+          #   strip: false
+          #   cargo_flags: "--no-default-features"
+          # - os: ubuntu-latest
+          #   target: mipsel-unknown-linux-musl
+          #   artifact_name: cask
+          #   cross: true
+          #   strip: false
+          #   cargo_flags: "--no-default-features"
+          # - os: ubuntu-latest
+          #   target: mips64-unknown-linux-gnuabi64
+          #   artifact_name: cask
+          #   cross: true
+          #   strip: false
+          #   cargo_flags: "--no-default-features"
+          # - os: ubuntu-latest
+          #   target: mips64el-unknown-linux-gnuabi64
+          #   artifact_name: cask
+          #   cross: true
+          #   strip: false
+          #   cargo_flags: "--no-default-features"
+          # - os: ubuntu-latest
+          #   target: riscv64gc-unknown-linux-gnu
+          #   artifact_name: cask
+          #   cross: true
+          #   strip: false
+          #   cargo_flags: "--no-default-features"
           - os: windows-latest
             target: i686-pc-windows-msvc
             artifact_name: cask.exe
-            cross: false
+            cross: true
             strip: true
-            compress: false
-            cargo_flags: ""
+            cargo_flags: "--no-default-features"
           - os: windows-latest
             target: x86_64-pc-windows-msvc
             artifact_name: cask.exe
             cross: false
             strip: true
-            compress: false
             cargo_flags: ""
           - os: windows-latest
             target: aarch64-pc-windows-msvc
             artifact_name: cask.exe
-            cross: false
+            cross: true
             strip: true
-            compress: false
-            cargo_flags: ""
+            cargo_flags: "--no-default-features"
           - os: macos-latest
             target: x86_64-apple-darwin
             artifact_name: cask
             cross: false
             strip: true
-            compress: false
             cargo_flags: ""
           - os: macos-latest
             target: aarch64-apple-darwin
             artifact_name: cask
             cross: false
             strip: true
-            compress: false
             cargo_flags: ""
           - os: ubuntu-latest
             target: x86_64-unknown-freebsd
             artifact_name: cask
             cross: true
             strip: false
-            compress: false
-            cargo_flags: ""
-          - os: ubuntu-latest
-            target: loongarch64-unknown-linux-gnu
-            artifact_name: cask
-            cross: false
-            strip: false
-            compress: false
             cargo_flags: ""
 
     env:
@@ -152,66 +159,14 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
+          target: ${{ matrix.target }}
 
-      - name: Install Cross
-        run: cargo install cross --git https://github.com/cross-rs/cross
-
-      - name: Build with Cross
-        if: ${{ matrix.cross }}
-        run: |
-          rustup default nightly
-          cross build --release --locked --target=${{ matrix.target }} ${{ matrix.cargo_flags }}
-
-      - name: Build with Cargo (Unix)
-        if: runner.os != 'windows' && matrix.cross == false
-        shell: bash
-        run: |
-          rustup target add ${{ matrix.target }}
-
-          if [ ${{ matrix.target }} = "loongarch64-unknown-linux-gnu" ]; then
-            # 定义远程文件 URL 和本地目录
-            REMOTE_URL="https://github.com/loongson/build-tools/releases/download/2024.06.01/x86_64-cross-tools-loongarch64-binutils_2.42-gcc_14.1.0-glibc_2.39.tar.xz"
-            TARGET_DIR="$HOME/.local/share/loongarch64-unknown-linux-gnu"
-
-            # 下载远程 tar.xz 文件
-            echo "Downloading tar.xz archive..."
-            wget "$REMOTE_URL" -O /tmp/archive.tar.xz
-
-            # 解压到目标目录
-            echo "Extracting archive to $TARGET_DIR..."
-            mkdir -p "$TARGET_DIR"
-            tar -xf /tmp/archive.tar.xz -C "$TARGET_DIR"
-
-            # 设置环境变量
-            export LC_ALL=POSIX
-            export CROSS_TARGET="loongarch64-unknown-linux-gnu"
-            export MABI="lp64d"
-            export BUILD64="-mabi=lp64d"
-            export PATH=$PATH:$TARGET_DIR/cross-tools/bin
-            export JOBS=-j8
-            export CARGO_TARGET_LOONGARCH64_UNKNOWN_LINUX_GNU_LINKER=loongarch64-unknown-linux-gnu-gcc
-            export CC_loongarch64_unknown_linux_gnu=loongarch64-unknown-linux-gnu-gcc
-            export CXX_loongarch64_unknown_linux_gnu=loongarch64-unknown-linux-gnu-g++
-            export AR_loongarch64_unknown_linux_gnu=loongarch64-unknown-linux-gnu-ar
-            export RANLIB_loongarch64_unknown_linux_gnu=loongarch64-unknown-linux-gnu-ranlib
-            export LINKER_loongarch64_unknown_linux_gnu=loongarch64-unknown-linux-gnu-gcc
-          fi
-
-          cargo build --release --locked --target=${{ matrix.target }} ${{ matrix.cargo_flags }}
-
-      - name: Build with Cargo (Windows)
-        if: runner.os == 'Windows' && matrix.cross == false
-        run: |
-          rustup target add ${{ matrix.target }}
-          cargo build --release --locked --target=${{ matrix.target }} ${{ matrix.cargo_flags }}
-
-      - name: Compress binaries
-        uses: svenstaro/upx-action@v2
+      - name: cargo build
+        uses: actions-rs/cargo@v1
         with:
-          file: target/${{ matrix.target }}/release/${{ matrix.artifact_name }}
-          args: --lzma
-          strip: ${{ matrix.strip }}
-        if: ${{ matrix.compress }}
+          command: build
+          args: --release --locked --target=${{ matrix.target }} ${{ matrix.cargo_flags }}
+          use-cross: ${{ matrix.cross }}
 
       - name: Create archive
         run: tar -cvzf target/${{ matrix.target }}/release/cask-${{ matrix.target }}.tar.gz --directory=target/${{ matrix.target }}/release ${{ matrix.artifact_name }}

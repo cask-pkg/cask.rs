@@ -1,4 +1,5 @@
-# NOTE: Custom image specification for freebsd is required until new version of cross is released.
+[target.x86_64-unknown-freebsd]
+image = "ghcr.io/cross-rs/x86_64-unknown-freebsd:edge"
 
 [build.env]
 passthrough = [

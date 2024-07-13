@@ -559,10 +559,16 @@ mod tests {
             formula::ResourceTarget::Simple(_) => todo!(),
         }
 
-        #[cfg(target_os = "macos")]
+        #[cfg(all(target_os = "macos", target_arch = "x86_64"))]
         assert_eq!(
             &rc.get_current_download_url("0.1.12").as_ref().unwrap().url,
             "https://github.com/axetroy/gpm.rs/releases/download/v0.1.12/gpm_darwin_amd64.tar.gz"
+        );
+
+        #[cfg(all(target_os = "macos", target_arch = "aarch64"))]
+        assert_eq!(
+            &rc.get_current_download_url("0.1.12").as_ref().unwrap().url,
+            "https://github.com/axetroy/gpm.rs/releases/download/v0.1.12/gpm_darwin_arm64.tar.gz"
         );
 
         // linux

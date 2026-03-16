@@ -153,20 +153,27 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Rust toolchain
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@stable
         with:
-          toolchain: stable
-          target: ${{ matrix.target }}
+          targets: ${{ matrix.target }}
+
+      - name: Install cross
+        if: matrix.cross
+        uses: taiki-e/install-action@v2
+        with:
+          tool: cross
 
       - name: cargo build
-        uses: actions-rs/cargo@v1
-        with:
-          command: build
-          args: --release --locked --target=${{ matrix.target }} ${{ matrix.cargo_flags }}
-          use-cross: ${{ matrix.cross }}
+        shell: bash
+        run: |
+          if [ "${{ matrix.cross }}" = "true" ]; then
+            cross build --release --locked --target=${{ matrix.target }} ${{ matrix.cargo_flags }}
+          else
+            cargo build --release --locked --target=${{ matrix.target }} ${{ matrix.cargo_flags }}
+          fi
 
       - name: Create archive
         run: tar -cvzf target/${{ matrix.target }}/release/cask-${{ matrix.target }}.tar.gz --directory=target/${{ matrix.target }}/release ${{ matrix.artifact_name }}
@@ -176,7 +183,7 @@ jobs:
       ###
 
       - name: Release to Github
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         if: startsWith(github.repository, 'cask-pkg') && startsWith(github.ref, 'refs/tags/')
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}

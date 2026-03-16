@@ -4,12 +4,12 @@ on:
   push:
     paths:
       - "install.sh"
-      - "install.sp1"
+      - "install.ps1"
       - ".github/workflows/installation.yml"
   pull_request:
     paths:
       - "install.sh"
-      - "install.sp1"
+      - "install.ps1"
       - ".github/workflows/installation.yml"
   workflow_dispatch:
   schedule:
@@ -21,7 +21,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-11, ubuntu-latest, windows-latest]
+        os: [macos-latest, ubuntu-latest, windows-latest]
 
     env:
       CARGO_INCREMENTAL: 0
@@ -30,7 +30,7 @@ jobs:
 
     steps:
       - name: Clone repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install with shell
         if: startsWith(matrix.os, 'ubuntu') || startsWith(matrix.os, 'macos')

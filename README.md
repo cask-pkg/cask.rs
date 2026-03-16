@@ -1,7 +1,7 @@
 English | [中文简体](README-zh-CN.md)
 
 <div align="center">
-   <img src="logo.svg" with="64" height="64"/>
+   <img src="logo.svg" width="64" height="64"/>
 
    <h1>Cask</h1>
 
@@ -26,18 +26,18 @@ A universal, distributed package manager.
 
 If you are tired of:
 
-1. Install different package manager in different platform (Homebrew/Chocolatey/Scoop).
-2. Writing installation scripts many times(Bash/PowerShell).
-3. Update remote package information when release a new version
+1. Installing different package managers on different platforms (Homebrew/Chocolatey/Scoop).
+2. Writing installation scripts multiple times (Bash/PowerShell).
+3. Updating remote package information every time you release a new version.
 
 Then welcome to Cask.
 
 ## Cross Platform support
 
 - [x] macOS(x86_64/arm64)
-- [x] Windows(i686/x86_64/arm64/MSYS2/Cygin/WSL)
+- [x] Windows(i686/x86_64/arm64/MSYS2/Cygwin/WSL)
 - [x] Linux(arm/arm64/x86_64)
-- [x] freeBSD(x86_64)
+- [x] FreeBSD(x86_64)
 
 ## Installation
 
@@ -49,7 +49,7 @@ Then welcome to Cask.
 
 2. PowerShell (Windows):
 
-   ```pwshell
+   ```pwsh
    iwr https://raw.githubusercontent.com/cask-pkg/cask.rs/main/install.ps1 -useb | iex
    ```
 
@@ -63,11 +63,11 @@ Then welcome to Cask.
    cask self-update
    ```
 
-try running following command
+Try running the following command:
 
-```terminal
+```
 $ cask --help
-cask v0.4.6
+cask v0.4.13
 Axetroy <axetroy.dev@gmail.com>
 General distributed binary distribution package management, written in Rust.
 
@@ -112,9 +112,9 @@ cask uninstall github.com/axetroy/dvm
 cask rm dvm
 ```
 
-Show more information with `cask --help` command.
+Show more information with the `cask --help` command.
 
-## Command
+## Commands
 
 | Command                            | Description                                 |
 | ---------------------------------- | ------------------------------------------- |
@@ -124,12 +124,12 @@ Show more information with `cask --help` command.
 | cask update \<PACKAGE\>            | Update package to latest                    |
 | cask homepage \<PACKAGE\>          | Open homepage of package                    |
 | cask check-updates                 | Check and update packages to latest         |
-| cask list                          | List installed package                      |
+| cask list                          | List installed packages                      |
 | cask clean                         | Clear residual data                         |
 | cask self-update                   | Update Cask to the newest version           |
-| cask self-uninstall                | Uninstall cask itself and installed package |
-| cask remote sync                   | Sync build-in formula from remote to local  |
-| cask remote list                   | List build-in formula on remote             |
+| cask self-uninstall                | Uninstall cask itself and installed packages |
+| cask remote sync                   | Sync built-in formula from remote to local  |
+| cask remote list                   | List built-in formula on remote             |
 
 ## Requirement
 

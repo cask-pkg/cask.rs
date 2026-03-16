@@ -1,7 +1,7 @@
 [English](README.md) | 中文简体
 
 <div align="center">
-   <img src="logo.svg" with="64" height="64"/>
+   <img src="logo.svg" width="64" height="64"/>
 
    <h1>Cask</h1>
 
@@ -35,9 +35,9 @@
 ## 跨平台支持
 
 - [x] macOS(x86_64/arm64)
-- [x] Windows(i686/x86_64/arm64/MSYS2/Cygin/WSL)
+- [x] Windows(i686/x86_64/arm64/MSYS2/Cygwin/WSL)
 - [x] Linux(arm/arm64/x86_64)
-- [x] freeBSD(x86_64)
+- [x] FreeBSD(x86_64)
 
 ## 安装
 
@@ -49,7 +49,7 @@
 
 2. PowerShell (Windows):
 
-   ```pwshell
+   ```pwsh
    iwr https://raw.githubusercontent.com/cask-pkg/cask.rs/main/install.ps1 -useb | iex
    ```
 
@@ -63,11 +63,11 @@
    cask self-update
    ```
 
-尝试运行以下命令
+尝试运行以下命令：
 
-```terminal
+```
 $ cask --help
-cask v0.4.6
+cask v0.4.13
 Axetroy <axetroy.dev@gmail.com>
 General distributed binary distribution package management, written in Rust.
 
@@ -130,7 +130,6 @@ cask rm dvm
 | cask self-uninstall                | 卸载 Cask 以及安装的包     |
 | cask remote sync                   | 同步远端的内置包信息到本地 |
 | cask remote list                   | 显示远端的内置包信息       |
-
 ## 使用条件
 
 Cask 依赖于 [Git](https://git-scm.com)
